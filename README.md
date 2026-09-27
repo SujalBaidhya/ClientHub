@@ -79,11 +79,43 @@ Visit `http://127.0.0.1:8000`.
 ### Note on emails
 By default, `MAIL_MAILER` is set to `log` in `.env.example` — emails are written to `storage/logs/laravel.log` instead of actually being sent, which is fine for local development and testing.
 
-To send real emails (recommended once you're testing with real users), use Gmail SMTP:
-1. Create a Gmail account for sending (e.g. `hello.yourapp@gmail.com`)
-2. Enable 2-Step Verification on that account
-3. Generate an [App Password](https://myaccount.google.com/apppasswords)
-4. Set these in your `.env`:
+## 📧 Email & Queue Configuration
+
+All outgoing emails (invitations, milestone alerts, and payment receipts) implement `ShouldQueue` to prevent blocking web requests.
+
+### 1. Gmail SMTP Setup
+To send real emails through Gmail SMTP:
+1. Log into your Google account.
+2. Ensure **2-Step Verification** is turned ON (`Google Account` > `Security`).
+3. Go to [Google App Passwords](https://myaccount.google.com/apppasswords).
+4. Create a new App Password named `ClientHub` and copy the 16-character string.
+5. Configure your `.env`:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=hello.clienthub@gmail.com
+MAIL_PASSWORD=your_16_character_app_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="hello.clienthub@gmail.com"
+MAIL_FROM_NAME="${APP_NAME}"
+
+Because emails are queued in the database, you must have the queue worker running in a separate terminal:
+
+php artisan queue:work
+
+Ensure your .env specifies:
+
+QUEUE_CONNECTION=database
+
+
+🔐 Client Invitation Flow
+Admin Creation: Go to /admin/clients, enter only the client's Name and Email (no password needed).
+
+Token Dispatch: The app creates a unique token and queues a ClientInvitationMail.
+
+Activation: The client receives the link (/invitation/{token}), sets their password, and is automatically logged in.
 
 **Never commit real credentials.** `.env` is already git-ignored — keep it that way.
 
