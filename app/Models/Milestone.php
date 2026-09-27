@@ -19,10 +19,15 @@ class Milestone extends Model
         'title',
         'description',
         'status',
+        'due_date',
+    'client_notes',
+    'approved_at',
         'completed_at',
         'created_at'
     ];
     protected $casts = [
+        'due_date' => 'date',
+        'approved_at' => 'datetime',
         'completed_at' => 'datetime',
     ];
     public function project()

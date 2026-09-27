@@ -7,6 +7,7 @@ use App\Mail\MilestoneCompletedMail;
 use App\Models\Milestone;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
 class MilestoneController extends Controller
@@ -44,7 +45,7 @@ class MilestoneController extends Controller
             'status' => 'required|in:pending,in_progress,completed',
         ]);
 
-               $wasAlreadyCompleted = $milestone->status === 'completed';
+        $wasAlreadyCompleted = $milestone->status === 'completed';
 
         $validated['completed_at'] = $validated['status'] === 'completed'
             ? ($milestone->completed_at ?? now())
@@ -53,8 +54,10 @@ class MilestoneController extends Controller
         $milestone->update($validated);
 
         if ($validated['status'] === 'completed' && !$wasAlreadyCompleted) {
-            Mail::to($project->client->email)
-                ->send(new MilestoneCompletedMail($milestone));
+            if ($project->client?->email) {
+                Mail::to($project->client->email)
+                    ->send(new MilestoneCompletedMail($milestone));
+            }
         }
 
         return redirect()->route('admin.milestones.create', $project)
@@ -67,5 +70,70 @@ class MilestoneController extends Controller
 
         return redirect()->route('admin.milestones.create', $project)
             ->with('success', 'Milestone deleted successfully.');
+    }
+
+    /**
+     * Mark a milestone as approved by the client.
+     */
+    public function approve(Milestone $milestone)
+    {
+        $user = auth()->user();
+        $project = $milestone->project;
+
+        $isClientOwner = (
+            ($project->client_id && (int) $project->client_id === (int) $user->id) ||
+            ($project->user_id && (int) $project->user_id === (int) $user->id) ||
+            ($project->client && isset($project->client->user_id) && (int) $project->client->user_id === (int) $user->id) ||
+            ($project->client && isset($project->client->email) && $project->client->email === $user->email)
+        );
+
+        $isAdmin = ($user->role === 'admin');
+
+        abort_unless($isClientOwner || $isAdmin, 403);
+
+        $milestone->update([
+            'status' => 'completed',
+            'approved_at' => now(),
+            'completed_at' => now(),
+        ]);
+
+        if ($project->client?->email) {
+            Mail::to($project->client->email)
+                ->send(new MilestoneCompletedMail($milestone));
+        }
+
+        return back()->with('success', "Milestone '{$milestone->title}' has been approved!");
+    }
+
+    /**
+     * Submit client feedback and request a revision.
+     */
+    public function requestRevision(Request $request, Milestone $milestone)
+    {
+        $user = auth()->user();
+        $project = $milestone->project;
+
+        $isClientOwner = (
+            ($project->client_id && (int) $project->client_id === (int) $user->id) ||
+            ($project->user_id && (int) $project->user_id === (int) $user->id) ||
+            ($project->client && isset($project->client->user_id) && (int) $project->client->user_id === (int) $user->id) ||
+            ($project->client && isset($project->client->email) && $project->client->email === $user->email)
+        );
+
+        $isAdmin = ($user->role === 'admin');
+
+        abort_unless($isClientOwner || $isAdmin, 403);
+
+        $validated = $request->validate([
+            'client_notes' => ['required', 'string', 'max:1000'],
+        ]);
+
+        $milestone->update([
+            'status' => 'in_progress',
+            'client_notes' => $validated['client_notes'],
+            'approved_at' => null,
+        ]);
+
+        return back()->with('success', "Revision requested for '{$milestone->title}'. Feedback submitted.");
     }
 }
