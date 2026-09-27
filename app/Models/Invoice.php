@@ -8,21 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 class Invoice extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'id',
         'project_id',
         'invoice_number',
         'status',
+        'transaction_code',
+        'paid_at',
         'amount',
         'issued_at',
         'due_date',
-        'created_at',
-        'updated_at',
     ];
-       protected $casts = [
+
+    protected $casts = [
         'amount' => 'decimal:2',
         'issued_at' => 'date',
         'due_date' => 'date',
+        'paid_at' => 'datetime',
     ];
 
     public function project()

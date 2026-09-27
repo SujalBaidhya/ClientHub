@@ -3,6 +3,8 @@
 use App\Models\Invoice;
 use App\Models\Project;
 use App\Models\User;
+use App\Mail\PaymentReceivedMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -56,4 +58,28 @@ test('esewa success callback marks invoice as paid', function () {
         'id' => $invoice->id,
         'status' => 'paid',
     ]);
+});
+test('an email receipt is sent to the client upon successful payment', function () {
+    Mail::fake();
+
+    $client = User::factory()->create(['role' => 'client', 'email' => 'client@example.com']);
+    $project = Project::factory()->create(['client_id' => $client->id]);
+    $invoice = Invoice::factory()->create([
+        'project_id' => $project->id,
+        'status' => 'pending',
+    ]);
+
+    $payload = [
+        'status' => 'COMPLETE',
+        'transaction_uuid' => "invoice-{$invoice->id}-test1234",
+        'total_amount' => $invoice->amount,
+    ];
+
+    $encodedData = base64_encode(json_encode($payload));
+
+    $this->get('/payment/success?data=' . $encodedData);
+
+    Mail::assertSent(PaymentReceivedMail::class, function ($mail) use ($client, $invoice) {
+        return $mail->hasTo($client->email) && $mail->invoice->id === $invoice->id;
+    });
 });

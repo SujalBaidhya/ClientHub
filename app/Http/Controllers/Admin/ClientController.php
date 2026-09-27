@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str; // <-- add this
+use App\Mail\ClientInvitationMail;
 
 class ClientController extends Controller
 {
@@ -18,26 +20,33 @@ class ClientController extends Controller
         return view('admin.create-client', compact('clients'));
     }
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
-        ]);
+  public function store(Request $request)
+{
+    // 1. Validate only name and email (no password required from admin)
+    $validated = $request->validate([
+        'name'  => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+    ]);
 
-                $client = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => 'client',
-        ]);
+    // 2. Generate a unique 40-character invitation token
+    $token = Str::random(40);
 
-        Mail::to($client->email)->send(new WelcomeClientMail($client));
+    // 3. Save the new client with a dummy temporary hashed password
+    $client = User::create([
+        'name'               => $validated['name'],
+        'email'              => $validated['email'],
+        'password'           => Hash::make(Str::random(32)),
+        'role'               => 'client',
+        'invitation_token'   => $token,
+        'invitation_sent_at' => now(),
+    ]);
 
-        return redirect()->route('admin.clients.create')
-            ->with('success', 'Client account created successfully.');
-    }
+    // 4. Generate the one-time link and queue the invitation email
+    $inviteUrl = route('invitations.show', ['token' => $token]);
+    Mail::to($client->email)->queue(new ClientInvitationMail($client, $inviteUrl));
+
+   return redirect()->route('admin.clients.create')->with('success', 'Client created and invitation email queued!');
+}
         public function destroy(User $client)
     {
         abort_if($client->role !== 'client', 404);

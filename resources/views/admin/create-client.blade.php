@@ -6,7 +6,7 @@
             <div>
                 <p class="dashboard-eyebrow">Admin</p>
                 <h1>Client Accounts</h1>
-                <p>Create login accounts for your clients.</p>
+                <p>Invite clients to set up their own login accounts.</p>
             </div>
         </div>
 
@@ -22,33 +22,29 @@
             </x-card>
         @endif
 
-        <x-card title="Add Client">
+        <x-card title="Invite Client">
 
             <form method="POST" action="{{ route('admin.clients.store') }}">
                 @csrf
 
                 <div style="margin-bottom: 16px;">
                     <label style="display:block; margin-bottom:4px; font-weight:bold;">Full Name</label>
-                    <input type="text" name="name" required value="{{ old('name') }}" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border);">
+                    <input type="text" name="name" required value="{{ old('name') }}" placeholder="e.g. Sujal Shrestha" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border);">
                 </div>
 
                 <div style="margin-bottom: 16px;">
-                    <label style="display:block; margin-bottom:4px; font-weight:bold;">Email</label>
-                    <input type="email" name="email" required value="{{ old('email') }}" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border);">
+                    <label style="display:block; margin-bottom:4px; font-weight:bold;">Email Address</label>
+                    <input type="email" name="email" required value="{{ old('email') }}" placeholder="client@example.com" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border);">
+                    <small style="color: #64748b; margin-top: 4px; display: block;">An invitation link will be sent to this email so they can set their password.</small>
                 </div>
 
-                <div style="margin-bottom: 16px;">
-                    <label style="display:block; margin-bottom:4px; font-weight:bold;">Password</label>
-                    <input type="password" name="password" required minlength="8" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border);">
-                </div>
-
-                <button type="submit" class="btn btn-success">Create Client</button>
+                <button type="submit" class="btn btn-success">Send Invitation</button>
 
             </form>
 
         </x-card>
 
-               <x-card title="Existing Clients">
+        <x-card title="Existing Clients">
 
             @if($clients->isEmpty())
                 <x-empty-state
@@ -62,6 +58,11 @@
                             <div>
                                 <strong>{{ $client->name }}</strong>
                                 <span>{{ $client->email }}</span>
+                                @if($client->invitation_token)
+                                    <span style="display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 9999px; background: #fef3c7; color: #b45309; margin-left: 8px;">Pending Setup</span>
+                                @else
+                                    <span style="display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 9999px; background: #dcfce7; color: #15803d; margin-left: 8px;">Active</span>
+                                @endif
                             </div>
 
                             <form method="POST" action="{{ route('admin.clients.destroy', $client) }}" onsubmit="return confirm('Delete {{ $client->name }}? This cannot be undone.');">

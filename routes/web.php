@@ -16,6 +16,12 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\InvitationController;
+
+Route::middleware('web')->group(function () {
+    Route::get('/invitation/{token}', [InvitationController::class, 'show'])->name('invitations.show');
+    Route::post('/invitation/{token}', [InvitationController::class, 'update'])->name('invitations.update');
+});
 Route::get('/', function () {
     return redirect()->route('login');
 });
@@ -95,4 +101,5 @@ Route::delete('/projects/{project}/invoices/{invoice}', [AdminInvoiceController:
  Route::get('/clients', [AdminClientController::class, 'create'])->name('admin.clients.create');
 Route::post('/clients', [AdminClientController::class, 'store'])->name('admin.clients.store');
 Route::delete('/clients/{client}', [AdminClientController::class, 'destroy'])->name('admin.clients.destroy');
+
 });

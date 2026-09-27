@@ -6,6 +6,8 @@ use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Mail\PaymentReceivedMail;
+use Illuminate\Support\Facades\Mail;
 
 class PaymentController extends Controller
 {
@@ -39,7 +41,6 @@ class PaymentController extends Controller
             return redirect()->route('dashboard')->with('error', 'Payment could not be verified.');
         }
 
-        // Extract the invoice ID from our transaction_uuid format: invoice-{id}-{random}
         preg_match('/^invoice-(\d+)-/', $data['transaction_uuid'], $matches);
         $invoiceId = $matches[1] ?? null;
 
@@ -49,7 +50,15 @@ class PaymentController extends Controller
             return redirect()->route('dashboard')->with('error', 'Invoice not found.');
         }
 
-        $invoice->update(['status' => 'paid']);
+        $invoice->update([
+            'status' => 'paid',
+            'transaction_code' => $data['transaction_code'] ?? null,
+            'paid_at' => now(),
+        ]);
+
+        if ($invoice->project && $invoice->project->client) {
+            Mail::to($invoice->project->client->email)->queue(new PaymentReceivedMail($invoice));
+        }
 
         return redirect()->route('dashboard')->with('success', 'Payment successful! Invoice marked as paid.');
     }
