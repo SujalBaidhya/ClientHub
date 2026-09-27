@@ -101,5 +101,7 @@ Route::delete('/projects/{project}/invoices/{invoice}', [AdminInvoiceController:
  Route::get('/clients', [AdminClientController::class, 'create'])->name('admin.clients.create');
 Route::post('/clients', [AdminClientController::class, 'store'])->name('admin.clients.store');
 Route::delete('/clients/{client}', [AdminClientController::class, 'destroy'])->name('admin.clients.destroy');
+Route::post('/admin/clients/{client}/resend-invite', [App\Http\Controllers\Admin\ClientController::class, 'resendInvite'])
+    ->name('admin.clients.resend-invite'); 
 
 });

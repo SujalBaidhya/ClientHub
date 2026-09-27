@@ -76,4 +76,32 @@ class ClientInvitationTest extends TestCase
         $this->assertNull($client->invitation_token);
         $this->assertTrue(Hash::check('secureSecret123!', $client->password));
     }
+    public function test_admin_can_resend_client_invitation(): void
+{
+    \Illuminate\Support\Facades\Mail::fake();
+
+    $admin = User::factory()->create(['role' => 'admin']);
+    $client = User::factory()->create([
+        'role' => 'client',
+        'invitation_token' => 'old-token-value',
+        'invitation_sent_at' => now()->subDay(),
+    ]);
+
+    $response = $this->actingAs($admin)
+        ->post(route('admin.clients.resend-invite', $client));
+
+    $response->assertRedirect(route('admin.clients.create'));
+    $response->assertSessionHas('success');
+
+    $client->refresh();
+
+    // Verify token rotated and timestamp updated
+    $this->assertNotEquals('old-token-value', $client->invitation_token);
+    $this->assertNotNull($client->invitation_token);
+
+    // Verify email was queued with the new invitation link
+    \Illuminate\Support\Facades\Mail::assertQueued(\App\Mail\ClientInvitationMail::class, function ($mail) use ($client) {
+        return $mail->hasTo($client->email);
+    });
+}
 }

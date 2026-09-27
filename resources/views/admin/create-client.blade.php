@@ -72,6 +72,14 @@
                                     Delete
                                 </button>
                             </form>
+                            @if($client->invitation_token)
+    <form method="POST" action="{{ route('admin.clients.resend-invite', $client) }}" style="display: inline;">
+        @csrf
+        <button type="submit" class="btn btn-small" style="background: #eef2ff; color: var(--primary); border-color: #c7d2fe;">
+            Resend Invite
+        </button>
+    </form>
+@endif
                         </div>
                     @endforeach
                 </div>
