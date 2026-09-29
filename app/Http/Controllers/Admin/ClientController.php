@@ -38,7 +38,7 @@ class ClientController extends Controller
         ]);
 
         $inviteUrl = route('invitations.show', ['token' => $token]);
-        Mail::to($client->email)->queue(new ClientInvitationMail($client, $inviteUrl));
+       Mail::to($client->email)->send(new ClientInvitationMail($client, $inviteUrl));
 
         return redirect()->route('admin.clients.create')->with('success', 'Client created and invitation email queued!');
     }
@@ -61,7 +61,7 @@ class ClientController extends Controller
         ]);
 
         $inviteUrl = route('invitations.show', ['token' => $token]);
-        Mail::to($client->email)->queue(new ClientInvitationMail($client, $inviteUrl));
+       Mail::to($client->email)->send(new ClientInvitationMail($client, $inviteUrl));
 
         return redirect()->route('admin.clients.create')
             ->with('success', "Invitation re-sent successfully to {$client->email}!");

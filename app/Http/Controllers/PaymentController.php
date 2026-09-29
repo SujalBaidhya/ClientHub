@@ -57,7 +57,7 @@ class PaymentController extends Controller
         ]);
 
         if ($invoice->project && $invoice->project->client) {
-            Mail::to($invoice->project->client->email)->queue(new PaymentReceivedMail($invoice));
+            Mail::to($invoice->project->client->email)->send(new PaymentReceivedMail($invoice));
         }
 
         return redirect()->route('dashboard')->with('success', 'Payment successful! Invoice marked as paid.');

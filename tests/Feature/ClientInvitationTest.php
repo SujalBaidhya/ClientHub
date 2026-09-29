@@ -37,7 +37,7 @@ class ClientInvitationTest extends TestCase
         $client = User::where('email', 'partner@example.com')->first();
         $this->assertNotNull($client->invitation_token);
 
-        Mail::assertQueued(ClientInvitationMail::class, function ($mail) use ($client) {
+        Mail::assertSent(ClientInvitationMail::class, function ($mail) use ($client) {
             return $mail->hasTo('partner@example.com');
         });
     }
@@ -100,7 +100,7 @@ class ClientInvitationTest extends TestCase
     $this->assertNotNull($client->invitation_token);
 
     // Verify email was queued with the new invitation link
-    \Illuminate\Support\Facades\Mail::assertQueued(\App\Mail\ClientInvitationMail::class, function ($mail) use ($client) {
+    \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\ClientInvitationMail::class, function ($mail) use ($client) {
         return $mail->hasTo($client->email);
     });
 }

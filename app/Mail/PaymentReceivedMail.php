@@ -5,14 +5,13 @@ namespace App\Mail;
 use App\Models\Invoice;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue; // 1. Ensure this is imported
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class PaymentReceivedMail extends Mailable implements ShouldQueue // 2. Add implements ShouldQueue
+class PaymentReceivedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
