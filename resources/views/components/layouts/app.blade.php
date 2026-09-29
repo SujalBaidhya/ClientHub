@@ -882,9 +882,18 @@
                 align-self: flex-end;
             }
 
-            .milestone-card-header {
+                      .milestone-card-header {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: stretch;
+            }
+
+            .milestone-main {
+                width: 100%;
+            }
+
+            .milestone-title {
+                flex-wrap: wrap;
+                width: 100%;
             }
 
             .milestone-actions {

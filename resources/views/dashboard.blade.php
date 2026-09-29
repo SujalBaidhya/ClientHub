@@ -152,10 +152,7 @@
                                             @endif
                                         </div>
 
-                                        <div class="milestone-actions">
-                                            @if($milestone->status === 'completed')
-                                                <span class="milestone-completed">✓ Completed</span>
-                                            @endif
+                                                                                <div class="milestone-actions">
                                             <span class="milestone-chevron">▼</span>
                                         </div>
                                     </summary>
