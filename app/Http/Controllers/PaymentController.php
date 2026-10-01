@@ -33,12 +33,20 @@ class PaymentController extends Controller
         ]);
     }
 
-    public function success(Request $request)
+        public function success(Request $request)
     {
         $data = json_decode(base64_decode($request->query('data')), true);
 
         if (!$data || ($data['status'] ?? null) !== 'COMPLETE') {
             return redirect()->route('dashboard')->with('error', 'Payment could not be verified.');
+        }
+
+        // LAYER 1: Verify the signature eSewa signed this response with.
+        // This proves the data actually came from eSewa and wasn't
+        // tampered with or faked by someone typing a URL themselves.
+        if (!$this->verifySignature($data)) {
+            \Log::warning('eSewa payment signature verification failed.', $data);
+            return redirect()->route('dashboard')->with('error', 'Payment verification failed.');
         }
 
         preg_match('/^invoice-(\d+)-/', $data['transaction_uuid'], $matches);
@@ -48,6 +56,19 @@ class PaymentController extends Controller
 
         if (!$invoice) {
             return redirect()->route('dashboard')->with('error', 'Invoice not found.');
+        }
+
+        // Prevent double-processing if this callback somehow fires twice.
+        if ($invoice->status === 'paid') {
+            return redirect()->route('dashboard')->with('success', 'This invoice has already been paid.');
+        }
+
+        // LAYER 2: Directly ask eSewa's own servers "did this payment
+        // genuinely happen?" — the strongest possible confirmation,
+        // independent of anything sent through the customer's browser.
+        if (!$this->verifyWithEsewa($data['transaction_uuid'], $data['total_amount'] ?? $invoice->amount)) {
+            \Log::warning('eSewa server-side status check failed.', $data);
+            return redirect()->route('dashboard')->with('error', 'Payment could not be confirmed with eSewa.');
         }
 
         $invoice->update([
@@ -61,6 +82,40 @@ class PaymentController extends Controller
         }
 
         return redirect()->route('dashboard')->with('success', 'Payment successful! Invoice marked as paid.');
+    }
+
+    private function verifySignature(array $data): bool
+    {
+        $fields = explode(',', $data['signed_field_names'] ?? '');
+
+        if (empty($fields)) {
+            return false;
+        }
+
+        $message = collect($fields)
+            ->map(fn ($field) => "{$field}=" . ($data[$field] ?? ''))
+            ->implode(',');
+
+        $expectedSignature = base64_encode(
+            hash_hmac('sha256', $message, config('services.esewa.secret_key'), true)
+        );
+
+        return hash_equals($expectedSignature, $data['signature'] ?? '');
+    }
+
+    private function verifyWithEsewa(string $transactionUuid, $totalAmount): bool
+    {
+        $response = \Http::get('https://rc.esewa.com.np/api/epay/transaction/status/', [
+            'product_code' => config('services.esewa.merchant_code'),
+            'total_amount' => $totalAmount,
+            'transaction_uuid' => $transactionUuid,
+        ]);
+
+        if (!$response->successful()) {
+            return false;
+        }
+
+        return ($response->json('status') ?? null) === 'COMPLETE';
     }
 
     public function failure()
