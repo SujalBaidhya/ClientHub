@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ClientActivityMail;
 use App\Mail\MilestoneCompletedMail;
 use App\Models\Milestone;
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-
 class MilestoneController extends Controller
 {
     public function create(Project $project)
@@ -128,12 +129,24 @@ class MilestoneController extends Controller
             'client_notes' => ['required', 'string', 'max:1000'],
         ]);
 
-        $milestone->update([
+             $milestone->update([
             'status' => 'in_progress',
             'client_notes' => $validated['client_notes'],
             'approved_at' => null,
         ]);
 
+        // Only notify admins when the client (not an admin) requests
+        // the revision — avoids admins emailing themselves.
+        if (!$isAdmin) {
+            $admins = User::where('role', 'admin')->pluck('email');
+
+            if ($admins->isNotEmpty()) {
+                Mail::to($admins)->send(
+                    new ClientActivityMail($user, $milestone, 'revision', $validated['client_notes'])
+                );
+            }
+        }
+
         return back()->with('success', "Revision requested for '{$milestone->title}'. Feedback submitted.");
-    }
+         }
 }
