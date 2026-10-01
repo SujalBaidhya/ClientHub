@@ -46,6 +46,13 @@ class InvoiceController extends Controller
             'due_date' => 'nullable|date',
         ]);
 
+        // If an admin manually marks an invoice as paid (not through
+        // the real eSewa flow), still record a paid_at date so it
+        // shows up correctly in payment history.
+        if ($validated['status'] === 'paid' && $invoice->status !== 'paid') {
+            $validated['paid_at'] = now();
+        }
+
         $invoice->update($validated);
 
         return redirect()->route('admin.invoices.create', $project)

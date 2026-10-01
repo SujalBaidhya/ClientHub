@@ -933,6 +933,9 @@
                 <a href="{{ route('admin.clients.create') }}" class="logout-button" style="text-decoration: none;">
                     Clients
                 </a>
+                <a href="{{ route('admin.payments.index') }}" class="logout-button" style="text-decoration: none;">
+        Payments
+    </a>
             @endif
             <form method="POST" action="{{ route('logout') }}" class="logout-form" style="margin: 0;">
                 @csrf

@@ -9,12 +9,14 @@ use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
 use App\Http\Controllers\Admin\MilestoneController as AdminMilestoneController;
 use App\Http\Controllers\Admin\InvoiceController as AdminInvoiceController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
+use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Admin\ProjectFileController as AdminFileController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PaymentController;
+
 use App\Http\Controllers\InvitationController;
 
 Route::middleware(['auth'])->group(function () {
@@ -112,4 +114,6 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::delete('/clients/{client}', [AdminClientController::class, 'destroy'])->name('admin.clients.destroy');
     Route::post('/clients/{client}/resend-invite', [AdminClientController::class, 'resendInvite'])
         ->name('admin.clients.resend-invite');
+
+    Route::get('/payments', [AdminPaymentController::class, 'index'])->name('admin.payments.index');
 });
