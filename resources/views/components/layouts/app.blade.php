@@ -4,15 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'ClientHub' }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 
     <style>
-        :root {
+                :root {
             --bg: #f6f7fb;
             --surface: #ffffff;
             --text: #1e1b4b;
             --muted: #6b7280;
             --border: #e4e4f0;
             --primary: #4f46e5;
+            --accent-gold: #a16207;
             --success-bg: #dcfce7;
             --success-text: #166534;
             --warning-bg: #fef3c7;
@@ -21,16 +26,25 @@
             --danger-text: #991b1b;
             --neutral-bg: #e5e7eb;
             --neutral-text: #374151;
+            --font-display: 'Fraunces', serif;
+            --font-body: 'Inter', -apple-system, sans-serif;
         }
 
         * { box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-            margin: 0;
-            background: var(--bg);
-            color: var(--text);
-        }
+    font-family: var(--font-body);
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
 
         .navbar {
             display: flex;
@@ -80,9 +94,9 @@
             background: var(--surface);
             padding: 26px;
             margin-bottom: 20px;
-            border-radius: 16px;
+            border-radius: 14px;
             border: 1px solid var(--border);
-            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.06);
+            box-shadow: none;
         }
 
         .card h2,
@@ -385,10 +399,10 @@
         }
 
         .milestone-detail .detail-label {
-            font-size: 0.72rem;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            color: #94a3b8;
+            font-size: 0.8rem;
+            text-transform: none;
+            letter-spacing: 0;
+            color: var(--muted);
         }
 
         .milestone-detail strong {
@@ -453,10 +467,10 @@
 
         .amount-input label,
         .invoice-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: #64748b;
-            text-transform: uppercase;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--muted);
+            text-transform: none;
         }
 
         .amount-input input {
@@ -495,9 +509,10 @@
         .invoice-table th {
             padding: 10px 15px;
             text-align: left;
-            font-size: 12px;
-            color: #64748b;
-            text-transform: uppercase;
+            font-size: 13px;
+            color: var(--muted);
+            text-transform: none;
+            font-weight: 500;
         }
 
         .invoice-table td {
@@ -561,7 +576,10 @@
         }
 
         .invoice-amount {
-            font-size: 18px;
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--accent-gold);
         }
 
         .invoice-card-actions {
@@ -576,9 +594,10 @@
             padding: 0;
             overflow: hidden;
             background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(30, 27, 75, 0.09);
             margin-bottom: 28px;
         }
 
@@ -596,19 +615,20 @@
 
         .project-label {
             display: block;
-            margin-bottom: 10px;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 0.12em;
-            color: #2563eb;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0;
+            color: var(--primary);
         }
 
         .current-project-title {
             margin: 0;
-            font-size: 28px;
+            font-size: 30px;
             line-height: 1.2;
-            font-weight: 700;
-            color: #111827;
+            font-weight: 600;
+            color: var(--text);
+            font-family: var(--font-display);
         }
 
         .current-project-description {
@@ -646,11 +666,11 @@
         }
 
         .info-label {
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #64748b;
+            font-size: 13px;
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: 0;
+            color: var(--muted);
         }
 
         .project-info-item strong {
@@ -664,9 +684,17 @@
         .progress-header {
             display: flex;
             justify-content: space-between;
+            align-items: baseline;
             margin-bottom: 10px;
             font-size: 14px;
+            font-weight: 500;
+        }
+
+        .progress-header strong {
+            font-family: var(--font-display);
+            font-size: 20px;
             font-weight: 600;
+            color: var(--primary);
         }
 
         .progress-bar {
@@ -694,17 +722,17 @@
 
         .dashboard-eyebrow {
             margin: 0 0 8px;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            color: #2563eb;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0;
+            color: var(--primary);
         }
 
         .dashboard-welcome h1 {
             margin: 0;
-            font-size: 32px;
+            font-size: 34px;
             line-height: 1.2;
-            color: #111827;
+            color: var(--text);
         }
 
         .dashboard-welcome p:not(.dashboard-eyebrow) {
@@ -736,9 +764,9 @@
 
         .dashboard-grid .card {
             background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: none;
             overflow: hidden;
         }
 

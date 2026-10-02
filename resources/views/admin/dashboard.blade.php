@@ -23,9 +23,9 @@
                 <h2 style="margin: 6px 0 0; font-size: 28px;">{{ $stats['total_projects'] }}</h2>
             </x-card>
 
-            <x-card>
+                       <x-card>
                 <span class="info-label">Revenue Collected</span>
-                <h2 style="margin: 6px 0 0; font-size: 28px; color: #16a34a;">
+                <h2 style="margin: 6px 0 0; font-size: 30px; font-family: var(--font-display); color: var(--accent-gold);">
                     NPR {{ number_format($stats['total_revenue'], 0) }}
                 </h2>
             </x-card>
