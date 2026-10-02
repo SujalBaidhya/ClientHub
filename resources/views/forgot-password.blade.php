@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password — ClientHub</title>
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
                    :root {
             --bg: #f6f7fb;
@@ -20,8 +22,8 @@
         * { box-sizing: border-box; }
         html, body { height: 100%; }
 
-        body {
-            font-family: Arial, sans-serif;
+              body {
+            font-family: 'Inter', -apple-system, sans-serif;
             margin: 0;
             background: var(--bg);
             color: var(--text);
@@ -59,7 +61,7 @@
             padding: 32px;
         }
 
-        .auth-heading { margin: 0 0 6px; font-size: 22px; }
+        .auth-heading { margin: 0 0 6px; font-size: 24px; font-family: 'Fraunces', serif; font-weight: 600; } .auth-heading { margin: 0 0 6px; font-size: 22px; }
         .auth-subtext { margin: 0 0 26px; color: var(--muted); font-size: 14px; }
 
         .auth-error {
