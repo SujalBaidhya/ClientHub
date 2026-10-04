@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <style>
         body { font-family: sans-serif; color: #1e1b4b; margin: 0; padding: 0; background: #f6f7fb; }
-        .header { background: #4f46e5; color: white; padding: 30px 40px; }
-        .header h1 { margin: 0; font-size: 22px; }
+        .header { background: #1e1b4b; color: white; padding: 34px 40px; }
+        .header h1 { margin: 0; font-size: 24px; font-family: Georgia, serif; font-weight: normal; }
         .content { background: white; padding: 30px 40px; }
-        .label { color: #6b7280; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .label { color: #6b7280; font-size: 12px; text-transform: none; letter-spacing: 0; }
         .value { font-size: 15px; font-weight: bold; margin: 2px 0 16px; }
-        .btn { display: inline-block; padding: 12px 24px; background: #4f46e5; color: white !important; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 14px; }
+        .btn { display: inline-block; padding: 12px 24px; background: #4f46e5; color: white !important; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px; }
         .footer { padding: 20px 40px; color: #6b7280; font-size: 11px; text-align: center; }
     </style>
 </head>

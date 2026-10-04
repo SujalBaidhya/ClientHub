@@ -537,8 +537,9 @@
 <body>
 
     @php
-        $isAdmin = auth()->user()?->role === 'admin';
-        $homeRoute = $isAdmin ? route('admin.dashboard') : route('dashboard');
+        $isGuest = auth()->guest();
+        $isAdmin = !$isGuest && auth()->user()->role === 'admin';
+        $homeRoute = $isGuest ? url('/login') : ($isAdmin ? route('admin.dashboard') : route('dashboard'));
         $current = request()->path();
     @endphp
 
@@ -549,21 +550,24 @@
         <aside class="sidebar" id="sidebar">
             <a href="{{ $homeRoute }}" class="sidebar-brand">ClientHub</a>
 
-                       <div style="display: flex; align-items: center; gap: 10px; padding: 0 12px 20px;">
-                <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.12); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0;">
-                    {{ strtoupper(substr(auth()->user()->name ?? '?', 0, 1)) }}
-                </div>
-                <div style="min-width: 0;">
-                    <div style="color: white; font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                        {{ auth()->user()->name }}
+                                   @unless($isGuest)
+                <div style="display: flex; align-items: center; gap: 10px; padding: 0 12px 20px;">
+                    <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.12); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0;">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     </div>
-                    <div style="color: var(--sidebar-text); font-size: 12px;">
-                        {{ $isAdmin ? 'Administrator' : 'Client' }}
+                    <div style="min-width: 0;">
+                        <div style="color: white; font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            {{ auth()->user()->name }}
+                        </div>
+                        <div style="color: var(--sidebar-text); font-size: 12px;">
+                            {{ $isAdmin ? 'Administrator' : 'Client' }}
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endunless
 
-                        <nav class="sidebar-nav">
+            <nav class="sidebar-nav">
+                @unless($isGuest)
 
                 @if($isAdmin)
                     <a href="{{ route('admin.projects.create') }}" class="btn btn-success" style="justify-content: center; text-align: center; margin: 0 0 18px; display: block;">
@@ -603,6 +607,7 @@
                         Contact Support
                     </a>
                 @endif
+                @endunless
 
             </nav>
             <div class="sidebar-divider"></div>

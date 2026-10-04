@@ -19,14 +19,16 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
         }
         .header {
-            background-color: #4f46e5;
+            background-color: #1e1b4b;
             color: #ffffff;
-            padding: 24px;
+            padding: 28px 24px;
             text-align: center;
         }
         .header h1 {
             margin: 0;
-            font-size: 20px;
+            font-size: 22px;
+            font-family: Georgia, serif;
+            font-weight: normal;
         }
         .content {
             padding: 24px;
@@ -72,11 +74,11 @@
                 </div>
                 <div class="item-row">
                     <span>Project:</span>
-                    <span>{{ $invoice->project->title ?? $invoice->project->name }}</span>
+                    <span>{{ $invoice->project->name }}</span>
                 </div>
                 <div class="item-row">
                     <span>Amount Paid:</span>
-                    <span>NPR. {{ number_format($invoice->amount, 2) }}</span>
+                    <span style="font-family: Georgia, serif; color: #a16207; font-size: 15px;">NPR {{ number_format($invoice->amount, 2) }}</span>
                 </div>
                 <div class="item-row">
                     <span>Status:</span>

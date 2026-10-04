@@ -4,20 +4,22 @@
     <meta charset="UTF-8">
     <style>
         body {
-            font-family: sans-serif;
+            font-family: 'Helvetica', sans-serif;
             color: #1e1b4b;
             padding: 0;
             margin: 0;
             font-size: 13px;
         }
         .header {
-            background: #4f46e5;
+            background: #1e1b4b;
             color: white;
-            padding: 30px 40px;
+            padding: 34px 40px;
         }
         .header h1 {
             margin: 0;
-            font-size: 24px;
+            font-size: 26px;
+            font-family: 'Georgia', serif;
+            font-weight: normal;
         }
         .header p {
             margin: 4px 0 0;
@@ -43,8 +45,8 @@
         .label {
             color: #6b7280;
             font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            text-transform: none;
+            letter-spacing: 0;
         }
         .value {
             font-size: 14px;
@@ -61,8 +63,8 @@
             background: #f6f7fb;
             padding: 10px 12px;
             font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            text-transform: none;
+            letter-spacing: 0;
             color: #6b7280;
             border-bottom: 2px solid #e4e4f0;
         }
@@ -89,9 +91,10 @@
             color: #6b7280;
         }
         .total-box .total-amount {
-            font-size: 26px;
-            font-weight: 800;
-            color: #4f46e5;
+            font-size: 28px;
+            font-weight: bold;
+            font-family: 'Georgia', serif;
+            color: #a16207;
         }
         .footer {
             margin-top: 50px;

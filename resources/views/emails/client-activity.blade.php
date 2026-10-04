@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <style>
         body { font-family: sans-serif; color: #1e1b4b; margin: 0; padding: 0; background: #f6f7fb; }
-        .header { background: #4f46e5; color: white; padding: 30px 40px; }
-        .header h1 { margin: 0; font-size: 22px; }
+        .header { background: #1e1b4b; color: white; padding: 34px 40px; }
+        .header h1 { margin: 0; font-size: 24px; font-family: Georgia, serif; font-weight: normal; }
         .content { background: white; padding: 30px 40px; }
         .milestone-box { background: #f6f7fb; border-radius: 10px; padding: 16px; margin-top: 16px; }
         .milestone-title { font-weight: bold; font-size: 15px; }
