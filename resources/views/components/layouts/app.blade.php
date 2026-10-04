@@ -609,15 +609,16 @@
                 @endif
                 @endunless
 
-            </nav>
-            <div class="sidebar-divider"></div>
+                        @unless($isGuest)
+                <div class="sidebar-divider"></div>
 
-            <div class="sidebar-footer">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="sidebar-link">Logout</button>
-                </form>
-            </div>
+                <div class="sidebar-footer">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="sidebar-link">Logout</button>
+                    </form>
+                </div>
+            @endunless
         </aside>
 
         <div class="main-content">
