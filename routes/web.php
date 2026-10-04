@@ -52,7 +52,7 @@ Route::post('/projects/{project}/files', [AdminFileController::class, 'store'])-
 Route::delete('/projects/{project}/files/{file}', [AdminFileController::class, 'destroy'])->name('admin.files.destroy');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware('auth')
+    ->middleware('auth','no-cache')
     ->name('dashboard');
 
 Route::get('/dashboard/{project}', [DashboardController::class, 'index'])
@@ -60,11 +60,11 @@ Route::get('/dashboard/{project}', [DashboardController::class, 'index'])
     ->name('dashboard.project');
 
 Route::get('/account', [AccountController::class, 'edit'])
-    ->middleware('auth')
+    ->middleware('auth','no-cache')
     ->name('account.edit');
 
 Route::put('/account', [AccountController::class, 'update'])
-    ->middleware('auth')
+    ->middleware('auth','no-cache')
     ->name('account.update');
 
 Route::post('/logout', [LoginController::class, 'logout'])
@@ -90,7 +90,7 @@ Route::get('/invoices/{invoice}/pay', [PaymentController::class, 'pay'])
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
 Route::get('/payment/failure', [PaymentController::class, 'failure'])->name('payment.failure');
 
-Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+Route::prefix('admin')->middleware(['auth', 'admin','no-cache'])->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/projects', [AdminProjectController::class, 'index'])->name('admin.projects.index');
     Route::get('/projects/create', [AdminProjectController::class, 'create'])->name('admin.projects.create');

@@ -5,7 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\AuthMiddleware;
 use App\Http\Middleware\AdminMiddleware;
-
+use App\Http\Middleware\NoCache;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'auth.custom' => AuthMiddleware::class,
             'admin' => AdminMiddleware::class,
+            'no-cache' => NoCache::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

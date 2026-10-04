@@ -41,7 +41,10 @@ class ProjectController extends Controller
             'description' => 'nullable|string',
             'status' => 'required|in:pending,in_progress,completed',
             'start_date' => 'nullable|date',
-            'due_date' => 'nullable|date',
+            'due_date' => 'nullable|date|after_or_equal:start_date',
+            ], 
+            [
+                'due_date.after_or_equal' => 'Due date cannot be earlier than the start date.',
         ]);
 
         Project::create($validated);
@@ -65,7 +68,10 @@ class ProjectController extends Controller
             'description' => 'nullable|string',
             'status' => 'required|in:pending,in_progress,completed',
             'start_date' => 'nullable|date',
-            'due_date' => 'nullable|date',
+            'due_date' => 'nullable|date|after_or_equal:start_date',
+            ], 
+            [
+                'due_date.after_or_equal' => 'Due date cannot be earlier than the start date.',
         ]);
 
         $project->update($validated);

@@ -10,20 +10,13 @@ use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
-    /**
-     * Show login page.
-     */
     public function showLoginForm()
     {
-            return view('login');
+        return view('login');
     }
 
-    /**
-     * Authenticate user.
-     */
        public function login(Request $request)
     {
-        // Validate login form
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],

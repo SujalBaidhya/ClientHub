@@ -25,10 +25,13 @@ class InvoiceController extends Controller
             'status' => 'required|in:pending,paid,overdue',
             'amount' => 'required|numeric|min:0',
             'issued_at' => 'nullable|date',
-            'due_date' => 'nullable|date',
+            'due_date' => 'nullable|date|after_or_equal:issued_at',
+            ], 
+            [
+            'due_date.after_or_equal' => 'Due date cannot be earlier than the issued date.',
         ]);
 
-              $invoice = $project->invoices()->create($validated);
+            $invoice = $project->invoices()->create($validated);
 
         Mail::to($project->client->email)->send(new InvoiceCreatedMail($invoice));
 
@@ -43,7 +46,10 @@ class InvoiceController extends Controller
             'status' => 'required|in:pending,paid,overdue',
             'amount' => 'required|numeric|min:0',
             'issued_at' => 'nullable|date',
-            'due_date' => 'nullable|date',
+            'due_date' => 'nullable|date|after_or_equal:issued_at',
+            ], 
+            [
+            'due_date.after_or_equal' => 'Due date cannot be earlier than the issued date.'
         ]);
 
         // If an admin manually marks an invoice as paid (not through
