@@ -41,27 +41,118 @@
                                 <span>Client: {{ $project->client->name ?? 'N/A' }}</span>
                             </div>
                          <a href="{{ route('admin.files.create', $project) }}" class="btn btn-small">
-    Manage Files
-</a>
-<a href="{{ route('admin.milestones.create', $project) }}" class="btn btn-small">
-    Manage Milestones
-</a>
-<a href="{{ route('admin.invoices.create', $project) }}" class="btn btn-small">
-    Manage Invoices
-</a>
-<a href="{{ route('admin.projects.edit', $project) }}" class="btn btn-small">
-    Edit
-</a>
-<form method="POST" action="{{ route('admin.projects.destroy', $project) }}" onsubmit="return confirm('Delete this project? This will also delete all its milestones, files, and invoices. This cannot be undone.');" style="display: inline;">
-    @csrf
-    @method('DELETE')
-    <button type="submit" class="btn btn-small" style="background: #dc2626; color: white; border: none;">
-        Delete
-    </button>
-</form>
+                            Manage Files
+                        </a>
+                        <a href="{{ route('admin.milestones.create', $project) }}" class="btn btn-small">
+                            Manage Milestones
+                        </a>
+                        <a href="{{ route('admin.invoices.create', $project) }}" class="btn btn-small">
+                            Manage Invoices
+                        </a>
+                        <a href="{{ route('admin.projects.edit', $project) }}" class="btn btn-small">
+                            Edit
+                        </a>
+                        <form method="POST" action="{{ route('admin.projects.destroy', $project) }}" onsubmit="return confirm('Delete this project? This will also delete all its milestones, files, and invoices. This cannot be undone.');" style="display: inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-small" style="background: #dc2626; color: white; border: none;">
+                                Delete
+                            </button>
+                        </form>
                         </div>
                     @endforeach
                 </div>
+                    <<div style="
+                        margin-top: 24px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        gap: 6px;
+                    ">
+                        {{-- Previous --}}
+                        @if($projects->onFirstPage())
+                            <span style="
+                                padding: 8px 12px;
+                                border: 1px solid var(--border);
+                                border-radius: 8px;
+                                color: #999;
+                                background: #f5f5f5;
+                            ">
+                                Previous
+                            </span>
+                        @else
+                            <a
+                                href="{{ $projects->previousPageUrl() }}"
+                                style="
+                                    padding: 8px 12px;
+                                    border: 1px solid var(--border);
+                                    border-radius: 8px;
+                                    text-decoration: none;
+                                    color: inherit;
+                                    background: white;
+                                "
+                            >
+                                Previous
+                            </a>
+                        @endif
+
+                        {{-- Page Numbers --}}
+                        @foreach($projects->getUrlRange(1, $projects->lastPage()) as $page => $url)
+                            @if($page == $projects->currentPage())
+                                <span style="
+                                    padding: 8px 12px;
+                                    border: 1px solid #2563eb;
+                                    border-radius: 8px;
+                                    background: #2563eb;
+                                    color: white;
+                                    font-weight: 600;
+                                ">
+                                    {{ $page }}
+                                </span>
+                            @else
+                                <a
+                                    href="{{ $url }}"
+                                    style="
+                                        padding: 8px 12px;
+                                        border: 1px solid var(--border);
+                                        border-radius: 8px;
+                                        text-decoration: none;
+                                        color: inherit;
+                                        background: white;
+                                    "
+                                >
+                                    {{ $page }}
+                                </a>
+                            @endif
+                        @endforeach
+
+                        {{-- Next --}}
+                        @if($projects->hasMorePages())
+                            <a
+                                href="{{ $projects->nextPageUrl() }}"
+                                style="
+                                    padding: 8px 12px;
+                                    border: 1px solid var(--border);
+                                    border-radius: 8px;
+                                    text-decoration: none;
+                                    color: inherit;
+                                    background: white;
+                                "
+                            >
+                                Next
+                            </a>
+                        @else
+                            <span style="
+                                padding: 8px 12px;
+                                border: 1px solid var(--border);
+                                border-radius: 8px;
+                                color: #999;
+                                background: #f5f5f5;
+                            ">
+                                Next
+                            </span>
+                        @endif
+                    </div>
             @endif
 
         </x-card>

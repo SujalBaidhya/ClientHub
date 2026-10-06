@@ -21,7 +21,8 @@ class ProjectController extends Controller
                     });
             })
             ->latest()
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         return view('admin.projects', compact('projects', 'search'));
     }

@@ -73,15 +73,106 @@
                                 </button>
                             </form>
                             @if($client->invitation_token)
-    <form method="POST" action="{{ route('admin.clients.resend-invite', $client) }}" style="display: inline;">
-        @csrf
-        <button type="submit" class="btn btn-small" style="background: #eef2ff; color: var(--primary); border-color: #c7d2fe;">
-            Resend Invite
-        </button>
-    </form>
-@endif
+                            <form method="POST" action="{{ route('admin.clients.resend-invite', $client) }}" style="display: inline;">
+                                @csrf
+                                <button type="submit" class="btn btn-small" style="background: #eef2ff; color: var(--primary); border-color: #c7d2fe;">
+                                    Resend Invite
+                                </button>
+                            </form>
+                        @endif
                         </div>
                     @endforeach
+                </div>
+                <div style="
+                    margin-top: 24px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 6px;
+                ">
+                    {{-- Previous --}}
+                    @if($clients->onFirstPage())
+                        <span style="
+                            padding: 8px 12px;
+                            border: 1px solid var(--border);
+                            border-radius: 8px;
+                            color: #999;
+                            background: #f5f5f5;
+                        ">
+                            Previous
+                        </span>
+                    @else
+                        <a
+                            href="{{ $clients->previousPageUrl() }}"
+                            style="
+                                padding: 8px 12px;
+                                border: 1px solid var(--border);
+                                border-radius: 8px;
+                                text-decoration: none;
+                                color: inherit;
+                                background: white;
+                            "
+                        >
+                            Previous
+                        </a>
+                    @endif
+
+                    {{-- Page Numbers --}}
+                    @foreach($clients->getUrlRange(1, $clients->lastPage()) as $page => $url)
+                        @if($page == $clients->currentPage())
+                            <span style="
+                                padding: 8px 12px;
+                                border: 1px solid #2563eb;
+                                border-radius: 8px;
+                                background: #2563eb;
+                                color: white;
+                                font-weight: 600;
+                            ">
+                                {{ $page }}
+                            </span>
+                        @else
+                            <a
+                                href="{{ $url }}"
+                                style="
+                                    padding: 8px 12px;
+                                    border: 1px solid var(--border);
+                                    border-radius: 8px;
+                                    text-decoration: none;
+                                    color: inherit;
+                                    background: white;
+                                "
+                            >
+                                {{ $page }}
+                            </a>
+                        @endif
+                    @endforeach
+
+                    {{-- Next --}}
+                    @if($clients->hasMorePages())
+                        <a
+                            href="{{ $clients->nextPageUrl() }}"
+                            style="
+                                padding: 8px 12px;
+                                border: 1px solid var(--border);
+                                border-radius: 8px;
+                                text-decoration: none;
+                                color: inherit;
+                                background: white;
+                            "
+                        >
+                            Next
+                        </a>
+                    @else
+                        <span style="
+                            padding: 8px 12px;
+                            border: 1px solid var(--border);
+                            border-radius: 8px;
+                            color: #999;
+                            background: #f5f5f5;
+                        ">
+                            Next
+                        </span>
+                    @endif
                 </div>
             @endif
 

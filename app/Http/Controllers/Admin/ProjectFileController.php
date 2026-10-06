@@ -19,7 +19,7 @@ class ProjectFileController extends Controller
     public function store(Request $request, Project $project)
     {
         $request->validate([
-            'file' => 'required|file|max:20480', // 20MB max
+            'file' => 'required|file|mimes:pdf|max:20480', // 20MB max
         ]);
 
         $uploaded = $request->file('file');
