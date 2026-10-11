@@ -385,6 +385,44 @@
         .plain-list { list-style: none; margin: 0; padding: 0; }
         .plain-list li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
         .plain-list li:last-child { border-bottom: none; }
+        .search-result-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 24px;
+    border-top: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--text);
+    transition: background 0.15s ease;
+}
+.search-result-row:hover { background: #f8fafc; }
+.search-result-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+.search-result-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.search-result-info strong {
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.search-result-info span {
+    font-size: 12px;
+    color: var(--muted);
+}
         .toast {
     position: fixed;
     top: 24px;
@@ -831,7 +869,12 @@
                     <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') || request()->routeIs('dashboard.project') ? 'active' : '' }}">
                         Dashboard
                     </a>
-                @else
+                                @else
+                    <form method="GET" action="{{ route('admin.search') }}" style="padding: 0 0 14px;">
+                        <input type="text" name="q" placeholder="Search..."
+                               style="width: 100%; padding: 8px 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: white; font-size: 13px;">
+                    </form>
+
                     <a href="{{ route('admin.dashboard') }}" class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                         Overview
                     </a>

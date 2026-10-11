@@ -22,6 +22,10 @@ use App\Http\Controllers\InvitationController;
 Route::middleware(['auth'])->group(function () {
     Route::post('/milestones/{milestone}/approve', [AdminMilestoneController::class, 'approve'])
         ->name('client.milestones.approve');
+    
+Route::post('/dashboard/{project}/files', [App\Http\Controllers\ClientFileController::class, 'store'])
+->middleware('auth')
+->name('files.store');  
 
     Route::post('/milestones/{milestone}/request-revision', [AdminMilestoneController::class, 'requestRevision'])
         ->name('client.milestones.request-revision');
@@ -119,4 +123,5 @@ Route::delete('/projects/{project}/files/{file}', [AdminFileController::class, '
 Route::post('/activity-logs/mark-read', [\App\Http\Controllers\Admin\ActivityLogController::class, 'markRead'])->name('admin.activity_logs.mark_read');
 Route::get('/activity', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('admin.activity.index');
 Route::get('/activity', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('admin.activity.index');
+Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('admin.search');
 });

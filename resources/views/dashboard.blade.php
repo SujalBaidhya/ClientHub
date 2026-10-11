@@ -421,32 +421,42 @@
                     @endif
                 </x-card>
 
-                {{-- Project Files --}}
+                               {{-- Project Files --}}
                 <x-card title="Project Files">
+                    @if($project)
+                        <form method="POST" action="{{ route('files.store', $project) }}" enctype="multipart/form-data" style="margin-bottom: 18px; display: flex; gap: 10px; align-items: center;">
+                            @csrf
+                            <input type="file" name="file" required style="flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: white;">
+                            <button type="submit" class="btn btn-success">Upload</button>
+                        </form>
+                    @endif
+
                     @if($files->isEmpty())
                         <x-empty-state
                             title="No files available"
                             message="Project files will appear here."
                         />
                     @else
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div class="file-list">
                             @foreach($files as $file)
-                                <div class="client-file-item">
-                                    <div style="display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1;">
-                                        <div style="width: 38px; height: 38px; border-radius: 8px; background: #eef2ff; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0;">
+                                <div class="file-item">
+                                    <div class="file-info">
+                                        <div class="file-icon">
                                             {{ strtoupper(pathinfo($file->original_name, PATHINFO_EXTENSION)) ?: 'FILE' }}
                                         </div>
-                                        <div style="min-width: 0; display: flex; flex-direction: column; gap: 2px;">
-                                            <strong style="font-size: 14px; color: #1e1b4b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $file->original_name }}">
-                                                {{ $file->original_name }}
-                                            </strong>
-                                            <span style="font-size: 12px; color: var(--muted);">
+                                        <div>
+                                            <strong>{{ $file->original_name }}</strong>
+                                            <span>
                                                 Uploaded {{ $file->created_at->format('M d, Y') }}
+                                                @if($file->uploaded_by === auth()->id())
+                                                    · by you
+                                                @elseif($file->uploadedBy)
+                                                    · by {{ $file->uploadedBy->name }}
+                                                @endif
                                             </span>
                                         </div>
                                     </div>
-
-                                    <a href="{{ route('files.download', $file) }}" class="btn btn-small" style="flex-shrink: 0;">
+                                    <a href="{{ route('files.download', $file) }}" class="btn btn-small">
                                         Download
                                     </a>
                                 </div>

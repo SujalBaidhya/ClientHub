@@ -152,7 +152,15 @@
                                 </div>
                                 <div class="file-meta">
                                     <strong title="{{ $file->original_name }}">{{ $file->original_name }}</strong>
-                                    <span>Uploaded {{ $file->created_at->format('M d, Y') }}</span>
+                                                                        <span>
+                                        Uploaded {{ $file->created_at->format('M d, Y') }}
+                                        @if($file->uploadedBy)
+                                            by {{ $file->uploadedBy->name }}
+                                            <span class="badge badge-{{ $file->uploadedBy->role === 'client' ? 'neutral' : 'success' }}" style="margin-left: 6px; font-size: 10px; padding: 1px 7px;">
+                                                {{ ucfirst($file->uploadedBy->role) }}
+                                            </span>
+                                        @endif
+                                    </span>
                                 </div>
                             </div>
 
