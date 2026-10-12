@@ -112,11 +112,18 @@
 
     <div class="dashboard">
 
-        <div class="admin-dashboard-header">
-            <p class="dashboard-eyebrow">Admin</p>
-            <h1 style="margin: 0 0 6px 0;">Overview</h1>
-            <p style="margin: 0; color: #6b7280; font-size: 14px;">A snapshot of everything happening across ClientHub.</p>
-        </div>
+       <div class="admin-dashboard-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
+    <div>
+        <p class="dashboard-eyebrow">Admin</p>
+        <h1 style="margin: 0 0 6px 0;">Overview</h1>
+        <p style="margin: 0; color: #6b7280; font-size: 14px;">A snapshot of everything happening across ClientHub.</p>
+    </div>
+
+    <form method="POST" action="{{ route('admin.invoices.check-overdue') }}">
+        @csrf
+        <button type="submit" class="btn btn-small">Check Overdue Invoices</button>
+    </form>
+</div>
 
         {{-- Stat Cards --}}
         <div class="stats-grid">
@@ -154,6 +161,12 @@
             </x-card>
 
         </div>
+                {{-- Revenue Trend --}}
+        <x-card title="Revenue — Last 6 Months">
+            <div style="height: 220px;">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </x-card>
 
         {{-- Project Status Breakdown --}}
         <x-card title="Projects by Status">
@@ -262,6 +275,53 @@
                         bodyFont: { size: 12 },
                         cornerRadius: 8,
                     }
+                }
+            }
+        });
+    </script>
+        <script>
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($monthlyRevenue->pluck('label')) !!},
+                datasets: [{
+                    label: 'Revenue (NPR)',
+                    data: {!! json_encode($monthlyRevenue->pluck('total')) !!},
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(79, 70, 229, 0.08)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: '#4f46e5',
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1e1b4b',
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                return ' NPR ' + context.raw.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) { return 'NPR ' + value.toLocaleString(); }
+                        },
+                        grid: { color: '#f1f0fb' }
+                    },
+                    x: { grid: { display: false } }
                 }
             }
         });

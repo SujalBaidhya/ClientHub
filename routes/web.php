@@ -93,6 +93,7 @@ Route::get('/payment/failure', [PaymentController::class, 'failure'])->name('pay
 
 Route::prefix('admin')->middleware(['auth', 'admin','no-cache'])->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::post('/check-overdue-invoices', [AdminDashboardController::class, 'checkOverdueInvoices'])->name('admin.invoices.check-overdue');
     Route::get('/projects', [AdminProjectController::class, 'index'])->name('admin.projects.index');
     Route::get('/projects/create', [AdminProjectController::class, 'create'])->name('admin.projects.create');
     Route::post('/projects', [AdminProjectController::class, 'store'])->name('admin.projects.store');
