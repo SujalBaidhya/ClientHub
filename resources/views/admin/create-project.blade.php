@@ -95,6 +95,16 @@
                         @endforeach
                     </select>
                 </div>
+                <div style="margin-bottom: 16px;">
+    <label style="display:block; margin-bottom:4px; font-weight:bold;">Start from Template (optional)</label>
+    <select name="template" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border);">
+        <option value="">No template — blank project</option>
+        @foreach($templates as $key => $template)
+            <option value="{{ $key }}">{{ $template['label'] }}</option>
+        @endforeach
+    </select>
+    <small style="color: var(--muted, #6b7280);">Automatically creates a standard set of milestones for this project type.</small>
+</div>
 
                 <div class="form-group">
                     <label class="form-label">Project Name</label>

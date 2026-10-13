@@ -3,35 +3,37 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Milestone;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
-      public function index(Request $request)
-    {
-        $search = $request->query('search');
+     public function index(Request $request)
+{
+    $search = $request->query('search');
 
-        $projects = Project::with('client')
-            ->when($search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhereHas('client', function ($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%");
-                    });
-            })
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
+    $projects = Project::with('client')
+        ->when($search, function ($query, $search) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhereHas('client', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                });
+        })
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
 
-        return view('admin.projects', compact('projects', 'search'));
-    }
+    return view('admin.projects', compact('projects', 'search'));
+}
 
     public function create()
     {
         $clients = User::where('role', 'client')->get();
+        $templates = config('project_templates');
 
-        return view('admin.create-project', compact('clients'));
+        return view('admin.create-project', compact('clients', 'templates'));
     }
 
     public function store(Request $request)
@@ -43,14 +45,33 @@ class ProjectController extends Controller
         'status' => 'required|in:pending,in_progress,completed',
         'start_date' => 'nullable|date',
         'due_date' => 'nullable|date|after_or_equal:start_date',
+        'template' => 'nullable|string|in:' . implode(',', array_keys(config('project_templates'))),
         ], 
         [
             'due_date.after_or_equal' => 'Due date cannot be earlier than the start date.',
     ]);
 
+    $template = $validated['template'] ?? null;
+    unset($validated['template']);
+
     $project = Project::create($validated);
 
-    \App\Models\ActivityLog::record(auth()->user()->name . ' created project "' . $project->name . '"', route('admin.projects.edit', $project));
+    if ($template && $milestones = config("project_templates.{$template}.milestones")) {
+        foreach ($milestones as $milestone) {
+            Milestone::create([
+                'project_id' => $project->id,
+                'title' => $milestone['title'],
+                'description' => $milestone['description'] ?? null,
+                'status' => 'pending',
+            ]);
+        }
+
+        \App\Models\ActivityLog::record(
+            auth()->user()->name . ' created project "' . $project->name . '" from the "' . config("project_templates.{$template}.label") . '" template'
+        );
+    } else {
+        \App\Models\ActivityLog::record(auth()->user()->name . ' created project "' . $project->name . '"');
+    }
 
     return redirect()->route('admin.projects.create')
         ->with('success', 'Project created successfully.');
@@ -77,10 +98,6 @@ class ProjectController extends Controller
         ]);
 
         $project->update($validated);
-        \App\Models\ActivityLog::record(
-            auth()->user()->name . ' updated project "' . $project->name . '"',
-            route('admin.projects.edit', $project)
-        );
 
         return redirect()->route('admin.projects.index')
             ->with('success', 'Project updated successfully.');
@@ -89,10 +106,6 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         $project->delete();
-        \App\Models\ActivityLog::record(
-            auth()->user()->name . ' deleted project "' . $project->name . '"',
-            route('admin.projects.index')
-        );
 
         return redirect()->route('admin.projects.index')
             ->with('success', 'Project deleted successfully.');
