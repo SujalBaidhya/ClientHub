@@ -123,17 +123,10 @@ Route::delete('/projects/{project}/files/{file}', [AdminFileController::class, '
     Route::get('/payments', [AdminPaymentController::class, 'index'])->name('admin.payments.index');
 Route::post('/activity-logs/mark-read', [\App\Http\Controllers\Admin\ActivityLogController::class, 'markRead'])->name('admin.activity_logs.mark_read');
 Route::get('/activity', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('admin.activity.index');
-Route::get('/activity', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('admin.activity.index');
+
 Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('admin.search');
 });
 Route::middleware('auth')->group(function () {
-    Route::get(
-        '/client/activity',
-        [ClientActivityLogController::class, 'index']
-    )->name('client.activity.index');
-
-    Route::post(
-        '/client/activity-logs/mark-read',
-        [ClientActivityLogController::class, 'markRead']
-    )->name('client.activity_logs.mark_read');
+    Route::get('/activity', [ClientActivityLogController::class, 'index'])->name('client.activity.index');
+    Route::post('/activity/mark-read', [ClientActivityLogController::class, 'markRead'])->name('client.activity.mark_read');
 }); 

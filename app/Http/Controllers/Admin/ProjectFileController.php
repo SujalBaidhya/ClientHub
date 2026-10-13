@@ -59,7 +59,7 @@ class ProjectFileController extends Controller
 
         \App\Models\ActivityLog::record(
             auth()->user()->name . ' uploaded file "' . $projectFile->original_name . '" for ' . $project->name,
-            route('admin.files.create', $project)
+            route('admin.files.create', $project), $project->id,true
         );
 
         return redirect()->route('admin.files.create', $project)
@@ -75,7 +75,7 @@ class ProjectFileController extends Controller
 
         \App\Models\ActivityLog::record(
             auth()->user()->name . ' deleted file "' . $fileName . '" from ' . $project->name,
-            route('admin.files.create', $project)
+            route('admin.files.create', $project), $project->id,true
         );
 
         return redirect()->route('admin.files.create', $project)

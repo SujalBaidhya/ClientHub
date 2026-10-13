@@ -29,7 +29,7 @@ class ClientFileController extends Controller
 
         \App\Models\ActivityLog::record(
             Auth::user()->name . ' uploaded a file to "' . $project->name . '"',
-            route('admin.files.create', $project)
+            route('admin.files.create', $project), $project->id,true
         );
 
         return redirect()->route('dashboard.project', $project)

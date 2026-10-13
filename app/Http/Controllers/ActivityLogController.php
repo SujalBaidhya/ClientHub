@@ -2,49 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ActivityLog;
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 
 class ActivityLogController extends Controller
 {
-   private function visibleLogs()
+    public function index(Request $request)
     {
-        $user = auth()->user();
+        $user = $request->user();
 
-         $query = ActivityLog::query();
+        $logs = ActivityLog::with('user')->visibleTo($user)->latest()->paginate(30);
+        $unreadIds = ActivityLog::visibleTo($user)->unreadFor($user)
+            ->whereIn('id', $logs->pluck('id'))->pluck('id')->all();
+        ActivityLog::markAllReadFor($user);
 
-        if ($user->role !== 'admin') {
-            $query->whereIn(
-                'project_id',
-                $user->projects()->select('projects.id')
-            );
-        }
-
-        return $query;
+        return view('activity-log', compact('logs','unreadIds'));
     }
 
-    public function index()
+    public function markRead(Request $request)
     {
-        $logs = $this->visibleLogs()
-            ->with(['user', 'project'])
-            ->latest()
-            ->paginate(30);
-
-        $this->visibleLogs()->where('is_read', false)->update(['is_read' => true]);
-
-        return view('admin.activity-log', compact('logs'));
-    }
-     public function markRead(Request $request)
-    {
-        $this->visibleLogs()
-            ->where('is_read', false)
-            ->update(['is_read' => true]);
+        ActivityLog::markAllReadFor($request->user());
 
         if ($request->wantsJson()) {
-            return response()->json([
-                'status' => 'success'
-            ]);
+            return response()->json(['status' => 'success']);
         }
 
         return back();

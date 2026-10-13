@@ -50,7 +50,7 @@ class ProjectController extends Controller
 
     $project = Project::create($validated);
 
-    \App\Models\ActivityLog::record(auth()->user()->name . ' created project "' . $project->name . '"', route('admin.projects.edit', $project));
+    \App\Models\ActivityLog::record(auth()->user()->name . ' created project "' . $project->name . '"', route('admin.projects.edit', $project), $project->id,true);
 
     return redirect()->route('admin.projects.create')
         ->with('success', 'Project created successfully.');
@@ -79,7 +79,7 @@ class ProjectController extends Controller
         $project->update($validated);
         \App\Models\ActivityLog::record(
             auth()->user()->name . ' updated project "' . $project->name . '"',
-            route('admin.projects.edit', $project)
+            route('admin.projects.edit', $project), $project->id,true
         );
 
         return redirect()->route('admin.projects.index')
@@ -91,7 +91,7 @@ class ProjectController extends Controller
         $project->delete();
         \App\Models\ActivityLog::record(
             auth()->user()->name . ' deleted project "' . $project->name . '"',
-            route('admin.projects.index')
+            route('admin.projects.index'), $project->id,true
         );
 
         return redirect()->route('admin.projects.index')

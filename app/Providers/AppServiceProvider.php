@@ -24,9 +24,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('components.layouts.app', function ($view) {
-            if (auth()->check() && auth()->user()->role === 'admin') {
-                $view->with('unreadActivityCount', ActivityLog::where('is_read', false)->count());
-                $view->with('recentActivity', ActivityLog::with('user')->where('is_read', false)->latest()->take(8)->get());
+            $user = auth()->user();
+            if ($user && in_array($user->role, ['admin', 'client'])) {
+                $unread = fn () => ActivityLog::visibleTo($user)->unreadFor($user);
+
+                $view->with('unreadActivityCount', $unread()->count());
+                $view->with('recentActivity', $unread()->with('user')->latest()->take(8)->get());
             } else {
                 $view->with('unreadActivityCount', 0);
                 $view->with('recentActivity', collect());

@@ -33,7 +33,7 @@ class InvoiceController extends Controller
 
         $invoice = $project->invoices()->create($validated);
 
-    \App\Models\ActivityLog::record(auth()->user()->name . ' created invoice "' . $invoice->invoice_number . '" for ' . $project->name, route('admin.invoices.create', $project));
+    \App\Models\ActivityLog::record(auth()->user()->name . ' created invoice "' . $invoice->invoice_number . '" for ' . $project->name, route('admin.invoices.create', $project), $project->id,true);
 
     Mail::to($project->client->email)->send(new InvoiceCreatedMail($invoice));
 
@@ -64,7 +64,7 @@ class InvoiceController extends Controller
         $invoice->update($validated);
 \App\Models\ActivityLog::record(
             auth()->user()->name . ' updated invoice "' . $invoice->invoice_number . '" for ' . $project->name,
-            route('admin.invoices.create', $project)
+            route('admin.invoices.create', $project), $project->id,true
         );
 
         return redirect()->route('admin.invoices.create', $project)
@@ -76,7 +76,7 @@ class InvoiceController extends Controller
         $invoice->delete();
         \App\Models\ActivityLog::record(
             auth()->user()->name . ' deleted invoice "' . $invoice->invoice_number . '" from ' . $project->name,
-            route('admin.invoices.create', $project)
+            route('admin.invoices.create', $project), $project->id,true
         );
 
         return redirect()->route('admin.invoices.create', $project)
