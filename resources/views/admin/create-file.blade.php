@@ -136,7 +136,47 @@
         </x-card>
 
         <x-card title="Existing Files">
+            <form method="GET" action="{{ route('admin.files.create', $project) }}" 
+            style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
 
+                <label for="uploader" style="font-size: 14px; font-weight: 600;">
+                    Filter by uploader:
+                </label>
+
+                <select name="uploader"
+                        id="uploader"
+                        onchange="this.form.submit()"
+                        style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: white; font-size: 14px; min-width: 200px;">
+
+                    <option value="">All uploaders</option>
+
+                    @foreach($uploaders as $uploader)
+                        <option value="{{ $uploader->id }}"
+                            {{ (string) $uploaderId === (string) $uploader->id ? 'selected' : '' }}>
+                            {{ $uploader->name }} ({{ ucfirst($uploader->role) }})
+                        </option>
+                    @endforeach
+
+                </select>
+
+                @if($uploaderId !== null && $uploaderId !== '')
+                    <a href="{{ route('admin.files.create', $project) }}"
+                    class="btn btn-small"
+                    style="text-decoration: none;">
+                        Clear Filter
+                    </a>
+                @endif
+
+            </form>
+
+            <p style="margin-bottom: 14px; color: var(--muted); font-size: 13px;">
+                Showing {{ $files->total() }} file(s)
+                @if($uploaderId !== null && $uploaderId !== '')
+                    uploaded by {{ $uploaders->firstWhere('id', (int) $uploaderId)?->name ?? 'selected user' }}
+                @else
+                    from all uploaders
+                @endif
+            </p>
             @if($files->isEmpty())
                 <x-empty-state
                     title="No files yet"
@@ -175,7 +215,48 @@
                     @endforeach
                 </div>
             @endif
+            <div class="pagination-container"
+                style="margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 6px; flex-wrap: wrap;">
 
+                {{-- Previous --}}
+                @if($files->onFirstPage())
+                    <span style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; color: #999; background: #f5f5f5;">
+                        Previous
+                    </span>
+                @else
+                    <a href="{{ $files->previousPageUrl() }}"
+                    style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: inherit; background: white;">
+                        Previous
+                    </a>
+                @endif
+
+                {{-- Page Numbers --}}
+                @foreach($files->getUrlRange(1, $files->lastPage()) as $page => $url)
+                    @if($page == $files->currentPage())
+                        <span style="padding: 8px 12px; border: 1px solid #2563eb; border-radius: 8px; background: #2563eb; color: white; font-weight: 600;">
+                            {{ $page }}
+                        </span>
+                    @else
+                        <a href="{{ $url }}"
+                        style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: inherit; background: white;">
+                            {{ $page }}
+                        </a>
+                    @endif
+                @endforeach
+
+                {{-- Next --}}
+                @if($files->hasMorePages())
+                    <a href="{{ $files->nextPageUrl() }}"
+                    style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: inherit; background: white;">
+                        Next
+                    </a>
+                @else
+                    <span style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; color: #999; background: #f5f5f5;">
+                        Next
+                    </span>
+                @endif
+
+            </div>
         </x-card>
 
     </div>

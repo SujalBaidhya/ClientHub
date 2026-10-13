@@ -16,8 +16,9 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PaymentController;
-
+use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\ActivityLogController as ClientActivityLogController;
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/milestones/{milestone}/approve', [AdminMilestoneController::class, 'approve'])
@@ -125,3 +126,14 @@ Route::get('/activity', [App\Http\Controllers\Admin\ActivityLogController::class
 Route::get('/activity', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('admin.activity.index');
 Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('admin.search');
 });
+Route::middleware('auth')->group(function () {
+    Route::get(
+        '/client/activity',
+        [ClientActivityLogController::class, 'index']
+    )->name('client.activity.index');
+
+    Route::post(
+        '/client/activity-logs/mark-read',
+        [ClientActivityLogController::class, 'markRead']
+    )->name('client.activity_logs.mark_read');
+}); 
