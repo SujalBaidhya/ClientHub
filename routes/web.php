@@ -124,6 +124,5 @@ Route::delete('/projects/{project}/files/{file}', [AdminFileController::class, '
     Route::get('/payments/export', [AdminPaymentController::class, 'exportCsv'])->name('admin.payments.export');
 Route::post('/activity-logs/mark-read', [\App\Http\Controllers\Admin\ActivityLogController::class, 'markRead'])->name('admin.activity_logs.mark_read');
 Route::get('/activity', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('admin.activity.index');
-Route::get('/activity', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('admin.activity.index');
 Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('admin.search');
 });

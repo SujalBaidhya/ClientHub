@@ -73,8 +73,8 @@ class ProjectController extends Controller
         \App\Models\ActivityLog::record(auth()->user()->name . ' created project "' . $project->name . '"');
     }
 
-    return redirect()->route('admin.projects.create')
-        ->with('success', 'Project created successfully.');
+  return redirect()->route('admin.projects.index')
+    ->with('success', 'Project created successfully.');
 }
     public function edit(Project $project)
     {
