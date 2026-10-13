@@ -17,19 +17,20 @@
             </h2>
         </x-card>
 
-        <form method="GET" action="{{ route('admin.payments.index') }}" style="margin-bottom: 20px; display: flex; gap: 10px;">
-            <input
-                type="text"
-                name="search"
-                value="{{ $search }}"
-                placeholder="Search by invoice number or client name..."
-                style="flex: 1; max-width: 400px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);"
-            >
-            <button type="submit" class="btn">Search</button>
-            @if($search)
-                <a href="{{ route('admin.payments.index') }}" class="btn">Clear</a>
-            @endif
-        </form>
+       <form method="GET" action="{{ route('admin.payments.index') }}" style="margin-bottom: 20px; display: flex; gap: 10px;">
+    <input
+        type="text"
+        name="search"
+        value="{{ $search }}"
+        placeholder="Search by invoice number or client name..."
+        style="flex: 1; max-width: 400px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);"
+    >
+    <button type="submit" class="btn">Search</button>
+    @if($search)
+        <a href="{{ route('admin.payments.index') }}" class="btn">Clear</a>
+    @endif
+    <a href="{{ route('admin.payments.export', ['search' => $search]) }}" class="btn btn-success" style="margin-left: auto;">Export CSV</a>
+</form>
 
         <x-card title="Payments">
 
