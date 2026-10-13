@@ -112,18 +112,26 @@
 
     <div class="dashboard">
 
-       <div class="admin-dashboard-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
-    <div>
-        <p class="dashboard-eyebrow">Admin</p>
-        <h1 style="margin: 0 0 6px 0;">Overview</h1>
-        <p style="margin: 0; color: #6b7280; font-size: 14px;">A snapshot of everything happening across ClientHub.</p>
-    </div>
-
-    <form method="POST" action="{{ route('admin.invoices.check-overdue') }}">
-        @csrf
-        <button type="submit" class="btn btn-small">Check Overdue Invoices</button>
-    </form>
+       <div class="admin-dashboard-header">
+    <p class="dashboard-eyebrow">Admin</p>
+    <h1 style="margin: 0 0 6px 0;">Overview</h1>
+    <p style="margin: 0; color: #6b7280; font-size: 14px;">A snapshot of everything happening across ClientHub.</p>
 </div>
+
+@if($stats['overdue_invoices'] > 0)
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; background: #fff5f5; border: 1px solid #fecaca; border-radius: 12px; padding: 14px 20px; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 20px;">⚠️</span>
+            <span style="color: #991b1b; font-weight: 600; font-size: 14.5px;">
+                {{ $stats['overdue_invoices'] }} invoice(s) overdue — clients have been notified automatically.
+            </span>
+        </div>
+        <form method="POST" action="{{ route('admin.invoices.check-overdue') }}">
+            @csrf
+            <button type="submit" class="btn btn-small" style="background: #dc2626; color: white; border: none;">Re-check Overdue Invoices</button>
+        </form>
+    </div>
+@endif
 
         {{-- Stat Cards --}}
         <div class="stats-grid">
@@ -184,12 +192,6 @@
                         <x-status-badge status="completed" />
                         <strong>{{ $stats['completed_projects'] }}</strong>
                     </div>
-                    @if($stats['overdue_invoices'] > 0)
-                        <div class="status-legend-item" style="border-color: #fecaca; background: #fff5f5;">
-                            <x-status-badge status="overdue" />
-                            <strong style="color: #dc2626;">{{ $stats['overdue_invoices'] }} invoice(s)</strong>
-                        </div>
-                    @endif
                 </div>
 
                 <div class="chart-wrapper">
