@@ -40,5 +40,8 @@ return [
         'secret_key' => env('ESEWA_SECRET_KEY'),
         'base_url' => env('ESEWA_BASE_URL'),
     ],
+    'brevo' => [
+    'key' => env('BREVO_API_KEY'),
+],
 
 ];
