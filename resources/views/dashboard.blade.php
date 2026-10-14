@@ -424,6 +424,11 @@
                                {{-- Project Files --}}
                 <x-card title="Project Files">
                     @if($project)
+                        @error('file_name')
+                            <div style="margin-bottom: 14px; padding: 12px 14px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; font-size: 13px; color: #991b1b;">
+                                {{ $message }}
+                            </div>
+                        @enderror
                         <form method="POST" action="{{ route('files.store', $project) }}" enctype="multipart/form-data" style="margin-bottom: 18px; display: flex; gap: 10px; align-items: center;">
                             @csrf
                             <input type="file" name="file" required style="flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: white;">
@@ -440,6 +445,7 @@
                         <div class="file-list">
                             @foreach($files as $file)
                                 <div class="file-item">
+                                    <a href="{{ route('files.view', $file) }}" title="View file" style="text-decoration: none; color: inherit; flex: 1; min-width: 0;">
                                     <div class="file-info">
                                         <div class="file-icon">
                                             {{ strtoupper(pathinfo($file->original_name, PATHINFO_EXTENSION)) ?: 'FILE' }}
@@ -456,6 +462,7 @@
                                             </span>
                                         </div>
                                     </div>
+                                    </a>
                                     <a href="{{ route('files.download', $file) }}" class="btn btn-small">
                                         Download
                                     </a>

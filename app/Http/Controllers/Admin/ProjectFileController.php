@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\ProjectFile;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProjectFileController extends Controller
 {
@@ -42,16 +43,32 @@ class ProjectFileController extends Controller
 
     public function store(Request $request, Project $project)
     {
-        $request->validate([
+        $validated = $request->validate([
             'file' => 'required|file|mimes:pdf|max:20480', // 20MB max
         ]);
-
         $uploaded = $request->file('file');
+        $fileName = basename(trim($uploaded->getClientOriginalName()));
+
+        $duplicateExists = $project->files()
+        ->whereRaw('LOWER(original_name) = ?', [
+            mb_strtolower($fileName),
+        ])
+        ->exists();
+
+        if ($duplicateExists) {
+            return back()
+                ->withErrors([
+                    'file_name' => 'A file named"'.$fileName.'" already exists in this project. Please choose a different filename.',
+                ])
+                ->withInput();
+        }
+
+        
         $path = $uploaded->store('files', 'public');
 
         $projectFile = $project->files()->create([
             'uploaded_by' => auth()->id(),
-            'original_name' => $uploaded->getClientOriginalName(),
+            'original_name' => $fileName,
             'file_path' => $path,
             'mime_type' => $uploaded->getClientMimeType(),
             'file_size' => $uploaded->getSize(),
@@ -64,6 +81,21 @@ class ProjectFileController extends Controller
 
         return redirect()->route('admin.files.create', $project)
             ->with('success', 'File uploaded successfully.');
+    }
+
+    public function view(ProjectFile $projectFile)
+    {
+        $disk = Storage::disk('public');
+        abort_unless($disk->exists($projectFile->file_path), 404);
+        return $disk->response(
+            $projectFile->file_path,
+            $projectFile->original_name,
+            [
+                'Content-Type' => 'application/pdf',
+                'X-Content-Type-Options' => 'nosniff',
+            ],
+            'inline'
+        );
     }
 
     public function destroy(Project $project, ProjectFile $file)

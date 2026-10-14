@@ -204,6 +204,13 @@
                                 </div>
                             </div>
 
+                            @if(strtolower(pathinfo($file->original_name, PATHINFO_EXTENSION)) === 'pdf')
+                                <a href="{{ route('admin.files.view', [$project, $file]) }}" target="_blank" rel="noopener noreferrer" class="btn btn-small"
+                                    style="background: #2563eb; color: white; border: none; text-decoration: none;">
+                                        View PDF
+                                </a>
+                            @endif
+                            
                             <form method="POST" action="{{ route('admin.files.destroy', [$project, $file]) }}" onsubmit="return confirm('Delete this file?');" class="file-delete-form">
                                 @csrf
                                 @method('DELETE')

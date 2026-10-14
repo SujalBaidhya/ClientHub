@@ -24,7 +24,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/milestones/{milestone}/approve', [AdminMilestoneController::class, 'approve'])
         ->name('client.milestones.approve');
     
-Route::post('/dashboard/{project}/files', [App\Http\Controllers\ClientFileController::class, 'store'])
+Route::post('/dashboard/{project}/files', [ProjectFileController::class, 'store'])
 ->middleware('auth')
 ->name('files.store');  
 
@@ -73,9 +73,17 @@ Route::post('/logout', [LoginController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
+Route::get('/files/{projectFile}/view', [ProjectFileController::class, 'view'])
+        ->middleware('auth')
+        ->name('files.view');
+
 Route::get('/files/{projectFile}/download', [ProjectFileController::class, 'download'])
     ->middleware('auth')
     ->name('files.download');
+
+Route::get('/invoices/{invoice}/view', [InvoiceController::class, 'view'])
+    ->middleware('auth')
+    ->name('invoices.view');
 
 Route::get('/invoices/{invoice}/download', [InvoiceController::class, 'download'])
     ->middleware('auth')
@@ -91,7 +99,8 @@ Route::get('/invoices/{invoice}/pay', [PaymentController::class, 'pay'])
 
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
 Route::get('/payment/failure', [PaymentController::class, 'failure'])->name('payment.failure');
-
+Route::get('/files/{projectFile}/view', [AdminFileController::class, 'view'])
+        ->name('admin.files.view');
 Route::prefix('admin')->middleware(['auth', 'admin','no-cache'])->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/projects', [AdminProjectController::class, 'index'])->name('admin.projects.index');

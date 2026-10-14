@@ -43,7 +43,7 @@ class ClientController extends Controller
 
         $inviteUrl = route('invitations.show', ['token' => $token]);
        Mail::to($client->email)->send(new ClientInvitationMail($client, $inviteUrl));
-         \App\Models\ActivityLog::record(auth()->user()->name . ' invited client "' . $client->name . '" (' . $client->email . ')', route('admin.clients.create'), $project->id);
+         \App\Models\ActivityLog::record(auth()->user()->name . ' invited client "' . $client->name . '" (' . $client->email . ')', route('admin.clients.create'), $project->id,true);
         return redirect()->route('admin.clients.create')->with('success', 'Client created and invitation email queued!');
     }
 
