@@ -19,6 +19,8 @@
         <h1>
             @if($activityType === 'revision')
                 Revision Requested
+            @elseif($activityType === 'approval')
+                Milestone Approved
             @else
                 New Client Comment
             @endif
@@ -29,6 +31,8 @@
             <strong>{{ $client->name }}</strong>
             @if($activityType === 'revision')
                 requested changes on a milestone in <strong>{{ $milestone->project->name }}</strong>.
+            @elseif($activityType === 'approval')
+                approved a milestone in <strong>{{ $milestone->project->name }}</strong>.
             @else
                 left a comment on a milestone in <strong>{{ $milestone->project->name }}</strong>.
             @endif
@@ -38,9 +42,11 @@
             <div class="milestone-title">{{ $milestone->title }}</div>
         </div>
 
-               <div class="message-box">
-            "{{ $activityMessage }}"
-        </div>
+        @if($activityType !== 'approval')
+            <div class="message-box">
+                "{{ $activityMessage }}"
+            </div>
+        @endif
 
         <a href="{{ url('/admin/projects/' . $milestone->project_id . '/milestones') }}" class="btn">View in Admin Panel</a>
     </div>
