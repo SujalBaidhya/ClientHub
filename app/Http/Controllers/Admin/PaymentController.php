@@ -14,12 +14,14 @@ class PaymentController extends Controller
         $payments = Invoice::with('project.client')
             ->where('status', 'paid')
             ->whereNotNull('paid_at')
-            ->when($request->query('search'), function ($query, $search) {
-                $query->where('invoice_number', 'like', "%{$search}%")
-                    ->orWhereHas('project.client', function ($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%");
-                    });
-            })
+           ->when($request->query('search'), function ($query, $search) {
+    $query->where(function ($q) use ($search) {
+        $q->where('invoice_number', 'like', "%{$search}%")
+            ->orWhereHas('project.client', function ($c) use ($search) {
+                $c->where('name', 'like', "%{$search}%");
+            });
+    });
+})
             ->latest('paid_at')
             ->get();
 
@@ -37,7 +39,7 @@ class PaymentController extends Controller
         $payments = Invoice::with('project.client')
             ->where('status', 'paid')
             ->whereNotNull('paid_at')
-            ->when($request->query('search'), function ($query, $search) {
+          ->when($request->query('search'), function ($query, $search) {
     $query->where(function ($q) use ($search) {
         $q->where('invoice_number', 'like', "%{$search}%")
             ->orWhereHas('project.client', function ($c) use ($search) {
