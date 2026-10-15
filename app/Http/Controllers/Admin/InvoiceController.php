@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Mail\InvoiceCreatedMail;
 use App\Models\Invoice;
 use App\Models\Project;
+use App\Support\SafeMail;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 
 class InvoiceController extends Controller
 {
@@ -18,28 +18,31 @@ class InvoiceController extends Controller
         return view('admin.create-invoice', compact('project', 'invoices'));
     }
 
-   public function store(Request $request, Project $project)
-{
-    $validated = $request->validate([
-        'invoice_number' => 'required|string|max:255|unique:invoices,invoice_number',
-        'status' => 'required|in:pending,paid,overdue',
-        'amount' => 'required|numeric|min:0',
-        'issued_at' => 'nullable|date',
-        'due_date' => 'nullable|date|after_or_equal:issued_at',
-        ], 
+    public function store(Request $request, Project $project)
+    {
+        $validated = $request->validate([
+            'invoice_number' => 'required|string|max:255|unique:invoices,invoice_number',
+            'status' => 'required|in:pending,paid,overdue',
+            'amount' => 'required|numeric|min:0',
+            'issued_at' => 'nullable|date',
+            'due_date' => 'nullable|date|after_or_equal:issued_at',
+        ],
         [
-        'due_date.after_or_equal' => 'Due date cannot be earlier than the issued date.',
-    ]);
+            'due_date.after_or_equal' => 'Due date cannot be earlier than the issued date.',
+        ]);
 
         $invoice = $project->invoices()->create($validated);
 
-    \App\Models\ActivityLog::record(auth()->user()->name . ' created invoice "' . $invoice->invoice_number . '" for ' . $project->name, route('admin.invoices.create', $project), $project->id,true);
+        \App\Models\ActivityLog::record(
+            auth()->user()->name . ' created invoice "' . $invoice->invoice_number . '" for ' . $project->name,
+            route('admin.invoices.create', $project), $project->id, true
+        );
 
-    Mail::to($project->client->email)->send(new InvoiceCreatedMail($invoice));
+        SafeMail::send($project->client?->email, new InvoiceCreatedMail($invoice));
 
-    return redirect()->route('admin.invoices.create', $project)
-        ->with('success', 'Invoice added successfully.');
-}
+        return redirect()->route('admin.invoices.create', $project)
+            ->with('success', 'Invoice added successfully.');
+    }
 
     public function update(Request $request, Project $project, Invoice $invoice)
     {
@@ -49,9 +52,9 @@ class InvoiceController extends Controller
             'amount' => 'required|numeric|min:0',
             'issued_at' => 'nullable|date',
             'due_date' => 'nullable|date|after_or_equal:issued_at',
-            ], 
-            [
-            'due_date.after_or_equal' => 'Due date cannot be earlier than the issued date.'
+        ],
+        [
+            'due_date.after_or_equal' => 'Due date cannot be earlier than the issued date.',
         ]);
 
         // If an admin manually marks an invoice as paid (not through
@@ -62,9 +65,10 @@ class InvoiceController extends Controller
         }
 
         $invoice->update($validated);
-\App\Models\ActivityLog::record(
+
+        \App\Models\ActivityLog::record(
             auth()->user()->name . ' updated invoice "' . $invoice->invoice_number . '" for ' . $project->name,
-            route('admin.invoices.create', $project), $project->id,true
+            route('admin.invoices.create', $project), $project->id, true
         );
 
         return redirect()->route('admin.invoices.create', $project)
@@ -74,9 +78,10 @@ class InvoiceController extends Controller
     public function destroy(Project $project, Invoice $invoice)
     {
         $invoice->delete();
+
         \App\Models\ActivityLog::record(
             auth()->user()->name . ' deleted invoice "' . $invoice->invoice_number . '" from ' . $project->name,
-            route('admin.invoices.create', $project), $project->id,true
+            route('admin.invoices.create', $project), $project->id, true
         );
 
         return redirect()->route('admin.invoices.create', $project)

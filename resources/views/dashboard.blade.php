@@ -431,7 +431,7 @@
                         @enderror
                         <form method="POST" action="{{ route('files.store', $project) }}" enctype="multipart/form-data" style="margin-bottom: 18px; display: flex; gap: 10px; align-items: center;">
                             @csrf
-                            <input type="file" name="file" required style="flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: white;">
+                            <input type="file" name="file" required accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip" style="flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: white;">
                             <button type="submit" class="btn btn-success">Upload</button>
                         </form>
                     @endif

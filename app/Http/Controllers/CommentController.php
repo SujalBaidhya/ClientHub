@@ -6,9 +6,9 @@ use App\Mail\ClientActivityMail;
 use App\Models\ActivityLog;
 use App\Models\Milestone;
 use App\Models\User;
+use App\Support\SafeMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 
 class CommentController extends Controller
 {
@@ -38,19 +38,20 @@ class CommentController extends Controller
         ]);
 
         // 1. Record in Activity Log so it appears on the Activity / Notifications page
-    $projectTitle = $project->title ?? $project->name ?? 'Project';
+        $projectTitle = $project->title ?? $project->name ?? 'Project';
 
-     ActivityLog::record(
-    "{$user->name} commented on milestone '{$milestone->title}' in project '{$projectTitle}'",
-    null, $project->id,true
-);
+        ActivityLog::record(
+            "{$user->name} commented on milestone '{$milestone->title}' in project '{$projectTitle}'",
+            null, $project->id, true
+        );
 
         // 2. Send email notification to admins when a client posts a comment
         if (!$isAdmin) {
             $admins = User::where('role', 'admin')->pluck('email');
 
             if ($admins->isNotEmpty()) {
-                Mail::to($admins)->send(
+                SafeMail::send(
+                    $admins,
                     new ClientActivityMail($user, $milestone, 'comment', $request->body)
                 );
             }

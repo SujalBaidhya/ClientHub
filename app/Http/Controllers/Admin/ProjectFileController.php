@@ -70,7 +70,7 @@ class ProjectFileController extends Controller
             'uploaded_by' => auth()->id(),
             'original_name' => $fileName,
             'file_path' => $path,
-            'mime_type' => $uploaded->getClientMimeType(),
+            'mime_type' => $uploaded->getMimeType(),
             'file_size' => $uploaded->getSize(),
         ]);
 
