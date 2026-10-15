@@ -6,12 +6,6 @@ return [
     |--------------------------------------------------------------------------
     | Third Party Services
     |--------------------------------------------------------------------------
-    |
-    | This file is for storing the credentials for third party services such
-    | as Mailgun, Postmark, AWS and more. This file provides the de facto
-    | location for this type of information, allowing packages to have
-    | a conventional file to locate the various service credentials.
-    |
     */
 
     'postmark' => [
@@ -28,7 +22,7 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-      'slack' => [
+    'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
@@ -39,9 +33,11 @@ return [
         'merchant_code' => env('ESEWA_MERCHANT_CODE'),
         'secret_key' => env('ESEWA_SECRET_KEY'),
         'base_url' => env('ESEWA_BASE_URL'),
+        'status_url' => env('ESEWA_STATUS_URL', 'https://rc.esewa.com.np/api/epay/transaction/status/'),
     ],
+
     'brevo' => [
-    'key' => env('BREVO_API_KEY'),
-],
+        'key' => env('BREVO_API_KEY'),
+    ],
 
 ];
