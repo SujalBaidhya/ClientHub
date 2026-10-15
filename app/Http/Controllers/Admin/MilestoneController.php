@@ -10,6 +10,7 @@ use App\Models\Project;
 use App\Models\User;
 use App\Support\SafeMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 
 class MilestoneController extends Controller
@@ -86,16 +87,7 @@ class MilestoneController extends Controller
         $user = auth()->user();
         $project = $milestone->project;
 
-        $isClientOwner = (
-            ($project->client_id && (int) $project->client_id === (int) $user->id) ||
-            ($project->user_id && (int) $project->user_id === (int) $user->id) ||
-            ($project->client && isset($project->client->user_id) && (int) $project->client->user_id === (int) $user->id) ||
-            ($project->client && isset($project->client->email) && $project->client->email === $user->email)
-        );
-
-        $isAdmin = ($user->role === 'admin');
-
-        abort_unless($isClientOwner || $isAdmin, 403);
+       Gate::authorize('respond', $milestone);
 
         $milestone->update([
             'status' => 'completed',
@@ -123,16 +115,9 @@ class MilestoneController extends Controller
         $user = auth()->user();
         $project = $milestone->project;
 
-        $isClientOwner = (
-            ($project->client_id && (int) $project->client_id === (int) $user->id) ||
-            ($project->user_id && (int) $project->user_id === (int) $user->id) ||
-            ($project->client && isset($project->client->user_id) && (int) $project->client->user_id === (int) $user->id) ||
-            ($project->client && isset($project->client->email) && $project->client->email === $user->email)
-        );
+       Gate::authorize('respond', $milestone);
 
-        $isAdmin = ($user->role === 'admin');
-
-        abort_unless($isClientOwner || $isAdmin, 403);
+$isAdmin = ($user->role === 'admin');
 
         $validated = $request->validate([
             'client_notes' => ['required', 'string', 'max:1000'],

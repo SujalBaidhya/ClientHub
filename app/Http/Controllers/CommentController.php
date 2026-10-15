@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Support\SafeMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class CommentController extends Controller
 {
@@ -18,15 +19,9 @@ class CommentController extends Controller
         $project = $milestone->project;
 
         // Check if user is the assigned client or an admin
-        $isAdmin = ($user->role === 'admin');
-        $isOwner = (
-            ($project->client_id && (int) $project->client_id === (int) $user->id) ||
-            ($project->user_id && (int) $project->user_id === (int) $user->id) ||
-            ($project->client && isset($project->client->user_id) && (int) $project->client->user_id === (int) $user->id) ||
-            ($project->client && isset($project->client->email) && $project->client->email === $user->email)
-        );
+      Gate::authorize('respond', $milestone);
 
-        abort_unless($isOwner || $isAdmin, 403);
+$isAdmin = ($user->role === 'admin');
 
         $request->validate([
             'body' => 'required|string|max:2000',
