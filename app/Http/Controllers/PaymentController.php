@@ -79,7 +79,7 @@ class PaymentController extends Controller
 
     \App\Models\ActivityLog::record(
         (auth()->user()->name ?? 'A client') . ' paid invoice "' . $invoice->invoice_number . '" via eSewa',
-        route('admin.payments.index')
+        route('admin.payments.index'), $invoice->project_id, true
     );
 
     if ($invoice->project && $invoice->project->client) {

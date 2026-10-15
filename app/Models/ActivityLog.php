@@ -3,13 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class ActivityLog extends Model
 {
     protected $fillable = [
         'user_id',
+        'project_id',
         'description',
         'url',
+        'client_visible',
         'is_read',
     ];
 
@@ -18,13 +21,61 @@ class ActivityLog extends Model
         return $this->belongsTo(User::class);
     }
 
-    public static function record(string $description, ?string $url = null): void
+    public static function record(string $description, ?string $url = null, ?int $projectId = null,bool $clientVisible = false): void
     {
-        static::create([
+        $log = static::create([
             'user_id'     => auth()->id(),
             'description' => $description,
             'url'         => $url,
             'is_read'     => false,
+            'client_visible' => $clientVisible,
+            'project_id' => $projectId,
         ]);
+        if (auth()->check()) {
+            static::markReadFor(auth()->user(), [$log->id]);
+        }
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(\App\Models\Project::class);
+    }
+
+    public function readers()
+    {
+        return $this->belongsToMany(User::class, 'activity_log_reads')->withPivot('read_at');
+    }
+
+    public function scopeUnreadFor($query, User $user)
+    {
+        return $query->whereDoesntHave('readers', fn ($q) => $q->where('users.id', $user->id));
+    }
+
+    public function scopeVisibleTo($query, User $user)
+    {
+        if ($user->role === 'admin') {
+            return $query;
+        }
+
+        return $query->where('client_visible', true)
+            ->whereHas('project', fn ($p) => $p->where('client_id', $user->id));
+    }
+
+    public static function markReadFor(User $user, $logIds): void
+    {
+        $rows = collect($logIds)->map(fn ($id) => [
+            'activity_log_id' => $id,
+            'user_id'         => $user->id,
+            'read_at'         => now(),
+        ])->all();
+
+        foreach (array_chunk($rows, 200) as $chunk) {
+            DB::table('activity_log_reads')->insertOrIgnore($chunk);
+        }
+    }
+
+    public static function markAllReadFor(User $user): void
+    {
+        static::markReadFor($user, static::visibleTo($user)->unreadFor($user)->pluck('id'));
     }
 }

@@ -826,11 +826,11 @@
             <nav class="sidebar-nav">
                 @unless($isGuest)
 
-               @if($isAdmin)
     <div class="activity-bell-wrapper">
         <button type="button" class="activity-bell-button" id="activityBellButton">
             <span>&#128276;</span> Notifications
             @php
+            $activityIndexRoute = $isAdmin ? route('admin.activity.index') : route('client.activity.index');
     $unreadActivityCount = $unreadActivityCount ?? 0;
     $recentActivity = $recentActivity ?? [];
 @endphp
@@ -841,7 +841,7 @@
 
         <div class="activity-dropdown" id="activityDropdown">
             @forelse($recentActivity as $item)
-                <a href="{{ $item->url ?? route('admin.activity.index') }}" class="activity-dropdown-item" style="text-decoration: none; display: block; color: inherit; {{ !$item->is_read ? 'background: rgba(0,0,0,0.03); font-weight: 500;' : '' }}">
+                <a href="{{ $item->url ?? $activityIndexRoute }}" class="activity-dropdown-item" style="text-decoration: none; display: block; color: inherit;background: rgba(0,0,0,0.03); font-weight: 500;">
                     <p>{{ $item->description }}</p>
                     <span style="font-size: 0.75rem; color: var(--muted);">{{ $item->created_at->diffForHumans() }}</span>
                 </a>
@@ -852,11 +852,12 @@
             @endforelse
 
 
-            <a href="{{ route('admin.activity.index') }}" class="activity-dropdown-footer">
+            <a href="{{ $activityIndexRoute }}" class="activity-dropdown-footer">
                 View all activity
             </a>
         </div>
     </div>
+       @if($isAdmin)
 
     <a href="{{ route('admin.projects.create') }}" class="btn btn-success" style="justify-content: center; text-align: center; margin: 0 0 18px; display: block;">
         + New Project
@@ -868,6 +869,9 @@
                 @if(!$isAdmin)
                     <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') || request()->routeIs('dashboard.project') ? 'active' : '' }}">
                         Dashboard
+                    </a>
+                    <a href="{{ route('client.activity.index') }}" class="sidebar-link {{ request()->routeIs('client.activity.*') ? 'active' : '' }}">
+                        Activity Log
                     </a>
                                 @else
                     <form method="GET" action="{{ route('admin.search') }}" style="padding: 0 0 14px;">
@@ -888,9 +892,9 @@
                         Payments
                     </a>
                  <a href="{{ route('admin.activity.index') }}" class="sidebar-link {{ request()->routeIs('admin.activity.*') ? 'active' : '' }}">
-    Activity Log
-</a>   
-                @endif
+                        Activity Log
+                    </a>   
+                 @endif
 
                 <div class="sidebar-section-label">Account</div>
 
@@ -990,7 +994,7 @@
                 if (dropdown.classList.contains('is-open') && badge) {
                     badge.remove();
 
-                    fetch("{{ route('admin.activity_logs.mark_read') }}", {
+                    fetch("{{$isAdmin ? route('admin.activity_logs.mark_read')  : route('client.activity.mark_read')}}", {
                         method: "POST",
                         headers: {
                             "X-CSRF-TOKEN": "{{ csrf_token() }}",

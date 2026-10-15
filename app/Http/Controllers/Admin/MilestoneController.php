@@ -34,7 +34,7 @@ class MilestoneController extends Controller
 
     $milestone = $project->milestones()->create($validated);
 
-    \App\Models\ActivityLog::record(auth()->user()->name . ' added milestone "' . $milestone->title . '" to ' . $project->name, route('admin.milestones.create', $project));
+    \App\Models\ActivityLog::record(auth()->user()->name . ' added milestone "' . $milestone->title . '" to ' . $project->name, route('admin.milestones.create', $project), $project->id,true);
 
     return redirect()->route('admin.milestones.create', $project)
         ->with('success', 'Milestone added successfully.');
@@ -100,7 +100,7 @@ class MilestoneController extends Controller
         'completed_at' => now(),
     ]);
 
-    \App\Models\ActivityLog::record($user->name . ' approved milestone "' . $milestone->title . '" on ' . $project->name, route('admin.milestones.create', $project));
+    \App\Models\ActivityLog::record($user->name . ' approved milestone "' . $milestone->title . '" on ' . $project->name, route('admin.milestones.create', $project), $project->id,true);
 
     if ($project->client?->email) {
         Mail::to($project->client->email)
@@ -139,7 +139,7 @@ class MilestoneController extends Controller
         'approved_at' => null,
     ]);
 
-    \App\Models\ActivityLog::record($user->name . ' requested a revision on "' . $milestone->title . '"', route('admin.milestones.create', $project));
+    \App\Models\ActivityLog::record($user->name . ' requested a revision on "' . $milestone->title . '"', route('admin.milestones.create', $project), $project->id,true);
 
     if (!$isAdmin) {
         $admins = User::where('role', 'admin')->pluck('email');

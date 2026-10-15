@@ -67,10 +67,18 @@ class ProjectController extends Controller
         }
 
         \App\Models\ActivityLog::record(
-            auth()->user()->name . ' created project "' . $project->name . '" from the "' . config("project_templates.{$template}.label") . '" template'
+            auth()->user()->name . ' created project "' . $project->name . '" from the "' . config("project_templates.{$template}.label") . '" template',
+            route('admin.projects.edit', $project),
+            $project->id,
+            true
         );
     } else {
-        \App\Models\ActivityLog::record(auth()->user()->name . ' created project "' . $project->name . '"');
+        \App\Models\ActivityLog::record(
+            auth()->user()->name . ' created project "' . $project->name . '"',
+            route('admin.projects.edit', $project),
+            $project->id,
+            true
+        );
     }
 
   return redirect()->route('admin.projects.index')
@@ -99,12 +107,26 @@ class ProjectController extends Controller
 
         $project->update($validated);
 
+        \App\Models\ActivityLog::record(
+            auth()->user()->name . ' updated project "' . $project->name . '"',
+            route('admin.projects.edit', $project),
+            $project->id,
+            true
+        );
+
         return redirect()->route('admin.projects.index')
             ->with('success', 'Project updated successfully.');
     }
 
     public function destroy(Project $project)
     {
+        // Logged before deleting: activity_logs.project_id is a foreign key, so it
+        // can't point at a project row that no longer exists. Admin-only entry.
+        \App\Models\ActivityLog::record(
+            auth()->user()->name . ' deleted project "' . $project->name . '"',
+            route('admin.projects.index')
+        );
+
         $project->delete();
 
         return redirect()->route('admin.projects.index')

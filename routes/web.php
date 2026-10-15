@@ -16,14 +16,15 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PaymentController;
-
+use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\ActivityLogController as ClientActivityLogController;
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/milestones/{milestone}/approve', [AdminMilestoneController::class, 'approve'])
         ->name('client.milestones.approve');
     
-Route::post('/dashboard/{project}/files', [App\Http\Controllers\ClientFileController::class, 'store'])
+Route::post('/dashboard/{project}/files', [ProjectFileController::class, 'store'])
 ->middleware('auth')
 ->name('files.store');  
 
@@ -72,6 +73,10 @@ Route::post('/logout', [LoginController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
+Route::get('/files/{projectFile}/view', [ProjectFileController::class, 'view'])
+        ->middleware('auth')
+        ->name('files.view');
+
 Route::get('/files/{projectFile}/download', [ProjectFileController::class, 'download'])
     ->middleware('auth')
     ->name('files.download');
@@ -90,7 +95,6 @@ Route::get('/invoices/{invoice}/pay', [PaymentController::class, 'pay'])
 
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
 Route::get('/payment/failure', [PaymentController::class, 'failure'])->name('payment.failure');
-
 Route::prefix('admin')->middleware(['auth', 'admin','no-cache'])->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::post('/check-overdue-invoices', [AdminDashboardController::class, 'checkOverdueInvoices'])->name('admin.invoices.check-overdue');
@@ -126,3 +130,7 @@ Route::post('/activity-logs/mark-read', [\App\Http\Controllers\Admin\ActivityLog
 Route::get('/activity', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('admin.activity.index');
 Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('admin.search');
 });
+Route::middleware('auth')->group(function () {
+    Route::get('/activity', [ClientActivityLogController::class, 'index'])->name('client.activity.index');
+    Route::post('/activity/mark-read', [ClientActivityLogController::class, 'markRead'])->name('client.activity.mark_read');
+}); 

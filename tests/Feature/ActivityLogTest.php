@@ -21,7 +21,7 @@ test('creating a project logs an activity entry', function () {
         'status' => 'pending',
     ]);
 
-    $response->assertRedirect(route('admin.projects.create'));
+    $response->assertRedirect(route('admin.projects.index'));
 
     $this->assertDatabaseHas('activity_logs', [
         'user_id' => $admin->id,

@@ -42,7 +42,7 @@ class CommentController extends Controller
 
      ActivityLog::record(
     "{$user->name} commented on milestone '{$milestone->title}' in project '{$projectTitle}'",
-    null
+    null, $project->id,true
 );
 
         // 2. Send email notification to admins when a client posts a comment

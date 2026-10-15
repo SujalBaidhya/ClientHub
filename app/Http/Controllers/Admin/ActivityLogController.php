@@ -8,18 +8,17 @@ use Illuminate\Http\Request;
 
 class ActivityLogController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $logs = ActivityLog::with('user')->latest()->paginate(30);
-
-        ActivityLog::where('is_read', false)->update(['is_read' => true]);
-
+        $user = $request->user();
+        $logs = ActivityLog::with('user')->visibleTo($user)->latest()->paginate(30);
+        ActivityLog::markAllReadFor($user);
         return view('admin.activity-log', compact('logs'));
     }
 
     public function markRead(Request $request)
     {
-        ActivityLog::where('is_read', false)->update(['is_read' => true]);
+        ActivityLog::markAllReadFor($request->user());
 
         if ($request->wantsJson()) {
             return response()->json(['status' => 'success']);
