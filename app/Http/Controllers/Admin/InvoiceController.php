@@ -31,6 +31,12 @@ class InvoiceController extends Controller
             'due_date.after_or_equal' => 'Due date cannot be earlier than the issued date.',
         ]);
 
+        // An invoice created as "paid" needs a payment date, otherwise it is
+        // counted in total revenue but missing from payment history.
+        if ($validated['status'] === 'paid') {
+            $validated['paid_at'] = now();
+        }
+
         $invoice = $project->invoices()->create($validated);
 
         \App\Models\ActivityLog::record(

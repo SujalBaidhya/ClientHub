@@ -49,6 +49,7 @@
                                     {{ $invoice->project->client->name ?? 'N/A' }}
                                     &middot; {{ $invoice->project->name ?? 'N/A' }}
                                     &middot; Paid {{ $invoice->paid_at?->format('M d, Y') }}
+&middot; {{ $invoice->transaction_code ? 'eSewa' : 'Manual' }}
                                 </span>
                             </div>
                             <strong style="color: #16a34a;">NPR {{ number_format($invoice->amount, 2) }}</strong>
