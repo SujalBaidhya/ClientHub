@@ -5,9 +5,8 @@ namespace App\Console\Commands;
 use App\Mail\InvoiceOverdueMail;
 use App\Models\ActivityLog;
 use App\Models\Invoice;
+use App\Support\SafeMail;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class MarkOverdueInvoices extends Command
 {
@@ -17,10 +16,11 @@ class MarkOverdueInvoices extends Command
 
     public function handle()
     {
+        // whereDate + today(): an invoice due TODAY is not overdue until tomorrow
         $invoices = Invoice::with('project.client')
             ->where('status', 'pending')
             ->whereNotNull('due_date')
-            ->where('due_date', '<', now())
+            ->whereDate('due_date', '<', today())
             ->get();
 
         $emailed = 0;
@@ -30,18 +30,17 @@ class MarkOverdueInvoices extends Command
             $invoice->update(['status' => 'overdue']);
 
             if ($invoice->project?->client) {
-                try {
-                    Mail::to($invoice->project->client->email)->send(new InvoiceOverdueMail($invoice));
-                    $emailed++;
-                } catch (\Throwable $e) {
-                    $failed++;
-                    Log::error("Failed to send overdue email for invoice {$invoice->invoice_number}: " . $e->getMessage());
-                }
+                SafeMail::send($invoice->project->client->email, new InvoiceOverdueMail($invoice))
+                    ? $emailed++
+                    : $failed++;
             }
 
+            // project_id + true makes it appear in the client's activity feed too
             ActivityLog::record(
-                "Invoice {$invoice->invoice_number} for \"{$invoice->project->name}\" is now overdue",
-                route('admin.invoices.create', $invoice->project)
+                "Invoice {$invoice->invoice_number} for \"" . ($invoice->project?->name ?? 'a project') . "\" is now overdue",
+                $invoice->project ? route('admin.invoices.create', $invoice->project) : null,
+                $invoice->project_id,
+                true
             );
         }
 

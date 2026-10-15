@@ -8,5 +8,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 use App\Console\Commands\MarkOverdueInvoices;
 use Illuminate\Support\Facades\Schedule;
-
-Schedule::command(MarkOverdueInvoices::class)->daily();
+Schedule::command(MarkOverdueInvoices::class)->hourly();

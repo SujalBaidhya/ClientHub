@@ -12,7 +12,8 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 php artisan migrate --force
-
+# Run Laravel's scheduler in the background (triggers the overdue check)
+php artisan schedule:work > /dev/null 2>&1 &
 # Start PHP-FPM in background
 php-fpm -D
 
