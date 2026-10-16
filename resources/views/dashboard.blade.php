@@ -300,6 +300,18 @@
                             message="Milestones will appear here when they are added to the project."
                         />
                     @else
+                                            @php
+                            $nextMilestone = $milestones->where('status', '!=', 'completed')->whereNotNull('due_date')->sortBy('due_date')->first();
+                        @endphp
+                        @if($nextMilestone)
+                            <div style="margin-bottom: 14px; padding: 10px 14px; border-radius: 10px; background: #f1f0fb; font-size: 13.5px; color: #1e1b4b;">
+                                <strong>Next up:</strong> {{ $nextMilestone->title }}
+                                &middot; {{ $nextMilestone->due_date->format('M d, Y') }}
+                                @if($nextMilestone->isOverdue())
+                                    <span style="color: #dc2626; font-weight: 600;">(overdue)</span>
+                                @endif
+                            </div>
+                        @endif
                         <div class="milestone-list">
                             @foreach($milestones as $milestone)
                                 <details class="milestone-card" style="border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; background: #ffffff; padding: 14px;">
@@ -309,6 +321,11 @@
                                                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                                                     <strong style="font-size: 14.5px; color: #1e1b4b;">{{ $milestone->title }}</strong>
                                                     <x-status-badge :status="$milestone->status" />
+                                                    @if($milestone->isOverdue())
+                                                        <span class="badge badge-danger">Overdue by {{ abs($milestone->daysUntilDue()) }} day(s)</span>
+                                                    @elseif($milestone->status !== 'completed' && $milestone->daysUntilDue() !== null && $milestone->daysUntilDue() <= 3)
+                                                        <span class="badge badge-warning">{{ $milestone->daysUntilDue() === 0 ? 'Due today' : 'Due in ' . $milestone->daysUntilDue() . ' day(s)' }}</span>
+                                                    @endif
                                                 </div>
                                                 @if($milestone->description)
                                                     <p style="margin: 4px 0 0; font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">

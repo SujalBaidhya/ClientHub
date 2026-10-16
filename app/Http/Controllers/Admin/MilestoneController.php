@@ -27,6 +27,7 @@ class MilestoneController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'status' => 'required|in:pending,in_progress,completed',
+                    'due_date' => 'nullable|date',
         ]);
 
         $validated['completed_at'] = $validated['status'] === 'completed'
@@ -50,6 +51,7 @@ class MilestoneController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'status' => 'required|in:pending,in_progress,completed',
+            'due_date' => 'nullable|date',
         ]);
 
         $wasAlreadyCompleted = $milestone->status === 'completed';

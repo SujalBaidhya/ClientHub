@@ -124,7 +124,10 @@
                         <option value="completed">Completed</option>
                     </select>
                 </div>
-
+                                <div class="milestone-form-group">
+                    <label style="display:block; margin-bottom: 6px; font-weight: 600; font-size: 14px;">Due Date <span style="font-weight: normal; color: var(--muted);">(optional)</span></label>
+                    <input type="date" name="due_date" class="milestone-form-input">
+                </div>
                 <button type="submit" class="btn btn-success" style="padding: 10px 18px;">
                     Add Milestone
                 </button>
@@ -156,7 +159,15 @@
                                 <div style="margin-bottom: 12px;">
                                     <textarea name="description" rows="2" class="milestone-form-textarea">{{ $milestone->description }}</textarea>
                                 </div>
-
+                               <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                    <label style="font-size: 13px; font-weight: 600;">Due date</label>
+                                    <input type="date" name="due_date" value="{{ $milestone->due_date?->format('Y-m-d') }}" class="milestone-form-input" style="width: auto;">
+                                    @if($milestone->isOverdue())
+                                        <span class="badge badge-danger">Overdue by {{ abs($milestone->daysUntilDue()) }} day(s)</span>
+                                    @elseif($milestone->status !== 'completed' && $milestone->daysUntilDue() !== null && $milestone->daysUntilDue() <= 3)
+                                        <span class="badge badge-warning">{{ $milestone->daysUntilDue() === 0 ? 'Due today' : 'Due in ' . $milestone->daysUntilDue() . ' day(s)' }}</span>
+                                    @endif
+                                </div>
                                 <div class="milestone-manage-actions">
                                     <div class="milestone-status-group">
                                         <select name="status" required class="milestone-form-select" style="padding: 9px 12px;">

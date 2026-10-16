@@ -66,8 +66,17 @@ class ProjectController extends Controller
     $project = Project::create($validated);
 
     if ($template && $milestones = config("project_templates.{$template}.milestones")) {
-        foreach ($milestones as $milestone) {
+               // With a start and due date on the project, spread the milestone dates evenly between them
+        $count = count($milestones);
+        $start = !empty($validated['start_date']) ? \Illuminate\Support\Carbon::parse($validated['start_date']) : null;
+        $end = !empty($validated['due_date']) ? \Illuminate\Support\Carbon::parse($validated['due_date']) : null;
+        $spread = $start && $end && $end->gte($start);
+
+        foreach (array_values($milestones) as $i => $milestone) {
             Milestone::create([
+                'due_date' => $spread
+                    ? $start->copy()->addDays((int) round($start->diffInDays($end) * ($i + 1) / $count))
+                    : null,
                 'project_id' => $project->id,
                 'title' => $milestone['title'],
                 'description' => $milestone['description'] ?? null,
