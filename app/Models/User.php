@@ -48,7 +48,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'invitation_sent_at' => 'datetime',
             'password' => 'hashed',
+                        'email_invoices' => 'boolean',
+            'email_reminders' => 'boolean',
+            'email_milestones' => 'boolean',
         ];
+    }
+        /**
+     * Whether this user wants an optional email. Categories: invoices, reminders, milestones.
+     * Essential emails (invitation, password reset, payment receipt) never check this.
+     */
+    public function wantsEmail(string $category): bool
+    {
+        $column = 'email_' . $category;
+
+        return (bool) ($this->{$column} ?? true);
     }
     public function projects()
     {

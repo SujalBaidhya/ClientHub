@@ -64,7 +64,9 @@ Route::get('/dashboard/{project}', [DashboardController::class, 'index'])
 Route::get('/account', [AccountController::class, 'edit'])
     ->middleware('auth','no-cache')
     ->name('account.edit');
-
+Route::put('/account/notifications', [AccountController::class, 'updateNotifications'])
+    ->middleware('auth','no-cache')
+    ->name('account.notifications');
 Route::put('/account', [AccountController::class, 'update'])
     ->middleware('auth','no-cache')
     ->name('account.update');

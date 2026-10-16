@@ -68,7 +68,7 @@ class MilestoneController extends Controller
         );
 
         if ($validated['status'] === 'completed' && !$wasAlreadyCompleted) {
-            if ($project->client?->email) {
+            if ($project->client?->email && $project->client->wantsEmail('milestones')) {
                 SafeMail::send($project->client->email, new MilestoneCompletedMail($milestone));
             }
         }
@@ -116,7 +116,7 @@ class MilestoneController extends Controller
 
         if ($isAdmin) {
             // An admin approved on the client's behalf: tell the client.
-            if ($project->client?->email) {
+            if ($project->client?->email && $project->client->wantsEmail('milestones')) {
                 SafeMail::send($project->client->email, new MilestoneCompletedMail($milestone));
             }
         } else {

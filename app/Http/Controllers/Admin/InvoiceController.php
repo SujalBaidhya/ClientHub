@@ -125,7 +125,9 @@ class InvoiceController extends Controller
             route('admin.invoices.create', $project), $project->id, true
         );
 
-        SafeMail::send($project->client?->email, new InvoiceCreatedMail($invoice));
+        if ($project->client?->wantsEmail('invoices')) {
+            SafeMail::send($project->client->email, new InvoiceCreatedMail($invoice));
+        }
 
         return redirect()->route('admin.invoices.create', $project)
             ->with('success', 'Invoice added successfully.');

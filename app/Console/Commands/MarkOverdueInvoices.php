@@ -30,7 +30,7 @@ class MarkOverdueInvoices extends Command
         foreach ($invoices as $invoice) {
             $invoice->update(['status' => 'overdue']);
 
-            if ($invoice->project?->client) {
+                        if ($invoice->project?->client && $invoice->project->client->wantsEmail('reminders')) {
                 SafeMail::send($invoice->project->client->email, new InvoiceOverdueMail($invoice))
                     ? $emailed++
                     : $failed++;

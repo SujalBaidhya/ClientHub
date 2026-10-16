@@ -18,6 +18,7 @@ class SendDueSoonInvoiceReminders extends Command
         $days = max(1, (int) $this->option('days'));
 
         $invoices = Invoice::with('project.client')
+            ->whereHas('project', fn ($q) => $q->active())
             ->where('status', 'pending')
             ->whereNull('due_reminder_sent_at')
             ->whereNotNull('due_date')
@@ -31,7 +32,9 @@ class SendDueSoonInvoiceReminders extends Command
         foreach ($invoices as $invoice) {
             $client = $invoice->project?->client;
 
-            if (! $client) {
+
+            // Client opted out of reminders (not marked as sent, so turning it back on still works)
+            if (! $client->wantsEmail('reminders')) {
                 continue;
             }
 
