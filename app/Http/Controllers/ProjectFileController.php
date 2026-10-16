@@ -17,12 +17,12 @@ class ProjectFileController extends Controller
         );
 
         abort_unless(
-            Storage::disk('public')->exists($projectFile->file_path),
+            Storage::disk(config('filesystems.uploads_disk'))->exists($projectFile->file_path),
             404,
             'File not found in storage.'
         );
 
-        return Storage::disk('public')->download(
+        return Storage::disk(config('filesystems.uploads_disk'))->download(
             $projectFile->file_path,
             $projectFile->original_name
         );
@@ -59,7 +59,7 @@ class ProjectFileController extends Controller
                 ->withInput();
         }
 
-        $path = $uploaded->store('files', 'public');
+        $path = $uploaded->store('files', config('filesystems.uploads_disk'));
 
         $project->files()->create([
             'uploaded_by' => Auth::id(),
@@ -86,7 +86,7 @@ class ProjectFileController extends Controller
             403
         );
 
-        $disk = Storage::disk('public');
+        $disk = Storage::disk(config('filesystems.uploads_disk'));
         abort_unless($disk->exists($projectFile->file_path), 404);
 
         // Only PDFs can be shown inline; anything else is offered as a download.
