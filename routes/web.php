@@ -109,7 +109,8 @@ Route::prefix('admin')->middleware(['auth', 'admin','no-cache'])->scopeBindings(
     Route::post('/projects/{project}/milestones', [AdminMilestoneController::class, 'store'])->name('admin.milestones.store');
     Route::put('/projects/{project}/milestones/{milestone}', [AdminMilestoneController::class, 'update'])->name('admin.milestones.update');
     Route::delete('/projects/{project}/milestones/{milestone}', [AdminMilestoneController::class, 'destroy'])->name('admin.milestones.destroy');
-
+        Route::get('/invoices', [AdminInvoiceController::class, 'index'])->name('admin.invoices.index');
+    Route::get('/invoices/export', [AdminInvoiceController::class, 'exportCsv'])->name('admin.invoices.export');
     Route::get('/projects/{project}/invoices', [AdminInvoiceController::class, 'create'])->name('admin.invoices.create');
     Route::post('/projects/{project}/invoices', [AdminInvoiceController::class, 'store'])->name('admin.invoices.store');
     Route::put('/projects/{project}/invoices/{invoice}', [AdminInvoiceController::class, 'update'])->name('admin.invoices.update');

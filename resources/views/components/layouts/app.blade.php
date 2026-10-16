@@ -888,6 +888,9 @@
                     <a href="{{ route('admin.clients.create') }}" class="sidebar-link {{ request()->routeIs('admin.clients.*') ? 'active' : '' }}">
                         Clients
                     </a>
+                                        <a href="{{ route('admin.invoices.index') }}" class="sidebar-link {{ request()->routeIs('admin.invoices.index') ? 'active' : '' }}">
+                        Invoices
+                    </a>
                     <a href="{{ route('admin.payments.index') }}" class="sidebar-link {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
                         Payments
                     </a>
