@@ -14,6 +14,12 @@ return [
     */
 
     'default' => env('FILESYSTEM_DISK', 'local'),
+    
+    /*
+    | Disk used for client/project file uploads. Keep 'public' for local development.
+    | On Render set UPLOADS_DISK=s3 so files survive redeploys (see .env.example).
+    */
+    'uploads_disk' => env('UPLOADS_DISK', 'public'),
 
     /*
     |--------------------------------------------------------------------------

@@ -64,7 +64,7 @@ class ProjectFileController extends Controller
         }
 
         
-        $path = $uploaded->store('files', 'public');
+        $path = $uploaded->store('files', config('filesystems.uploads_disk'));
 
         $projectFile = $project->files()->create([
             'uploaded_by' => auth()->id(),
@@ -87,7 +87,7 @@ class ProjectFileController extends Controller
     {
         $fileName = $file->original_name;
 
-        \Storage::disk('public')->delete($file->file_path);
+        \Storage::disk(config('filesystems.uploads_disk'))->delete($file->file_path);
         $file->delete();
 
         \App\Models\ActivityLog::record(

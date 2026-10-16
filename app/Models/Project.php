@@ -16,7 +16,7 @@ class Project extends Model
 
         static::deleting(function ($project) {
             foreach ($project->files as $file) {
-                Storage::disk('public')->delete($file->file_path);
+              Storage::disk(config('filesystems.uploads_disk'))->delete($file->file_path);
             }
         });
     }
