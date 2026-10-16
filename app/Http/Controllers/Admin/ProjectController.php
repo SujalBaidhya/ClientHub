@@ -10,23 +10,32 @@ use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
-     public function index(Request $request)
-{
-    $search = $request->query('search');
+       public function index(Request $request)
+    {
+        $search = $request->query('search');
+        $view = $request->query('view') === 'archived' ? 'archived' : 'active';
 
-    $projects = Project::with('client')
-        ->when($search, function ($query, $search) {
-            $query->where('name', 'like', "%{$search}%")
-                ->orWhereHas('client', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
+        $base = fn () => Project::when($view === 'archived', fn ($q) => $q->archived(), fn ($q) => $q->active());
+
+        $projects = $base()->with('client')
+            ->when($search, function ($query, $search) {
+                // grouped so the search never escapes the active/archived filter
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhereHas('client', function ($c) use ($search) {
+                            $c->where('name', 'like', "%{$search}%");
+                        });
                 });
-        })
-        ->latest()
-        ->paginate(10)
-        ->withQueryString();
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
-    return view('admin.projects', compact('projects', 'search'));
-}
+        $activeCount = Project::active()->count();
+        $archivedCount = Project::archived()->count();
+
+        return view('admin.projects', compact('projects', 'search', 'view', 'activeCount', 'archivedCount'));
+    }
 
     public function create()
     {
@@ -131,5 +140,35 @@ class ProjectController extends Controller
 
         return redirect()->route('admin.projects.index')
             ->with('success', 'Project deleted successfully.');
+    }
+        public function archive(Project $project)
+    {
+        $project->update(['archived_at' => now()]);
+
+        // Admin-only entry: clients simply stop seeing the project
+        \App\Models\ActivityLog::record(
+            auth()->user()->name . ' archived project "' . $project->name . '"',
+            route('admin.projects.index', ['view' => 'archived']),
+            $project->id,
+            false
+        );
+
+        return redirect()->route('admin.projects.index')
+            ->with('success', 'Project archived. You can restore it from the Archived tab.');
+    }
+
+    public function restore(Project $project)
+    {
+        $project->update(['archived_at' => null]);
+
+        \App\Models\ActivityLog::record(
+            auth()->user()->name . ' restored project "' . $project->name . '"',
+            route('admin.projects.edit', $project),
+            $project->id,
+            false
+        );
+
+        return redirect()->route('admin.projects.index', ['view' => 'archived'])
+            ->with('success', 'Project restored.');
     }
 }

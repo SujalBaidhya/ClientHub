@@ -120,6 +120,9 @@
         </div>
 
         <form method="GET" action="{{ route('admin.projects.index') }}" class="projects-search-form">
+                        @if($view === 'archived')
+                <input type="hidden" name="view" value="archived">
+            @endif
             <input
                 type="text"
                 name="search"
@@ -130,18 +133,32 @@
             <div style="display: flex; gap: 8px;">
                 <button type="submit" class="btn" style="flex: 1;">Search</button>
                 @if($search)
-                    <a href="{{ route('admin.projects.index') }}" class="btn">Clear</a>
+                    <a href="{{ route('admin.projects.index', $view === 'archived' ? ['view' => 'archived'] : []) }}" class="btn">Clear</a>
                 @endif
             </div>
         </form>
-
+            <div style="display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
+            <a href="{{ route('admin.projects.index') }}"
+               style="padding: 8px 14px; border: 1px solid {{ $view === 'active' ? '#1e1b4b' : 'var(--border)' }}; border-radius: 999px; text-decoration: none; font-size: 13px; background: {{ $view === 'active' ? '#1e1b4b' : 'white' }}; color: {{ $view === 'active' ? 'white' : 'inherit' }};">
+                Active ({{ $activeCount }})
+            </a>
+            <a href="{{ route('admin.projects.index', ['view' => 'archived']) }}"
+               style="padding: 8px 14px; border: 1px solid {{ $view === 'archived' ? '#1e1b4b' : 'var(--border)' }}; border-radius: 999px; text-decoration: none; font-size: 13px; background: {{ $view === 'archived' ? '#1e1b4b' : 'white' }}; color: {{ $view === 'archived' ? 'white' : 'inherit' }};">
+                Archived ({{ $archivedCount }})
+            </a>
+        </div>
         <x-card>
 
-            @if($projects->isEmpty())
+                       @if($projects->isEmpty())
                 @if($search)
                     <x-empty-state
                         title="No matches found"
                         message="No projects or clients matched '{{ $search }}'. Try a different search."
+                    />
+                @elseif($view === 'archived')
+                    <x-empty-state
+                        title="No archived projects"
+                        message="Projects you archive will appear here and can be restored any time."
                     />
                 @else
                     <x-empty-state
@@ -171,13 +188,28 @@
                                 <a href="{{ route('admin.projects.edit', $project) }}" class="btn btn-small">
                                     Edit
                                 </a>
-                                <form method="POST" action="{{ route('admin.projects.destroy', $project) }}" onsubmit="return confirm('Delete this project? This will also delete all its milestones, files, and invoices. This cannot be undone.');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-small" style="background: #dc2626; color: white; border: none; width: 100%;">
-                                        Delete
-                                    </button>
-                                </form>
+                                                                @if($project->isArchived())
+                                    <form method="POST" action="{{ route('admin.projects.restore', $project) }}">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="btn btn-small btn-success" style="width: 100%;">Restore</button>
+                                    </form>
+                                    <form method="POST" action="{{ route('admin.projects.destroy', $project) }}" onsubmit="return confirm('Permanently delete this project? This will also delete all its milestones, files, and invoices. This cannot be undone.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-small" style="background: #dc2626; color: white; border: none; width: 100%;">
+                                            Delete Forever
+                                        </button>
+                                    </form>
+                                @else
+                                    <form method="POST" action="{{ route('admin.projects.archive', $project) }}" onsubmit="return confirm('Archive this project? It will be hidden from the client and from reminders, but nothing is deleted. You can restore it later.');">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="btn btn-small" style="background: #b45309; color: white; border: none; width: 100%;">
+                                            Archive
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </div>
                     @endforeach

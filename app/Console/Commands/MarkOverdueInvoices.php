@@ -17,8 +17,9 @@ class MarkOverdueInvoices extends Command
     public function handle()
     {
         // whereDate + today(): an invoice due TODAY is not overdue until tomorrow
-        $invoices = Invoice::with('project.client')
-            ->where('status', 'pending')
+       $invoices = Invoice::with('project.client')
+    ->whereHas('project', fn ($q) => $q->active())
+    ->where('status', 'pending')
             ->whereNotNull('due_date')
             ->whereDate('due_date', '<', today())
             ->get();

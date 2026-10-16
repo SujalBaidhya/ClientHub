@@ -104,7 +104,8 @@ Route::prefix('admin')->middleware(['auth', 'admin','no-cache'])->scopeBindings(
     Route::get('/projects/{project}/edit', [AdminProjectController::class, 'edit'])->name('admin.projects.edit');
     Route::put('/projects/{project}', [AdminProjectController::class, 'update'])->name('admin.projects.update');
     Route::delete('/projects/{project}', [AdminProjectController::class, 'destroy'])->name('admin.projects.destroy');
-
+        Route::patch('/projects/{project}/archive', [AdminProjectController::class, 'archive'])->name('admin.projects.archive');
+    Route::patch('/projects/{project}/restore', [AdminProjectController::class, 'restore'])->name('admin.projects.restore');
     Route::get('/projects/{project}/milestones', [AdminMilestoneController::class, 'create'])->name('admin.milestones.create');
     Route::post('/projects/{project}/milestones', [AdminMilestoneController::class, 'store'])->name('admin.milestones.store');
     Route::put('/projects/{project}/milestones/{milestone}', [AdminMilestoneController::class, 'update'])->name('admin.milestones.update');
