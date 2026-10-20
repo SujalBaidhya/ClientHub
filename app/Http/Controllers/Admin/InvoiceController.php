@@ -149,8 +149,12 @@ class InvoiceController extends Controller
         // If an admin manually marks an invoice as paid (not through
         // the real eSewa flow), still record a paid_at date so it
         // shows up correctly in payment history.
-        if ($validated['status'] === 'paid' && $invoice->status !== 'paid') {
-            $validated['paid_at'] = now();
+        if ($validated['status'] === 'paid') {
+            if ($invoice->status !== 'paid' || ! $invoice->paid_at) {
+                $validated['paid_at'] = now();
+            }
+        } else {
+            $validated['paid_at'] = null;
         }
 
         $invoice->update($validated);

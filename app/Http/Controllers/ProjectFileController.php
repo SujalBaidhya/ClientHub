@@ -12,7 +12,7 @@ class ProjectFileController extends Controller
     public function download(ProjectFile $projectFile)
     {
         abort_unless(
-            $projectFile->project->client_id === Auth::id(),
+            Auth::user()->role === 'admin' || $projectFile->project->client_id === Auth::id(),
             403
         );
 

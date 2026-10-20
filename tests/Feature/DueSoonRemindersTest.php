@@ -51,3 +51,18 @@ test('a failed email is not marked as reminded so it retries', function () {
 
     expect($invoice->fresh()->due_reminder_sent_at)->toBeNull();
 });
+
+test('reminders do not crash when project client is null', function () {
+    Mail::fake();
+    $project = Project::factory()->create(['client_id' => null]);
+    $invoice = Invoice::factory()->create([
+        'project_id' => $project->id,
+        'status' => 'pending',
+        'due_date' => today()->addDay()->toDateString(),
+    ]);
+
+    $this->artisan('invoices:remind-due-soon')->assertSuccessful();
+
+    Mail::assertNothingSent();
+    expect($invoice->fresh()->due_reminder_sent_at)->toBeNull();
+});

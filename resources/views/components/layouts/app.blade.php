@@ -841,7 +841,20 @@
 
         <div class="activity-dropdown" id="activityDropdown">
             @forelse($recentActivity as $item)
-                <a href="{{ $item->url ?? $activityIndexRoute }}" class="activity-dropdown-item" style="text-decoration: none; display: block; color: inherit;background: rgba(0,0,0,0.03); font-weight: 500;">
+                @php
+                    if ($isAdmin) {
+                        $targetUrl = $item->url ?? $activityIndexRoute;
+                    } else {
+                        if ($item->url && !str_contains($item->url, '/admin')) {
+                            $targetUrl = $item->url;
+                        } elseif ($item->project_id) {
+                            $targetUrl = route('dashboard.project', $item->project_id);
+                        } else {
+                            $targetUrl = route('client.activity.index');
+                        }
+                    }
+                @endphp
+                <a href="{{ $targetUrl }}" class="activity-dropdown-item" style="text-decoration: none; display: block; color: inherit;background: rgba(0,0,0,0.03); font-weight: 500;">
                     <p>{{ $item->description }}</p>
                     <span style="font-size: 0.75rem; color: var(--muted);">{{ $item->created_at->diffForHumans() }}</span>
                 </a>

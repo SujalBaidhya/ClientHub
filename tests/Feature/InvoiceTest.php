@@ -22,6 +22,22 @@ test('a client can download their own invoice', function () {
     $response->assertHeader('content-type', 'application/pdf');
 });
 
+test('an admin can download any invoice', function () {
+    $admin = User::factory()->create(['role' => 'admin']);
+    $client = User::factory()->create(['role' => 'client']);
+    $project = Project::factory()->create(['client_id' => $client->id]);
+    $invoice = Invoice::factory()->create([
+        'project_id' => $project->id,
+        'invoice_number' => 'INV-TEST-ADMIN',
+    ]);
+
+    $response = $this->actingAs($admin)
+        ->get("/invoices/{$invoice->id}/download");
+
+    $response->assertOk();
+    $response->assertHeader('content-type', 'application/pdf');
+});
+
 test('a client cannot download someone elses invoice', function () {
     $client = User::factory()->create(['role' => 'client']);
     $otherClient = User::factory()->create(['role' => 'client']);

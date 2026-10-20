@@ -103,6 +103,7 @@
                             <div class="inv-right">
                                 <strong>NPR {{ number_format($invoice->amount, 2) }}</strong>
                                 <x-status-badge :status="$invoice->status" />
+                                <a href="{{ route('invoices.download', $invoice) }}" class="btn btn-small" style="background: white; border: 1px solid var(--border); color: #374151;">PDF</a>
                                 @if($invoice->project)
                                     <a href="{{ route('admin.invoices.create', $invoice->project) }}" class="btn btn-small">Manage</a>
                                 @endif

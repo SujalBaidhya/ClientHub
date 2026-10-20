@@ -124,7 +124,7 @@
 
                 <div style="margin-bottom: 16px;">
                     <label style="display:block; margin-bottom: 6px; font-weight: 600; font-size: 14px;">Select File</label>
-                    <input type="file" name="file" required class="file-upload-input">
+                    <input type="file" name="file" required accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip" class="file-upload-input">
                 </div>
 
                 <button type="submit" class="btn btn-success" style="padding: 10px 18px;">
@@ -208,6 +208,11 @@
                                 <a href="{{ route('files.view', $file) }}" target="_blank" rel="noopener noreferrer" class="btn btn-small"
                                     style="background: #2563eb; color: white; border: none; text-decoration: none;">
                                         View PDF
+                                </a>
+                            @else
+                                <a href="{{ route('files.view', $file) }}" class="btn btn-small"
+                                    style="background: #2563eb; color: white; border: none; text-decoration: none;">
+                                        Download
                                 </a>
                             @endif
                             
