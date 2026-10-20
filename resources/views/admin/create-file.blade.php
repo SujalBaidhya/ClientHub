@@ -107,6 +107,108 @@
                 padding: 9px 14px;
             }
         }
+        .dropzone-box {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            background: #f8fafc;
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .dropzone-box:hover, .dropzone-box.is-dragover {
+            border-color: var(--primary, #4f46e5);
+            background: #eef2ff;
+        }
+        .dropzone-hidden-input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+        .dropzone-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            pointer-events: none;
+        }
+        .dropzone-icon-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #e0e7ff;
+            color: var(--primary, #4f46e5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+        .dropzone-box:hover .dropzone-icon-wrap {
+            transform: translateY(-2px);
+        }
+        .dropzone-title {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #1e1b4b;
+            display: block;
+        }
+        .dropzone-hint {
+            font-size: 11.5px;
+            color: #6b7280;
+            display: block;
+            margin-top: 2px;
+        }
+        .dropzone-preview {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #ffffff;
+            border: 1px solid var(--border, #e4e4f0);
+            border-radius: 8px;
+            padding: 10px 14px;
+            text-align: left;
+            position: relative;
+            z-index: 3;
+        }
+        .dropzone-preview-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .dropzone-preview-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e1b4b;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .dropzone-preview-size {
+            font-size: 11px;
+            color: #6b7280;
+            display: block;
+        }
+        .dropzone-remove-btn {
+            background: #fee2e2;
+            color: #991b1b;
+            border: none;
+            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .dropzone-remove-btn:hover {
+            background: #fecaca;
+        }
     </style>
 
     <div class="dashboard">
@@ -122,16 +224,95 @@
             <form method="POST" action="{{ route('admin.files.store', $project) }}" enctype="multipart/form-data">
                 @csrf
 
-                <div style="margin-bottom: 16px;">
-                    <label style="display:block; margin-bottom: 6px; font-weight: 600; font-size: 14px;">Select File</label>
-                    <input type="file" name="file" required accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip" class="file-upload-input">
+                <div class="dropzone-box" id="adminDropzoneBox">
+                    <input type="file" name="file" id="adminDropzoneInput" required accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip" class="dropzone-hidden-input">
+                    <div class="dropzone-content" id="adminDropzonePrompt">
+                        <div class="dropzone-icon-wrap">
+                            <x-icon name="upload-cloud" size="24" />
+                        </div>
+                        <div>
+                            <span class="dropzone-title">Click to upload or drag & drop</span>
+                            <span class="dropzone-hint">PDF, Images, Word, Excel, ZIP up to 20MB</span>
+                        </div>
+                    </div>
+                    <div class="dropzone-preview" id="adminDropzonePreview" style="display: none;">
+                        <div style="color: var(--primary);"><x-icon name="file-text" size="22" /></div>
+                        <div class="dropzone-preview-info">
+                            <span id="adminDropzoneFileName" class="dropzone-preview-name"></span>
+                            <span id="adminDropzoneFileSize" class="dropzone-preview-size"></span>
+                        </div>
+                        <button type="button" id="adminDropzoneClearBtn" class="dropzone-remove-btn" title="Remove file">
+                            <x-icon name="x" size="14" />
+                        </button>
+                    </div>
                 </div>
 
-                <button type="submit" class="btn btn-success" style="padding: 10px 18px;">
-                    Upload File
-                </button>
+                <div id="adminDropzoneActions" style="display: none; margin-top: 14px;">
+                    <button type="submit" class="btn btn-success" style="padding: 9px 18px; display: inline-flex; align-items: center; gap: 6px;">
+                        <x-icon name="upload-cloud" size="15" />
+                        <span>Upload File</span>
+                    </button>
+                </div>
 
             </form>
+
+            <script>
+                (function() {
+                    var box = document.getElementById("adminDropzoneBox");
+                    var input = document.getElementById("adminDropzoneInput");
+                    var prompt = document.getElementById("adminDropzonePrompt");
+                    var preview = document.getElementById("adminDropzonePreview");
+                    var nameEl = document.getElementById("adminDropzoneFileName");
+                    var sizeEl = document.getElementById("adminDropzoneFileSize");
+                    var clearBtn = document.getElementById("adminDropzoneClearBtn");
+                    var actions = document.getElementById("adminDropzoneActions");
+
+                    if (!input || !box) return;
+
+                    function formatBytes(bytes) {
+                        if (bytes === 0) return "0 Bytes";
+                        var k = 1024, sizes = ["Bytes", "KB", "MB", "GB"];
+                        var i = Math.floor(Math.log(bytes) / Math.log(k));
+                        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+                    }
+
+                    input.addEventListener("change", function() {
+                        if (input.files && input.files[0]) {
+                            var file = input.files[0];
+                            nameEl.textContent = file.name;
+                            sizeEl.textContent = formatBytes(file.size);
+                            prompt.style.display = "none";
+                            preview.style.display = "flex";
+                            actions.style.display = "block";
+                        }
+                    });
+
+                    if (clearBtn) {
+                        clearBtn.addEventListener("click", function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            input.value = "";
+                            preview.style.display = "none";
+                            prompt.style.display = "flex";
+                            actions.style.display = "none";
+                        });
+                    }
+
+                    ["dragenter", "dragover"].forEach(function(evt) {
+                        box.addEventListener(evt, function(e) {
+                            e.preventDefault();
+                            box.classList.add("is-dragover");
+                        });
+                    });
+
+                    ["dragleave", "drop"].forEach(function(evt) {
+                        box.addEventListener(evt, function(e) {
+                            e.preventDefault();
+                            box.classList.remove("is-dragover");
+                        });
+                    });
+                })();
+            </script>
 
         </x-card>
 

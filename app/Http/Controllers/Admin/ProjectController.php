@@ -13,11 +13,13 @@ class ProjectController extends Controller
        public function index(Request $request)
     {
         $search = $request->query('search');
+        $status = $request->query('status');
         $view = $request->query('view') === 'archived' ? 'archived' : 'active';
 
         $base = fn () => Project::when($view === 'archived', fn ($q) => $q->archived(), fn ($q) => $q->active());
 
         $projects = $base()->with('client')
+            ->when($status, fn ($query, $status) => $query->where('status', $status))
             ->when($search, function ($query, $search) {
                 // grouped so the search never escapes the active/archived filter
                 $query->where(function ($q) use ($search) {
@@ -34,7 +36,7 @@ class ProjectController extends Controller
         $activeCount = Project::active()->count();
         $archivedCount = Project::archived()->count();
 
-        return view('admin.projects', compact('projects', 'search', 'view', 'activeCount', 'archivedCount'));
+        return view('admin.projects', compact('projects', 'search', 'status', 'view', 'activeCount', 'archivedCount'));
     }
 
     public function create()

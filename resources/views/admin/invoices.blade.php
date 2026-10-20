@@ -53,7 +53,7 @@
         </div>
 
         <form method="GET" action="{{ route('admin.invoices.index') }}" class="inv-filters">
-            <input type="text" name="search" value="{{ $search }}" placeholder="Search invoice, project or client..."
+            <input type="text" id="invFilterInput" name="search" value="{{ $search }}" placeholder="Live filter or press Enter to search all..."
                    style="flex: 1; min-width: 200px; max-width: 400px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);">
             @if($status)
                 <input type="hidden" name="status" value="{{ $status }}">
@@ -132,4 +132,19 @@
 
     </div>
 
+    <script>
+        (function() {
+            var input = document.getElementById('invFilterInput');
+            var rows = document.querySelectorAll('.inv-row');
+            if (!input || !rows.length) return;
+
+            input.addEventListener('input', function() {
+                var q = input.value.trim().toLowerCase();
+                rows.forEach(function(row) {
+                    var text = row.textContent.toLowerCase();
+                    row.style.display = (q === '' || text.includes(q)) ? '' : 'none';
+                });
+            });
+        })();
+    </script>
 </x-layouts.app>

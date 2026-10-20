@@ -778,6 +778,166 @@
             .milestone-card-details { flex-direction: column; align-items: flex-start; gap: 16px; }
             .milestone-review { margin-left: 0; }
         }
+
+        /* ===== Command Palette (Linear / Stripe style) ===== */
+        .sidebar-search-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--sidebar-text);
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            margin-bottom: 14px;
+            transition: all 0.15s ease;
+            text-align: left;
+        }
+        .sidebar-search-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        .sidebar-search-btn .cmd-kbd {
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.18);
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .cmd-palette-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 12vh 16px 20px;
+        }
+        .cmd-palette-backdrop.is-open {
+            display: flex;
+            animation: cmdFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes cmdFadeIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .cmd-palette-modal {
+            width: 100%;
+            max-width: 580px;
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.28), 0 0 0 1px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .cmd-palette-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+        }
+        .cmd-palette-input {
+            flex: 1;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            font-size: 15px;
+            background: transparent;
+            color: var(--text);
+            padding: 0;
+            font-family: inherit;
+        }
+        .cmd-kbd {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            font-size: 11px;
+            font-family: inherit;
+            font-weight: 600;
+            color: #64748b;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 2px 6px;
+            line-height: 1.2;
+        }
+        .cmd-palette-body {
+            max-height: 380px;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        .cmd-palette-group-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            padding: 8px 10px 4px;
+        }
+        .cmd-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.1s ease;
+        }
+        .cmd-item:hover, .cmd-item.is-selected {
+            background: #f1f5f9;
+        }
+        .cmd-item-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: #eef2ff;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+        .cmd-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .cmd-item-title {
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .cmd-item-subtitle {
+            font-size: 12px;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .cmd-palette-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 18px;
+            background: #f8fafc;
+            border-top: 1px solid var(--border);
+            font-size: 11.5px;
+            color: #64748b;
+        }
+
     </style>
 </head>
 <body>
@@ -872,8 +1032,15 @@
     </div>
        @if($isAdmin)
 
-    <a href="{{ route('admin.projects.create') }}" class="btn btn-success" style="justify-content: center; text-align: center; margin: 0 0 18px; display: block;">
-        + New Project
+    <button type="button" class="sidebar-search-btn" id="openCommandPalette">
+        <x-icon name="search" size="14" />
+        <span>Quick search...</span>
+        <kbd class="cmd-kbd">Ctrl K</kbd>
+    </button>
+
+    <a href="{{ route('admin.projects.create') }}" class="btn btn-success" style="justify-content: center; text-align: center; margin: 0 0 18px; display: flex; align-items: center; gap: 6px;">
+        <x-icon name="plus" size="16" />
+        New Project
     </a>
 @endif
 
@@ -881,57 +1048,65 @@
 
                 @if(!$isAdmin)
                     <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') || request()->routeIs('dashboard.project') ? 'active' : '' }}">
-                        Dashboard
+                        <x-icon name="layout-dashboard" size="18" />
+                        <span>Dashboard</span>
                     </a>
                     <a href="{{ route('client.activity.index') }}" class="sidebar-link {{ request()->routeIs('client.activity.*') ? 'active' : '' }}">
-                        Activity Log
+                        <x-icon name="activity" size="18" />
+                        <span>Activity Log</span>
                     </a>
-                                @else
-                    <form method="GET" action="{{ route('admin.search') }}" style="padding: 0 0 14px;">
-                        <input type="text" name="q" placeholder="Search..."
-                               style="width: 100%; padding: 8px 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: white; font-size: 13px;">
-                    </form>
-
+                @else
                     <a href="{{ route('admin.dashboard') }}" class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                        Overview
+                        <x-icon name="layout-dashboard" size="18" />
+                        <span>Overview</span>
                     </a>
                     <a href="{{ route('admin.projects.index') }}" class="sidebar-link {{ request()->routeIs('admin.projects.*') ? 'active' : '' }}">
-                        Projects
+                        <x-icon name="folder" size="18" />
+                        <span>Projects</span>
                     </a>
                     <a href="{{ route('admin.clients.create') }}" class="sidebar-link {{ request()->routeIs('admin.clients.*') ? 'active' : '' }}">
-                        Clients
+                        <x-icon name="users" size="18" />
+                        <span>Clients</span>
                     </a>
-                                        <a href="{{ route('admin.invoices.index') }}" class="sidebar-link {{ request()->routeIs('admin.invoices.index') ? 'active' : '' }}">
-                        Invoices
+                    <a href="{{ route('admin.invoices.index') }}" class="sidebar-link {{ request()->routeIs('admin.invoices.index') ? 'active' : '' }}">
+                        <x-icon name="file-text" size="18" />
+                        <span>Invoices</span>
                     </a>
                     <a href="{{ route('admin.payments.index') }}" class="sidebar-link {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
-                        Payments
+                        <x-icon name="credit-card" size="18" />
+                        <span>Payments</span>
                     </a>
-                 <a href="{{ route('admin.activity.index') }}" class="sidebar-link {{ request()->routeIs('admin.activity.*') ? 'active' : '' }}">
-                        Activity Log
+                    <a href="{{ route('admin.activity.index') }}" class="sidebar-link {{ request()->routeIs('admin.activity.*') ? 'active' : '' }}">
+                        <x-icon name="activity" size="18" />
+                        <span>Activity Log</span>
                     </a>   
-                 @endif
+                @endif
 
                 <div class="sidebar-section-label">Account</div>
 
                 <a href="{{ route('account.edit') }}" class="sidebar-link {{ request()->routeIs('account.edit') ? 'active' : '' }}">
-                    Settings
+                    <x-icon name="settings" size="18" />
+                    <span>Settings</span>
                 </a>
 
                 @if(!$isAdmin)
                     <a href="https://mail.google.com/mail/?view=cm&fs=1&to=hello.clienthub@gmail.com" target="_blank" class="sidebar-link">
-                        Contact Support
+                        <x-icon name="external-link" size="18" />
+                        <span>Contact Support</span>
                     </a>
                 @endif
                 @endunless
 
-                        @unless($isGuest)
+                @unless($isGuest)
                 <div class="sidebar-divider"></div>
 
                 <div class="sidebar-footer">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="sidebar-link">Logout</button>
+                        <button type="submit" class="sidebar-link">
+                            <x-icon name="log-out" size="18" />
+                            <span>Logout</span>
+                        </button>
                     </form>
                 </div>
             @endunless
@@ -950,6 +1125,24 @@
 
         </div>
 
+    </div>
+    <!-- ===== Command Palette Modal ===== -->
+    <div id="commandPalette" class="cmd-palette-backdrop">
+        <div class="cmd-palette-modal" id="commandPaletteModal">
+            <div class="cmd-palette-header">
+                <x-icon name="search" size="18" style="color: var(--muted);" />
+                <input type="text" id="cmdPaletteInput" class="cmd-palette-input" placeholder="Search projects, clients, invoices, or jump to..." autocomplete="off">
+                <kbd class="cmd-kbd" id="closeCmdPaletteBtn" style="cursor: pointer;">ESC</kbd>
+            </div>
+            <div id="cmdPaletteResults" class="cmd-palette-body">
+                <!-- Dynamically populated -->
+            </div>
+            <div class="cmd-palette-footer">
+                <span>Navigate <kbd class="cmd-kbd">↑</kbd> <kbd class="cmd-kbd">↓</kbd></span>
+                <span>Select <kbd class="cmd-kbd">↵</kbd></span>
+                <span>Close <kbd class="cmd-kbd">esc</kbd></span>
+            </div>
+        </div>
     </div>
 <script>
     (function () {
@@ -1027,6 +1220,168 @@
                 if (!dropdown.contains(e.target) && e.target !== bellButton) {
                     dropdown.classList.remove('is-open');
                 }
+            });
+        }
+        // ===== Command Palette Logic =====
+        var cmdPalette = document.getElementById("commandPalette");
+        var cmdInput = document.getElementById("cmdPaletteInput");
+        var cmdResults = document.getElementById("cmdPaletteResults");
+        var openCmdBtn = document.getElementById("openCommandPalette");
+        var closeCmdBtn = document.getElementById("closeCmdPaletteBtn");
+
+        var defaultCommands = [
+            @if($isAdmin)
+            { title: "Create New Project", subtitle: "Assign project and milestones to client", url: "{{ route('admin.projects.create') }}", icon: "plus" },
+            { title: "All Projects", subtitle: "View and filter all client projects", url: "{{ route('admin.projects.index') }}", icon: "folder" },
+            { title: "All Invoices", subtitle: "Manage project invoices and CSV export", url: "{{ route('admin.invoices.index') }}", icon: "file-text" },
+            { title: "Payment History", subtitle: "View verified client payments", url: "{{ route('admin.payments.index') }}", icon: "credit-card" },
+            { title: "Client Accounts", subtitle: "Invite new clients and manage accounts", url: "{{ route('admin.clients.create') }}", icon: "users" },
+            { title: "Activity Audit Log", subtitle: "Recent actions across projects", url: "{{ route('admin.activity.index') }}", icon: "activity" },
+            @else
+            { title: "Project Dashboard", subtitle: "View your active project and milestones", url: "{{ route('dashboard') }}", icon: "layout-dashboard" },
+            { title: "Recent Updates & Notifications", subtitle: "View project activity feed", url: "{{ route('client.activity.index') }}", icon: "activity" },
+            { title: "Account Settings", subtitle: "Manage profile and password", url: "{{ route('account.edit') }}", icon: "settings" },
+            @endif
+            { title: "Account Settings", subtitle: "Update email preferences & security", url: "{{ route('account.edit') }}", icon: "settings" }
+        ];
+
+        function renderDefaultCommands() {
+            if (!cmdResults) return;
+            var html = '<div class="cmd-palette-group-title">Quick Actions</div>';
+            defaultCommands.forEach(function (cmd, idx) {
+                html += '<a href="' + cmd.url + '" class="cmd-item ' + (idx === 0 ? 'is-selected' : '') + '" data-idx="' + idx + '"><div class="cmd-item-icon">★</div><div class="cmd-item-info"><div class="cmd-item-title">' + cmd.title + '</div><div class="cmd-item-subtitle">' + cmd.subtitle + '</div></div><span style="color: var(--muted); font-size: 11px;">Jump →</span></a>';
+            });
+            cmdResults.innerHTML = html;
+            attachCmdItemEvents();
+        }
+
+        function openPalette() {
+            if (!cmdPalette) return;
+            cmdPalette.classList.add("is-open");
+            cmdInput.value = "";
+            renderDefaultCommands();
+            setTimeout(function () { cmdInput.focus(); }, 50);
+        }
+
+        function closePalette() {
+            if (!cmdPalette) return;
+            cmdPalette.classList.remove("is-open");
+        }
+
+        if (openCmdBtn) openCmdBtn.addEventListener("click", openPalette);
+        if (closeCmdBtn) closeCmdBtn.addEventListener("click", closePalette);
+
+        if (cmdPalette) {
+            cmdPalette.addEventListener("click", function (e) {
+                if (e.target === cmdPalette) closePalette();
+            });
+        }
+
+        document.addEventListener("keydown", function (e) {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+                e.preventDefault();
+                if (cmdPalette && cmdPalette.classList.contains("is-open")) {
+                    closePalette();
+                } else {
+                    openPalette();
+                }
+            } else if (e.key === "Escape" && cmdPalette && cmdPalette.classList.contains("is-open")) {
+                closePalette();
+            }
+        });
+
+        var debounceTimer = null;
+        if (cmdInput) {
+            cmdInput.addEventListener("input", function () {
+                var query = cmdInput.value.trim();
+                clearTimeout(debounceTimer);
+
+                if (query.length < 2) {
+                    renderDefaultCommands();
+                    return;
+                }
+
+                debounceTimer = setTimeout(function () {
+                    var searchUrl = @if($isAdmin) "{{ route('admin.search') }}" @else "{{ url('/search') }}" @endif;
+                    fetch(searchUrl + "?q=" + encodeURIComponent(query), {
+                        headers: { "Accept": "application/json" }
+                    })
+                    .then(function (res) { return res.json(); })
+                    .then(function (data) {
+                        var html = "";
+                        var total = 0;
+
+                        if (data.projects && data.projects.length) {
+                            html += '<div class="cmd-palette-group-title">Projects</div>';
+                            data.projects.forEach(function (p) {
+                                total++;
+                                html += '<a href="' + p.url + '" class="cmd-item ' + (total === 1 ? 'is-selected' : '') + '"><div class="cmd-item-icon">📁</div><div class="cmd-item-info"><div class="cmd-item-title">' + p.title + '</div><div class="cmd-item-subtitle">' + p.subtitle + '</div></div><span style="font-size: 11px; color: var(--muted); text-transform: capitalize;">' + p.status + '</span></a>';
+                            });
+                        }
+
+                        if (data.invoices && data.invoices.length) {
+                            html += '<div class="cmd-palette-group-title">Invoices</div>';
+                            data.invoices.forEach(function (inv) {
+                                total++;
+                                html += '<a href="' + inv.url + '" class="cmd-item ' + (total === 1 ? 'is-selected' : '') + '"><div class="cmd-item-icon">💳</div><div class="cmd-item-info"><div class="cmd-item-title">' + inv.title + '</div><div class="cmd-item-subtitle">' + inv.subtitle + '</div></div><span style="font-size: 12px; font-weight: 600; color: #16a34a;">' + inv.amount + '</span></a>';
+                            });
+                        }
+
+                        if (data.clients && data.clients.length) {
+                            html += '<div class="cmd-palette-group-title">Clients</div>';
+                            data.clients.forEach(function (c) {
+                                total++;
+                                html += '<a href="' + c.url + '" class="cmd-item ' + (total === 1 ? 'is-selected' : '') + '"><div class="cmd-item-icon">👤</div><div class="cmd-item-info"><div class="cmd-item-title">' + c.title + '</div><div class="cmd-item-subtitle">' + c.subtitle + '</div></div><span style="font-size: 11px; color: var(--muted);">Client</span></a>';
+                            });
+                        }
+
+                        if (!total) {
+                            html = '<div style="padding: 24px; text-align: center; color: var(--muted); font-size: 13.5px;">No results found for "' + query + '"</div>';
+                        }
+
+                        cmdResults.innerHTML = html;
+                        attachCmdItemEvents();
+                    })
+                    .catch(function (err) {
+                        console.error("Command palette search error:", err);
+                    });
+                }, 180);
+            });
+
+            cmdInput.addEventListener("keydown", function (e) {
+                var items = cmdResults.querySelectorAll(".cmd-item");
+                if (!items.length) return;
+
+                var selected = cmdResults.querySelector(".cmd-item.is-selected");
+                var currentIndex = Array.prototype.indexOf.call(items, selected);
+
+                if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    if (selected) selected.classList.remove("is-selected");
+                    var nextIndex = (currentIndex + 1) % items.length;
+                    items[nextIndex].classList.add("is-selected");
+                    items[nextIndex].scrollIntoView({ block: "nearest" });
+                } else if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    if (selected) selected.classList.remove("is-selected");
+                    var prevIndex = (currentIndex - 1 + items.length) % items.length;
+                    items[prevIndex].classList.add("is-selected");
+                    items[prevIndex].scrollIntoView({ block: "nearest" });
+                } else if (e.key === "Enter" && selected) {
+                    e.preventDefault();
+                    selected.click();
+                }
+            });
+        }
+
+        function attachCmdItemEvents() {
+            var items = cmdResults.querySelectorAll(".cmd-item");
+            items.forEach(function (item) {
+                item.addEventListener("mouseenter", function () {
+                    var cur = cmdResults.querySelector(".cmd-item.is-selected");
+                    if (cur) cur.classList.remove("is-selected");
+                    item.classList.add("is-selected");
+                });
             });
         }
     })();

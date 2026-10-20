@@ -185,6 +185,108 @@
                 box-sizing: border-box;
             }
         }
+        .dropzone-box {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            background: #f8fafc;
+            padding: 22px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .dropzone-box:hover, .dropzone-box.is-dragover {
+            border-color: var(--primary, #4f46e5);
+            background: #eef2ff;
+        }
+        .dropzone-hidden-input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+        .dropzone-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            pointer-events: none;
+        }
+        .dropzone-icon-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #e0e7ff;
+            color: var(--primary, #4f46e5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+        .dropzone-box:hover .dropzone-icon-wrap {
+            transform: translateY(-2px);
+        }
+        .dropzone-title {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #1e1b4b;
+            display: block;
+        }
+        .dropzone-hint {
+            font-size: 11.5px;
+            color: #6b7280;
+            display: block;
+            margin-top: 2px;
+        }
+        .dropzone-preview {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #ffffff;
+            border: 1px solid var(--border, #e4e4f0);
+            border-radius: 8px;
+            padding: 10px 14px;
+            text-align: left;
+            position: relative;
+            z-index: 3;
+        }
+        .dropzone-preview-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .dropzone-preview-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e1b4b;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .dropzone-preview-size {
+            font-size: 11px;
+            color: #6b7280;
+            display: block;
+        }
+        .dropzone-remove-btn {
+            background: #fee2e2;
+            color: #991b1b;
+            border: none;
+            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .dropzone-remove-btn:hover {
+            background: #fecaca;
+        }
     </style>
 
     <div class="dashboard">
@@ -446,11 +548,94 @@
                                 {{ $message }}
                             </div>
                         @enderror
-                        <form method="POST" action="{{ route('files.store', $project) }}" enctype="multipart/form-data" style="margin-bottom: 18px; display: flex; gap: 10px; align-items: center;">
+                        <form method="POST" action="{{ route('files.store', $project) }}" enctype="multipart/form-data" style="margin-bottom: 20px;">
                             @csrf
-                            <input type="file" name="file" required accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip" style="flex: 1; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: white;">
-                            <button type="submit" class="btn btn-success">Upload</button>
+                            <div class="dropzone-box" id="clientDropzoneBox">
+                                <input type="file" name="file" id="clientDropzoneInput" required accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip" class="dropzone-hidden-input">
+                                <div class="dropzone-content" id="clientDropzonePrompt">
+                                    <div class="dropzone-icon-wrap">
+                                        <x-icon name="upload-cloud" size="24" />
+                                    </div>
+                                    <div>
+                                        <span class="dropzone-title">Drop your file here, or browse</span>
+                                        <span class="dropzone-hint">PDF, Images, Word, Excel, ZIP up to 20MB</span>
+                                    </div>
+                                </div>
+                                <div class="dropzone-preview" id="clientDropzonePreview" style="display: none;">
+                                    <div style="color: var(--primary);"><x-icon name="file-text" size="22" /></div>
+                                    <div class="dropzone-preview-info">
+                                        <span id="clientDropzoneFileName" class="dropzone-preview-name"></span>
+                                        <span id="clientDropzoneFileSize" class="dropzone-preview-size"></span>
+                                    </div>
+                                    <button type="button" id="clientDropzoneClearBtn" class="dropzone-remove-btn" title="Remove file">
+                                        <x-icon name="x" size="14" />
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="clientDropzoneActions" style="display: none; margin-top: 10px; justify-content: flex-end;">
+                                <button type="submit" class="btn btn-success" style="padding: 9px 18px; display: inline-flex; align-items: center; gap: 6px;">
+                                    <x-icon name="upload-cloud" size="15" />
+                                    <span>Upload Selected File</span>
+                                </button>
+                            </div>
                         </form>
+                        <script>
+                            (function() {
+                                var box = document.getElementById("clientDropzoneBox");
+                                var input = document.getElementById("clientDropzoneInput");
+                                var prompt = document.getElementById("clientDropzonePrompt");
+                                var preview = document.getElementById("clientDropzonePreview");
+                                var nameEl = document.getElementById("clientDropzoneFileName");
+                                var sizeEl = document.getElementById("clientDropzoneFileSize");
+                                var clearBtn = document.getElementById("clientDropzoneClearBtn");
+                                var actions = document.getElementById("clientDropzoneActions");
+
+                                if (!input || !box) return;
+
+                                function formatBytes(bytes) {
+                                    if (bytes === 0) return "0 Bytes";
+                                    var k = 1024, sizes = ["Bytes", "KB", "MB", "GB"];
+                                    var i = Math.floor(Math.log(bytes) / Math.log(k));
+                                    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+                                }
+
+                                input.addEventListener("change", function() {
+                                    if (input.files && input.files[0]) {
+                                        var file = input.files[0];
+                                        nameEl.textContent = file.name;
+                                        sizeEl.textContent = formatBytes(file.size);
+                                        prompt.style.display = "none";
+                                        preview.style.display = "flex";
+                                        actions.style.display = "flex";
+                                    }
+                                });
+
+                                if (clearBtn) {
+                                    clearBtn.addEventListener("click", function(e) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        input.value = "";
+                                        preview.style.display = "none";
+                                        prompt.style.display = "flex";
+                                        actions.style.display = "none";
+                                    });
+                                }
+
+                                ["dragenter", "dragover"].forEach(function(evt) {
+                                    box.addEventListener(evt, function(e) {
+                                        e.preventDefault();
+                                        box.classList.add("is-dragover");
+                                    });
+                                });
+
+                                ["dragleave", "drop"].forEach(function(evt) {
+                                    box.addEventListener(evt, function(e) {
+                                        e.preventDefault();
+                                        box.classList.remove("is-dragover");
+                                    });
+                                });
+                            })();
+                        </script>
                     @endif
 
                     @if($files->isEmpty())

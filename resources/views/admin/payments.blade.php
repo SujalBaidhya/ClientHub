@@ -20,9 +20,10 @@
        <form method="GET" action="{{ route('admin.payments.index') }}" style="margin-bottom: 20px; display: flex; gap: 10px;">
     <input
         type="text"
+        id="payFilterInput"
         name="search"
         value="{{ $search }}"
-        placeholder="Search by invoice number or client name..."
+        placeholder="Live filter or press Enter to search all..."
         style="flex: 1; max-width: 400px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);"
     >
     <button type="submit" class="btn">Search</button>
@@ -86,4 +87,19 @@
 
     </div>
 
+    <script>
+        (function() {
+            var input = document.getElementById('payFilterInput');
+            var items = document.querySelectorAll('.file-item');
+            if (!input || !items.length) return;
+
+            input.addEventListener('input', function() {
+                var q = input.value.trim().toLowerCase();
+                items.forEach(function(item) {
+                    var text = item.textContent.toLowerCase();
+                    item.style.display = (q === '' || text.includes(q)) ? '' : 'none';
+                });
+            });
+        })();
+    </script>
 </x-layouts.app>

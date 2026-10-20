@@ -43,6 +43,32 @@ class SearchController extends Controller
                 ->get();
         }
 
+        if ($request->wantsJson()) {
+            return response()->json([
+                'projects' => $projects->map(fn ($p) => [
+                    'id' => $p->id,
+                    'title' => $p->name,
+                    'subtitle' => $p->client->name ?? 'No client',
+                    'url' => route('admin.projects.edit', $p),
+                    'status' => $p->status,
+                ]),
+                'invoices' => $invoices->map(fn ($inv) => [
+                    'id' => $inv->id,
+                    'title' => $inv->invoice_number,
+                    'subtitle' => ($inv->project->client->name ?? 'N/A') . ' — ' . ($inv->project->name ?? 'N/A'),
+                    'url' => $inv->project ? route('admin.invoices.create', $inv->project) : route('admin.invoices.index'),
+                    'status' => $inv->status,
+                    'amount' => 'NPR ' . number_format($inv->amount, 2),
+                ]),
+                'clients' => $clients->map(fn ($c) => [
+                    'id' => $c->id,
+                    'title' => $c->name,
+                    'subtitle' => $c->email,
+                    'url' => route('admin.clients.create'),
+                ]),
+            ]);
+        }
+
         return view('admin.search-results', compact('q', 'projects', 'invoices', 'clients'));
     }
 }

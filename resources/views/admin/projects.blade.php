@@ -120,8 +120,11 @@
         </div>
 
         <form method="GET" action="{{ route('admin.projects.index') }}" class="projects-search-form">
-                        @if($view === 'archived')
+            @if($view === 'archived')
                 <input type="hidden" name="view" value="archived">
+            @endif
+            @if(!empty($status))
+                <input type="hidden" name="status" value="{{ $status }}">
             @endif
             <input
                 type="text"
@@ -132,11 +135,21 @@
             >
             <div style="display: flex; gap: 8px;">
                 <button type="submit" class="btn" style="flex: 1;">Search</button>
-                @if($search)
+                @if($search || !empty($status))
                     <a href="{{ route('admin.projects.index', $view === 'archived' ? ['view' => 'archived'] : []) }}" class="btn">Clear</a>
                 @endif
             </div>
         </form>
+
+        @if(!empty($status))
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px; background: #ffffff; border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; font-size: 13.5px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+                <span style="color: var(--muted); font-size: 13px;">Filtered by status:</span>
+                <x-status-badge :status="$status" />
+                <a href="{{ route('admin.projects.index', array_filter(['view' => $view === 'archived' ? 'archived' : null, 'search' => $search])) }}" style="margin-left: auto; color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                    Clear status filter &times;
+                </a>
+            </div>
+        @endif
             <div style="display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
             <a href="{{ route('admin.projects.index') }}"
                style="padding: 8px 14px; border: 1px solid {{ $view === 'active' ? '#1e1b4b' : 'var(--border)' }}; border-radius: 999px; text-decoration: none; font-size: 13px; background: {{ $view === 'active' ? '#1e1b4b' : 'white' }}; color: {{ $view === 'active' ? 'white' : 'inherit' }};">
@@ -153,7 +166,12 @@
                 @if($search)
                     <x-empty-state
                         title="No matches found"
-                        message="No projects or clients matched '{{ $search }}'. Try a different search."
+                        message="No projects or clients matched your current search/filters."
+                    />
+                @elseif(!empty($status))
+                    <x-empty-state
+                        title="No {{ ucfirst(str_replace('_', ' ', $status)) }} projects"
+                        message="There are currently no active projects with this status."
                     />
                 @elseif($view === 'archived')
                     <x-empty-state
