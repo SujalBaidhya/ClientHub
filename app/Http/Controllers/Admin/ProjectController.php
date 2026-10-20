@@ -18,7 +18,7 @@ class ProjectController extends Controller
 
         $base = fn () => Project::when($view === 'archived', fn ($q) => $q->archived(), fn ($q) => $q->active());
 
-        $projects = $base()->with('client')
+        $projects = $base()->with(['client', 'milestones', 'files', 'invoices'])
             ->when($status, fn ($query, $status) => $query->where('status', $status))
             ->when($search, function ($query, $search) {
                 // grouped so the search never escapes the active/archived filter
