@@ -119,6 +119,183 @@
             border-top: 1px solid var(--border);
         }
 
+        /* ===== Milestone Roadmap Stepper & Cards ===== */
+        .milestone-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: #ffffff;
+            padding: 16px 18px;
+            border-left: 4px solid #cbd5e1;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .milestone-card[data-status="completed"] { border-left-color: #10b981; }
+        .milestone-card[data-status="in_progress"] { border-left-color: #f59e0b; }
+        .milestone-card[data-status="pending"] { border-left-color: #94a3b8; }
+
+        .milestone-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            border-color: #cbd5e1;
+        }
+
+        .milestone-card.is-highlighted {
+            animation: milestone-highlight 1.2s ease;
+        }
+
+        @keyframes milestone-highlight {
+            0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); border-color: #4f46e5; }
+            50% { box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.25); border-color: #4f46e5; }
+            100% { box-shadow: none; }
+        }
+
+        .milestone-chevron {
+            color: #94a3b8;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, color 0.15s ease;
+        }
+
+        .milestone-card[open] .milestone-chevron {
+            transform: rotate(180deg);
+            color: #1e1b4b;
+        }
+
+        .roadmap-stepper-container {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 18px;
+        }
+
+        .roadmap-stepper-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .roadmap-stepper-title {
+            font-size: 11.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .roadmap-stepper-counter {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--primary);
+            background: #eef2ff;
+            padding: 2px 9px;
+            border-radius: 999px;
+            letter-spacing: 0.02em;
+        }
+
+        .roadmap-track-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 2px 6px 2px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .roadmap-step-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            flex-shrink: 0;
+            user-select: none;
+        }
+
+        .roadmap-step-pill:hover {
+            transform: translateY(-1px);
+            border-color: #cbd5e1;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+            color: var(--text);
+        }
+
+        .roadmap-step-pill.is-done {
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+            color: #065f46;
+        }
+
+        .roadmap-step-pill.is-active {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1e40af;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+        }
+
+        .roadmap-step-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            background: #e2e8f0;
+            color: #475569;
+            flex-shrink: 0;
+        }
+
+        .roadmap-step-pill.is-done .roadmap-step-dot {
+            background: #10b981;
+            color: #ffffff;
+        }
+
+        .roadmap-step-pill.is-active .roadmap-step-dot {
+            background: #3b82f6;
+            color: #ffffff;
+            position: relative;
+        }
+
+        .roadmap-pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ffffff;
+            animation: pulse-dot 1.4s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.7; }
+        }
+
+        .roadmap-connector {
+            flex: 1;
+            min-width: 14px;
+            height: 2px;
+            background: #e2e8f0;
+            flex-shrink: 0;
+        }
+
+        .roadmap-connector.is-done {
+            background: #10b981;
+        }
+
         @media (max-width: 768px) {
             .client-welcome {
                 flex-direction: column;
@@ -402,21 +579,60 @@
                             message="Milestones will appear here when they are added to the project."
                         />
                     @else
-                                            @php
+                        {{-- Visual Roadmap Stepper --}}
+                        <div class="roadmap-stepper-container">
+                            <div class="roadmap-stepper-header">
+                                <span class="roadmap-stepper-title">
+                                    <x-icon name="activity" size="14" />
+                                    <span>Project Roadmap</span>
+                                </span>
+                                <span class="roadmap-stepper-counter">{{ $completedMilestones }} of {{ $totalMilestones }} completed ({{ $progress }}%)</span>
+                            </div>
+                            <div class="roadmap-track-wrapper">
+                                @foreach($milestones as $idx => $m)
+                                    @php
+                                        $isDone = $m->status === 'completed';
+                                        $isActive = $m->status === 'in_progress';
+                                    @endphp
+                                    <div class="roadmap-step-pill {{ $isDone ? 'is-done' : ($isActive ? 'is-active' : 'is-pending') }}"
+                                         title="Click to jump to '{{ $m->title }}'"
+                                         onclick="const d = document.getElementById('milestone-card-{{ $m->id }}'); if (d) { d.open = true; d.scrollIntoView({ behavior: 'smooth', block: 'center' }); d.classList.add('is-highlighted'); setTimeout(() => d.classList.remove('is-highlighted'), 1200); }">
+                                        <span class="roadmap-step-dot">
+                                            @if($isDone)
+                                                <x-icon name="check" size="11" strokeWidth="3" />
+                                            @elseif($isActive)
+                                                <span class="roadmap-pulse-dot"></span>
+                                            @else
+                                                {{ $idx + 1 }}
+                                            @endif
+                                        </span>
+                                        <span class="roadmap-step-name">{{ $m->title }}</span>
+                                    </div>
+                                    @if(!$loop->last)
+                                        <div class="roadmap-connector {{ $isDone ? 'is-done' : '' }}"></div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+
+                        @php
                             $nextMilestone = $milestones->where('status', '!=', 'completed')->whereNotNull('due_date')->sortBy('due_date')->first();
                         @endphp
                         @if($nextMilestone)
-                            <div style="margin-bottom: 14px; padding: 10px 14px; border-radius: 10px; background: #f1f0fb; font-size: 13.5px; color: #1e1b4b;">
-                                <strong>Next up:</strong> {{ $nextMilestone->title }}
-                                &middot; {{ $nextMilestone->due_date->format('M d, Y') }}
-                                @if($nextMilestone->isOverdue())
-                                    <span style="color: #dc2626; font-weight: 600;">(overdue)</span>
-                                @endif
+                            <div style="margin-bottom: 14px; padding: 10px 14px; border-radius: 10px; background: #f1f0fb; font-size: 13.5px; color: #1e1b4b; display: flex; align-items: center; gap: 8px;">
+                                <x-icon name="clock" size="16" style="color: var(--primary);" />
+                                <div>
+                                    <strong>Next up:</strong> {{ $nextMilestone->title }}
+                                    &middot; {{ $nextMilestone->due_date->format('M d, Y') }}
+                                    @if($nextMilestone->isOverdue())
+                                        <span style="color: #dc2626; font-weight: 600;">(overdue)</span>
+                                    @endif
+                                </div>
                             </div>
                         @endif
                         <div class="milestone-list">
                             @foreach($milestones as $milestone)
-                                <details class="milestone-card" style="border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; background: #ffffff; padding: 14px;">
+                                <details id="milestone-card-{{ $milestone->id }}" class="milestone-card" data-status="{{ $milestone->status }}">
                                     <summary style="list-style: none; cursor: pointer;">
                                         <div class="milestone-summary-row">
                                             <div style="min-width: 0; flex: 1;">
@@ -436,7 +652,7 @@
                                                 @endif
                                             </div>
 
-                                            <span style="font-size: 12px; color: #94a3b8; margin-left: 8px;">▼</span>
+                                            <span class="milestone-chevron"><x-icon name="chevron-down" size="16" /></span>
                                         </div>
                                     </summary>
 

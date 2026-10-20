@@ -423,46 +423,167 @@
     font-size: 12px;
     color: var(--muted);
 }
-        .toast {
-    position: fixed;
-    top: 24px;
-    right: 24px;
-    z-index: 999;
-    padding: 14px 20px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    color: white;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    animation: toast-in 0.3s ease;
-    max-width: 320px;
-}
+        /* ===== Toast Notifications System ===== */
+        .toast-stack {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+            max-width: 380px;
+            width: calc(100% - 48px);
+        }
 
-.toast-success { background: #15803d; }
-.toast-error { background: #b91c1c; }
+        .toast-item {
+            pointer-events: auto;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 13px 16px;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+            animation: toast-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s ease, opacity 0.15s ease;
+        }
 
-.toast.toast-hide {
-    animation: toast-out 0.3s ease forwards;
-}
+        .toast-item.toast-success {
+            border-left: 4px solid #10b981;
+        }
 
-@keyframes toast-in {
-    from { transform: translateX(40px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
+        .toast-item.toast-error {
+            border-left: 4px solid #ef4444;
+        }
 
-@keyframes toast-out {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(40px); opacity: 0; }
-}
+        .toast-icon-wrap {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
 
-@media (max-width: 850px) {
-    .toast {
-        left: 14px;
-        right: 14px;
-        top: 14px;
-        max-width: none;
-    }
-}
+        .toast-success .toast-icon-wrap {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .toast-error .toast-icon-wrap {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .toast-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .toast-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #1e1b4b;
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+
+        .toast-message {
+            font-size: 12.5px;
+            color: #4b5563;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .toast-close-btn {
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.15s ease, background 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .toast-close-btn:hover {
+            color: #1e1b4b;
+            background: #f3f4f6;
+        }
+
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .toast-progress-bar {
+            height: 100%;
+            width: 100%;
+            transform-origin: left;
+            animation: toast-timer 3.8s linear forwards;
+        }
+
+        .toast-success .toast-progress-bar { background: #10b981; }
+        .toast-error .toast-progress-bar { background: #ef4444; }
+
+        .toast-item.toast-hide {
+            animation: toast-out 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+        }
+
+        @keyframes toast-in {
+            from { transform: translateX(30px) scale(0.96); opacity: 0; }
+            to { transform: translateX(0) scale(1); opacity: 1; }
+        }
+
+        @keyframes toast-out {
+            from { transform: translateX(0) scale(1); opacity: 1; }
+            to { transform: translateX(30px) scale(0.96); opacity: 0; }
+        }
+
+        @keyframes toast-timer {
+            from { transform: scaleX(1); }
+            to { transform: scaleX(0); }
+        }
+
+        .btn-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: btn-spin 0.6s linear infinite;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        @keyframes btn-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 640px) {
+            .toast-stack {
+                top: 14px;
+                right: 14px;
+                left: 14px;
+                width: auto;
+                max-width: none;
+            }
+        }
 
         .badge {
             display: inline-block;
@@ -949,18 +1070,57 @@
         $current = request()->path();
     @endphp
 
-    <div class="app-shell">
+    <div class="toast-stack" id="toastStack">
         @if(session('success'))
-    <div class="toast toast-success">{{ session('success') }}</div>
-@endif
+            <div class="toast toast-item toast-success">
+                <div class="toast-icon-wrap">
+                    <x-icon name="check" size="14" strokeWidth="2.5" />
+                </div>
+                <div class="toast-body">
+                    <div class="toast-title">Success</div>
+                    <div class="toast-message">{{ session('success') }}</div>
+                </div>
+                <button type="button" class="toast-close-btn" onclick="this.closest('.toast-item').classList.add('toast-hide'); setTimeout(() => this.closest('.toast-item')?.remove(), 260);" aria-label="Close">
+                    <x-icon name="x" size="14" />
+                </button>
+                <div class="toast-progress"><div class="toast-progress-bar"></div></div>
+            </div>
+        @endif
 
-@if(session('error'))
-    <div class="toast toast-error">{{ session('error') }}</div>
-@endif
+        @if(session('error'))
+            <div class="toast toast-item toast-error">
+                <div class="toast-icon-wrap">
+                    <x-icon name="alert-circle" size="14" strokeWidth="2.5" />
+                </div>
+                <div class="toast-body">
+                    <div class="toast-title">Notice</div>
+                    <div class="toast-message">{{ session('error') }}</div>
+                </div>
+                <button type="button" class="toast-close-btn" onclick="this.closest('.toast-item').classList.add('toast-hide'); setTimeout(() => this.closest('.toast-item')?.remove(), 260);" aria-label="Close">
+                    <x-icon name="x" size="14" />
+                </button>
+                <div class="toast-progress"><div class="toast-progress-bar"></div></div>
+            </div>
+        @endif
 
-@if($errors->any())
-    <div class="toast toast-error">{{ $errors->first() }}</div>
-@endif
+        @if($errors->any())
+            <div class="toast toast-item toast-error">
+                <div class="toast-icon-wrap">
+                    <x-icon name="alert-circle" size="14" strokeWidth="2.5" />
+                </div>
+                <div class="toast-body">
+                    <div class="toast-title">Please review</div>
+                    <div class="toast-message">{{ $errors->first() }}</div>
+                </div>
+                <button type="button" class="toast-close-btn" onclick="this.closest('.toast-item').classList.add('toast-hide'); setTimeout(() => this.closest('.toast-item')?.remove(), 260);" aria-label="Close">
+                    <x-icon name="x" size="14" />
+                </button>
+                <div class="toast-progress"><div class="toast-progress-bar"></div></div>
+            </div>
+        @endif
+    </div>
+
+    <div class="app-shell">
 
         <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
@@ -1167,25 +1327,74 @@
             backdrop.addEventListener('click', closeMenu);
         }
 
-        document.querySelectorAll('.toast').forEach(function (toast, i) {
-            setTimeout(function () {
+        // Auto-dismiss initial toasts & setup dismiss timers
+        function initToast(toast, delay = 3800) {
+            let timer = setTimeout(function () {
                 toast.classList.add('toast-hide');
-            }, 3500 + i * 300);
+                setTimeout(() => toast.remove(), 260);
+            }, delay);
 
-            setTimeout(function () {
-                toast.remove();
-            }, 3900 + i * 300);
+            toast.addEventListener('mouseenter', () => clearTimeout(timer));
+            toast.addEventListener('mouseleave', () => {
+                timer = setTimeout(function () {
+                    toast.classList.add('toast-hide');
+                    setTimeout(() => toast.remove(), 260);
+                }, 2000);
+            });
+        }
+
+        document.querySelectorAll('.toast-item').forEach(function (toast, i) {
+            initToast(toast, 3800 + i * 300);
         });
 
+        // Global toast trigger for interactive client feedback
+        window.showToast = function (message, type = 'success', title = null) {
+            let stack = document.getElementById('toastStack');
+            if (!stack) {
+                stack = document.createElement('div');
+                stack.id = 'toastStack';
+                stack.className = 'toast-stack';
+                document.body.appendChild(stack);
+            }
+
+            const item = document.createElement('div');
+            item.className = `toast toast-item toast-${type}`;
+            const isSuccess = type === 'success';
+            const iconSvg = isSuccess 
+                ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+                : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+
+            item.innerHTML = `
+                <div class="toast-icon-wrap">${iconSvg}</div>
+                <div class="toast-body">
+                    <div class="toast-title">${title || (isSuccess ? 'Success' : 'Notice')}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button type="button" class="toast-close-btn" aria-label="Close">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+                <div class="toast-progress"><div class="toast-progress-bar"></div></div>
+            `;
+
+            item.querySelector('.toast-close-btn').addEventListener('click', () => {
+                item.classList.add('toast-hide');
+                setTimeout(() => item.remove(), 260);
+            });
+
+            stack.appendChild(item);
+            initToast(item, 3800);
+        };
+
+        // Form submit loading states with clean micro-spinner
         document.querySelectorAll('form').forEach(function (form) {
             form.addEventListener('submit', function () {
                 var btn = form.querySelector('button[type="submit"]');
-                if (btn && !btn.disabled) {
+                if (btn && !btn.disabled && !form.hasAttribute('data-no-loader')) {
                     btn.disabled = true;
                     btn.dataset.originalText = btn.innerHTML;
-                    btn.innerHTML = 'Please wait...';
-                    btn.style.opacity = '0.7';
-                    btn.style.cursor = 'default';
+                    btn.innerHTML = '<span class="btn-spinner"></span> Processing...';
+                    btn.style.opacity = '0.85';
+                    btn.style.cursor = 'wait';
                 }
             });
         });
