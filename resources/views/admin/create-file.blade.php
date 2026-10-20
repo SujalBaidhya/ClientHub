@@ -212,6 +212,12 @@
 
     <div class="dashboard">
 
+        <x-breadcrumbs :links="[
+            ['label' => 'Projects', 'url' => route('admin.projects.index'), 'icon' => true],
+            ['label' => $project->name, 'url' => route('admin.projects.edit', $project)],
+            ['label' => 'Deliverables & Files'],
+        ]" />
+
         <div class="files-header">
             <p class="dashboard-eyebrow">Admin Workspace</p>
             <h1 style="margin: 0 0 6px 0;">{{ $project->name }}</h1>
