@@ -27,13 +27,14 @@
             gap: 16px;
             padding: 16px;
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 12px;
             background: #ffffff;
-            transition: border-color 0.15s ease;
+            transition: all 0.2s ease;
         }
 
         .file-card-item:hover {
             border-color: #cbd5e1;
+            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
         }
 
         .file-details {
@@ -46,17 +47,15 @@
 
         .file-badge-icon {
             flex-shrink: 0;
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             border-radius: 10px;
-            background: #eef2ff;
-            color: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 700;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.04em;
         }
 
         .file-meta {
@@ -214,9 +213,9 @@
     <div class="dashboard">
 
         <div class="files-header">
-            <p class="dashboard-eyebrow">Admin</p>
+            <p class="dashboard-eyebrow">Admin Workspace</p>
             <h1 style="margin: 0 0 6px 0;">{{ $project->name }}</h1>
-            <p style="margin: 0; color: #6b7280; font-size: 14px;">Upload and manage files for this project.</p>
+            <p style="margin: 0; color: #6b7280; font-size: 14px;">Upload deliverables and manage files for this project.</p>
         </div>
 
         <x-card title="Upload File">
@@ -366,44 +365,66 @@
             @else
                 <div style="display: flex; flex-direction: column; gap: 12px;">
                     @foreach($files as $file)
+                        @php
+                            $ext = strtolower(pathinfo($file->original_name, PATHINFO_EXTENSION));
+                            $typeConfig = match(true) {
+                                $ext === 'pdf' => ['bg' => '#fee2e2', 'color' => '#dc2626', 'label' => 'PDF'],
+                                in_array($ext, ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg']) => ['bg' => '#d1fae5', 'color' => '#059669', 'label' => strtoupper($ext)],
+                                in_array($ext, ['doc', 'docx', 'txt', 'rtf']) => ['bg' => '#dbeafe', 'color' => '#2563eb', 'label' => strtoupper($ext)],
+                                in_array($ext, ['xls', 'xlsx', 'csv']) => ['bg' => '#fef3c7', 'color' => '#d97706', 'label' => strtoupper($ext)],
+                                in_array($ext, ['zip', 'rar', 'tar', 'gz', '7z']) => ['bg' => '#ede9fe', 'color' => '#7c3aed', 'label' => 'ZIP'],
+                                default => ['bg' => '#f1f5f9', 'color' => '#475569', 'label' => strtoupper($ext) ?: 'FILE'],
+                            };
+                            $formattedSize = $file->file_size ? ($file->file_size < 1048576 ? round($file->file_size / 1024, 1) . ' KB' : round($file->file_size / 1048576, 1) . ' MB') : null;
+                        @endphp
                         <div class="file-card-item">
                             <div class="file-details">
-                                <div class="file-badge-icon">
-                                    {{ strtoupper(pathinfo($file->original_name, PATHINFO_EXTENSION)) ?: 'FILE' }}
+                                <div class="file-badge-icon" style="background: {{ $typeConfig['bg'] }}; color: {{ $typeConfig['color'] }};">
+                                    {{ $typeConfig['label'] }}
                                 </div>
                                 <div class="file-meta">
                                     <strong title="{{ $file->original_name }}">{{ $file->original_name }}</strong>
-                                                                        <span>
-                                        Uploaded {{ $file->created_at->format('M d, Y') }}
+                                    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 2px;">
+                                        @if($formattedSize)
+                                            <span style="background: #f1f5f9; padding: 1px 6px; border-radius: 4px; font-weight: 500; color: #475569;">{{ $formattedSize }}</span>
+                                            <span>&middot;</span>
+                                        @endif
+                                        <span>Uploaded {{ $file->created_at->format('M d, Y') }}</span>
                                         @if($file->uploadedBy)
-                                            by {{ $file->uploadedBy->name }}
-                                            <span class="badge badge-{{ $file->uploadedBy->role === 'client' ? 'neutral' : 'success' }}" style="margin-left: 6px; font-size: 10px; padding: 1px 7px;">
+                                            <span>&middot;</span>
+                                            <span>by {{ $file->uploadedBy->name }}</span>
+                                            <span class="badge badge-{{ $file->uploadedBy->role === 'client' ? 'neutral' : 'success' }}" style="font-size: 10px; padding: 1px 7px;">
                                                 {{ ucfirst($file->uploadedBy->role) }}
                                             </span>
                                         @endif
-                                    </span>
+                                    </div>
                                 </div>
                             </div>
 
-                            @if(strtolower(pathinfo($file->original_name, PATHINFO_EXTENSION)) === 'pdf')
-                                <a href="{{ route('files.view', $file) }}" target="_blank" rel="noopener noreferrer" class="btn btn-small"
-                                    style="background: #2563eb; color: white; border: none; text-decoration: none;">
+                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                @if(strtolower(pathinfo($file->original_name, PATHINFO_EXTENSION)) === 'pdf')
+                                    <a href="{{ route('files.view', $file) }}" target="_blank" rel="noopener noreferrer" class="btn btn-small"
+                                        style="background: #2563eb; color: white; border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                         View PDF
-                                </a>
-                            @else
-                                <a href="{{ route('files.view', $file) }}" class="btn btn-small"
-                                    style="background: #2563eb; color: white; border: none; text-decoration: none;">
+                                    </a>
+                                @else
+                                    <a href="{{ route('files.view', $file) }}" class="btn btn-small"
+                                        style="background: #2563eb; color: white; border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                                         Download
-                                </a>
-                            @endif
-                            
-                            <form method="POST" action="{{ route('admin.files.destroy', [$project, $file]) }}" onsubmit="return confirm('Delete this file?');" class="file-delete-form">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-small" style="background: #dc2626; color: white; border: none;">
-                                    Delete File
-                                </button>
-                            </form>
+                                    </a>
+                                @endif
+                                
+                                <form method="POST" action="{{ route('admin.files.destroy', [$project, $file]) }}" onsubmit="return confirm('Delete this file?');" class="file-delete-form">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-small" style="background: #dc2626; color: white; border: none; display: inline-flex; align-items: center; gap: 5px;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                        Delete File
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     @endforeach
                 </div>

@@ -891,26 +891,43 @@
                     @else
                         <div class="file-list">
                             @foreach($files as $file)
+                                @php
+                                    $ext = strtolower(pathinfo($file->original_name, PATHINFO_EXTENSION));
+                                    $typeConfig = match(true) {
+                                        $ext === 'pdf' => ['bg' => '#fee2e2', 'color' => '#dc2626', 'label' => 'PDF'],
+                                        in_array($ext, ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg']) => ['bg' => '#d1fae5', 'color' => '#059669', 'label' => strtoupper($ext)],
+                                        in_array($ext, ['doc', 'docx', 'txt', 'rtf']) => ['bg' => '#dbeafe', 'color' => '#2563eb', 'label' => strtoupper($ext)],
+                                        in_array($ext, ['xls', 'xlsx', 'csv']) => ['bg' => '#fef3c7', 'color' => '#d97706', 'label' => strtoupper($ext)],
+                                        in_array($ext, ['zip', 'rar', 'tar', 'gz', '7z']) => ['bg' => '#ede9fe', 'color' => '#7c3aed', 'label' => 'ZIP'],
+                                        default => ['bg' => '#f1f5f9', 'color' => '#475569', 'label' => strtoupper($ext) ?: 'FILE'],
+                                    };
+                                    $formattedSize = $file->file_size ? ($file->file_size < 1048576 ? round($file->file_size / 1024, 1) . ' KB' : round($file->file_size / 1048576, 1) . ' MB') : null;
+                                @endphp
                                 <div class="file-item">
                                     <a href="{{ route('files.view', $file) }}" title="View file" style="text-decoration: none; color: inherit; flex: 1; min-width: 0;">
                                     <div class="file-info">
-                                        <div class="file-icon">
-                                            {{ strtoupper(pathinfo($file->original_name, PATHINFO_EXTENSION)) ?: 'FILE' }}
+                                        <div class="file-icon" style="background: {{ $typeConfig['bg'] }}; color: {{ $typeConfig['color'] }}; font-weight: 700; font-size: 11px;">
+                                            {{ $typeConfig['label'] }}
                                         </div>
                                         <div>
                                             <strong>{{ $file->original_name }}</strong>
-                                            <span>
-                                                Uploaded {{ $file->created_at->format('M d, Y') }}
+                                            <span style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 2px;">
+                                                @if($formattedSize)
+                                                    <span style="background: #f1f5f9; padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 500; color: #475569;">{{ $formattedSize }}</span>
+                                                    <span>·</span>
+                                                @endif
+                                                <span>Uploaded {{ $file->created_at->format('M d, Y') }}</span>
                                                 @if($file->uploaded_by === auth()->id())
-                                                    · by you
+                                                    <span>· by you</span>
                                                 @elseif($file->uploadedBy)
-                                                    · by {{ $file->uploadedBy->name }}
+                                                    <span>· by {{ $file->uploadedBy->name }}</span>
                                                 @endif
                                             </span>
                                         </div>
                                     </div>
                                     </a>
-                                    <a href="{{ route('files.download', $file) }}" class="btn btn-small">
+                                    <a href="{{ route('files.download', $file) }}" class="btn btn-small" style="display: inline-flex; align-items: center; gap: 5px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                                         Download
                                     </a>
                                 </div>
