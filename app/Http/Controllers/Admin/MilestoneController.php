@@ -56,9 +56,12 @@ class MilestoneController extends Controller
 
         $wasAlreadyCompleted = $milestone->status === 'completed';
 
-        $validated['completed_at'] = $validated['status'] === 'completed'
-            ? ($milestone->completed_at ?? now())
-            : null;
+        if ($validated['status'] === 'completed') {
+            $validated['completed_at'] = $milestone->completed_at ?? now();
+        } else {
+            $validated['completed_at'] = null;
+            $validated['approved_at'] = null;
+        }
 
         $milestone->update($validated);
 
@@ -153,6 +156,7 @@ class MilestoneController extends Controller
             'status' => 'in_progress',
             'client_notes' => $validated['client_notes'],
             'approved_at' => null,
+            'completed_at' => null,
         ]);
 
         \App\Models\ActivityLog::record(

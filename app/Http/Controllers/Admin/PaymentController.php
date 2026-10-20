@@ -11,21 +11,23 @@ class PaymentController extends Controller
 {
     public function index(Request $request)
     {
-        $payments = Invoice::with('project.client')
+        $query = Invoice::with('project.client')
             ->where('status', 'paid')
             ->whereNotNull('paid_at')
-           ->when($request->query('search'), function ($query, $search) {
-    $query->where(function ($q) use ($search) {
-        $q->where('invoice_number', 'like', "%{$search}%")
-            ->orWhereHas('project.client', function ($c) use ($search) {
-                $c->where('name', 'like', "%{$search}%");
+            ->when($request->query('search'), function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('invoice_number', 'like', "%{$search}%")
+                        ->orWhereHas('project.client', function ($c) use ($search) {
+                            $c->where('name', 'like', "%{$search}%");
+                        });
+                });
             });
-    });
-})
-            ->latest('paid_at')
-            ->get();
 
-        $totalReceived = $payments->sum('amount');
+        $totalReceived = (clone $query)->sum('amount');
+
+        $payments = $query->latest('paid_at')
+            ->paginate(15)
+            ->withQueryString();
 
         return view('admin.payments', [
             'payments' => $payments,
@@ -39,14 +41,14 @@ class PaymentController extends Controller
         $payments = Invoice::with('project.client')
             ->where('status', 'paid')
             ->whereNotNull('paid_at')
-          ->when($request->query('search'), function ($query, $search) {
-    $query->where(function ($q) use ($search) {
-        $q->where('invoice_number', 'like', "%{$search}%")
-            ->orWhereHas('project.client', function ($c) use ($search) {
-                $c->where('name', 'like', "%{$search}%");
-            });
-    });
-})
+            ->when($request->query('search'), function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('invoice_number', 'like', "%{$search}%")
+                        ->orWhereHas('project.client', function ($c) use ($search) {
+                            $c->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
             ->latest('paid_at')
             ->get();
 

@@ -106,3 +106,37 @@ test('a successful esewa payment logs an activity entry', function () {
 
     expect(ActivityLog::first()->description)->toContain('INV-TEST-001');
 });
+
+test('clients can mark activity notifications as read without 403', function () {
+    $client = User::factory()->create(['role' => 'client']);
+    $project = Project::factory()->create(['client_id' => $client->id]);
+    $log = ActivityLog::create([
+        'description' => 'Test client notification',
+        'project_id' => $project->id,
+        'client_visible' => true,
+    ]);
+
+    $this->actingAs($client)
+        ->postJson(route('client.activity.mark_read'))
+        ->assertOk()
+        ->assertJson(['status' => 'success']);
+
+    expect(ActivityLog::visibleTo($client)->unreadFor($client)->count())->toBe(0);
+});
+
+test('notification bell renders client safe url for client users', function () {
+    $client = User::factory()->create(['role' => 'client']);
+    $project = Project::factory()->create(['client_id' => $client->id]);
+
+    ActivityLog::create([
+        'description' => 'Admin updated an invoice',
+        'url' => route('admin.invoices.create', $project),
+        'project_id' => $project->id,
+        'client_visible' => true,
+    ]);
+
+    $response = $this->actingAs($client)->get(route('dashboard'));
+    $response->assertOk();
+    $response->assertSee(route('dashboard.project', $project));
+    $response->assertDontSee(route('admin.invoices.create', $project));
+});

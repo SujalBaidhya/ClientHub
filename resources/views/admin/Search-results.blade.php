@@ -56,9 +56,7 @@
                                     <strong>{{ $invoice->invoice_number }}</strong>
                                     <span>{{ $invoice->project->client->name ?? 'Unknown' }} — {{ $invoice->project->name }}</span>
                                 </div>
-                                <span class="badge badge-{{ $invoice->status === 'paid' ? 'success' : 'warning' }}">
-                                    {{ ucfirst($invoice->status) }}
-                                </span>
+                                <x-status-badge :status="$invoice->status" />
                             </a>
                         @endforeach
                     </div>

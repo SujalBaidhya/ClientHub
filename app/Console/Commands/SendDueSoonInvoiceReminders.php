@@ -32,9 +32,8 @@ class SendDueSoonInvoiceReminders extends Command
         foreach ($invoices as $invoice) {
             $client = $invoice->project?->client;
 
-
-            // Client opted out of reminders (not marked as sent, so turning it back on still works)
-            if (! $client->wantsEmail('reminders')) {
+            // Project without an assigned client or client opted out of reminders
+            if (! $client || ! $client->wantsEmail('reminders')) {
                 continue;
             }
 

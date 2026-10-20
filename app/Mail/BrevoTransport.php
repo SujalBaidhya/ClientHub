@@ -43,6 +43,18 @@ class BrevoTransport extends AbstractTransport
             'htmlContent' => $email->getHtmlBody() ?: nl2br($email->getTextBody() ?? ''),
         ];
 
+        $attachments = [];
+        foreach ($email->getAttachments() as $attachment) {
+            $attachments[] = [
+                'name'    => $attachment->getName(),
+                'content' => base64_encode($attachment->getBody()),
+            ];
+        }
+
+        if (!empty($attachments)) {
+            $payload['attachment'] = $attachments;
+        }
+
         $response = Http::withHeaders([
             'api-key'      => $this->key,
             'accept'       => 'application/json',

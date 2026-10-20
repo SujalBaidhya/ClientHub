@@ -44,7 +44,7 @@ class ProjectFileController extends Controller
     public function store(Request $request, Project $project)
     {
         $validated = $request->validate([
-            'file' => 'required|file|mimes:pdf|max:20480', // 20MB max
+            'file' => 'required|file|mimes:pdf,jpg,jpeg,png,gif,webp,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip|max:20480', // 20MB max
         ]);
         $uploaded = $request->file('file');
         $fileName = basename(trim($uploaded->getClientOriginalName()));
@@ -86,7 +86,7 @@ class ProjectFileController extends Controller
     public function destroy(Project $project, ProjectFile $file)
     {
         $fileName = $file->original_name;
-
+        
         \Storage::disk(config('filesystems.uploads_disk'))->delete($file->file_path);
         $file->delete();
 
