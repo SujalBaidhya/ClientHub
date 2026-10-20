@@ -575,9 +575,9 @@
             to { transform: rotate(360deg); }
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 900px) {
             .toast-stack {
-                top: 14px;
+                top: 72px;
                 right: 14px;
                 left: 14px;
                 width: auto;
