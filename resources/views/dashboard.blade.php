@@ -723,29 +723,58 @@
                                         @endif
 
                                         {{-- Comments --}}
-                                        <div style="margin-top: 4px; border-top: 1px solid var(--border); padding-top: 12px;">
-                                            <span style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #1e1b4b; letter-spacing: 0.03em;">Comments</span>
+                                        <div style="margin-top: 14px; border-top: 1px solid var(--border); padding-top: 14px;">
+                                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                                                <span style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #1e1b4b; letter-spacing: 0.03em; display: inline-flex; align-items: center; gap: 5px;">
+                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                                    Comments
+                                                </span>
+                                                <span style="font-size: 11.5px; color: var(--muted); font-weight: 500;">
+                                                    {{ $milestone->comments->count() }} {{ \Illuminate\Support\Str::plural('reply', $milestone->comments->count()) }}
+                                                </span>
+                                            </div>
 
-                                            @forelse($milestone->comments as $comment)
-                                                <div style="margin-top: 8px; background: #f6f7fb; border-radius: 8px; padding: 10px 12px;">
-                                                    <div style="font-size: 12px; font-weight: 700; color: var(--primary);">
-                                                        {{ $comment->user->name }}
-                                                        <span style="font-weight: normal; color: var(--muted);">
-                                                            &middot; {{ $comment->created_at->diffForHumans() }}
-                                                        </span>
+                                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                @forelse($milestone->comments as $comment)
+                                                    @php
+                                                        $cInitials = collect(explode(' ', $comment->user->name ?? 'U'))
+                                                            ->filter()
+                                                            ->map(fn($p) => strtoupper(mb_substr($p, 0, 1)))
+                                                            ->take(2)
+                                                            ->join('') ?: 'U';
+                                                        $cIsAdmin = ($comment->user->role ?? null) === 'admin';
+                                                    @endphp
+                                                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 9px; padding: 10px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                                                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px;">
+                                                            <div style="display: flex; align-items: center; gap: 7px;">
+                                                                <span style="width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 700; background: {{ $cIsAdmin ? '#4f46e5' : '#0d9488' }}; color: white; flex-shrink: 0;">
+                                                                    {{ $cInitials }}
+                                                                </span>
+                                                                <strong style="font-size: 12.5px; color: #1e1b4b;">{{ $comment->user->name }}</strong>
+                                                                <span style="font-size: 10.5px; font-weight: 600; padding: 1px 6px; border-radius: 999px; background: {{ $cIsAdmin ? '#e0e7ff' : '#ccfbf1' }}; color: {{ $cIsAdmin ? '#3730a3' : '#115e59' }};">
+                                                                    {{ $cIsAdmin ? 'Admin' : 'Client' }}
+                                                                </span>
+                                                            </div>
+                                                            <span style="font-size: 11.5px; color: var(--muted);" title="{{ $comment->created_at->format('M d, Y h:i A') }}">
+                                                                &middot; {{ $comment->created_at->diffForHumans() }}
+                                                            </span>
+                                                        </div>
+                                                        <div style="font-size: 13px; line-height: 1.5; color: #334155; padding-left: 31px; white-space: pre-wrap; word-break: break-word;">
+                                                            {{ $comment->body }}
+                                                        </div>
                                                     </div>
-                                                    <div style="font-size: 13px; margin-top: 4px; color: #374151;">
-                                                        {{ $comment->body }}
-                                                    </div>
-                                                </div>
-                                            @empty
-                                                <p style="font-size: 13px; color: var(--muted); margin: 6px 0 0;">No comments yet.</p>
-                                            @endforelse
+                                                @empty
+                                                    <p style="font-size: 13px; color: var(--muted); margin: 6px 0 0;">No comments yet.</p>
+                                                @endforelse
+                                            </div>
 
                                             <form method="POST" action="{{ route('comments.store', $milestone) }}" style="margin-top: 12px;">
                                                 @csrf
                                                 <textarea name="body" rows="2" placeholder="Write a comment..." required style="width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; box-sizing: border-box;"></textarea>
-                                                <button type="submit" class="btn btn-small" style="margin-top: 8px;">Post Comment</button>
+                                                <button type="submit" class="btn btn-small" style="margin-top: 8px; display: inline-flex; align-items: center; gap: 5px;">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                                    Post Comment
+                                                </button>
                                             </form>
                                         </div>
 
