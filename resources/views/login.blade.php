@@ -51,7 +51,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 40px 56px;
+            padding: 44px 60px;
             background: #ffffff;
             max-width: 580px;
             width: 100%;
@@ -66,15 +66,15 @@
         .brand-link {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             text-decoration: none;
             color: var(--text);
         }
 
         .brand-badge {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
             background: var(--primary);
             color: #ffffff;
             display: flex;
@@ -83,7 +83,19 @@
             font-weight: 800;
             font-size: 15px;
             letter-spacing: -0.02em;
-            box-shadow: 0 4px 10px rgba(30, 27, 75, 0.2);
+            box-shadow: 0 4px 12px rgba(30, 27, 75, 0.2);
+            position: relative;
+        }
+
+        .brand-badge::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-gold);
         }
 
         .brand-name {
@@ -95,15 +107,15 @@
         }
 
         .auth-form-container {
-            max-width: 400px;
+            max-width: 410px;
             width: 100%;
             margin: auto 0;
-            padding: 24px 0;
+            padding: 32px 0;
         }
 
         .auth-heading {
             font-family: var(--font-display);
-            font-size: 30px;
+            font-size: 32px;
             font-weight: 600;
             color: var(--primary);
             letter-spacing: -0.02em;
@@ -114,7 +126,7 @@
         .auth-subtext {
             font-size: 14.5px;
             color: var(--muted);
-            margin-bottom: 28px;
+            margin-bottom: 30px;
             line-height: 1.5;
         }
 
@@ -159,9 +171,20 @@
             align-items: center;
         }
 
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            color: #94a3b8;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.15s ease;
+        }
+
         .form-control {
             width: 100%;
-            padding: 12px 14px;
+            padding: 12px 14px 12px 42px;
             border: 1px solid var(--border);
             border-radius: 10px;
             font-size: 14.5px;
@@ -175,6 +198,11 @@
             outline: none;
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        }
+
+        .form-control:focus + .input-icon,
+        .input-wrapper:focus-within .input-icon {
+            color: var(--accent);
         }
 
         .password-toggle-btn {
@@ -274,7 +302,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: 12.5px;
             color: var(--muted);
         }
 
@@ -283,22 +311,22 @@
             align-items: center;
             gap: 6px;
             color: #059669;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         /* ===== Right Panel: Showcase ===== */
         .auth-showcase-side {
             flex: 1.15;
-            background: #0b0924;
+            background: #090822;
             background-image: 
-                radial-gradient(circle at 15% 25%, rgba(79, 70, 229, 0.3) 0%, transparent 45%),
-                radial-gradient(circle at 85% 75%, rgba(217, 119, 6, 0.18) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(30, 27, 75, 0.5) 0%, transparent 100%);
+                radial-gradient(circle at 15% 20%, rgba(79, 70, 229, 0.28) 0%, transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(217, 119, 6, 0.18) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(30, 27, 75, 0.4) 0%, transparent 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 60px;
+            padding: 64px;
             color: #ffffff;
             position: relative;
             overflow: hidden;
@@ -310,8 +338,8 @@
             inset: 0;
             background-size: 32px 32px;
             background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+                linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
             pointer-events: none;
         }
 
@@ -330,10 +358,10 @@
             border-radius: 999px;
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.12);
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11.5px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.07em;
             color: #cbd5e1;
             margin-bottom: 24px;
             backdrop-filter: blur(8px);
@@ -355,98 +383,67 @@
         }
 
         .showcase-desc {
-            font-size: 16px;
+            font-size: 15.5px;
             line-height: 1.6;
             color: #94a3b8;
-            margin-bottom: 36px;
-        }
-
-        /* Testimonial Quote Card */
-        .testimonial-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-radius: 16px;
-            padding: 24px 28px;
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
             margin-bottom: 32px;
         }
 
-        .stars-row {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 14px;
-        }
-
-        .testimonial-quote {
-            font-size: 15px;
-            line-height: 1.6;
-            color: #e2e8f0;
-            font-style: italic;
-            margin-bottom: 18px;
-        }
-
-        .testimonial-author-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding-top: 14px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .testimonial-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #4f46e5, #06b6d4);
-            color: #ffffff;
-            font-size: 13px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        .testimonial-author-name {
-            font-size: 14px;
-            font-weight: 700;
-            color: #ffffff;
-            line-height: 1.2;
-        }
-
-        .testimonial-author-role {
-            font-size: 12px;
-            color: #94a3b8;
-            margin-top: 2px;
-        }
-
-        .showcase-features-list {
+        /* ===== High-End Feature Glass Cards ===== */
+        .showcase-cards-stack {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
         }
 
-        .showcase-feature-item {
+        .feature-glass-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-radius: 14px;
+            padding: 16px 18px;
             display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            color: #cbd5e1;
+            align-items: flex-start;
+            gap: 14px;
+            transition: all 0.2s ease;
         }
 
-        .showcase-check-icon {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: rgba(79, 70, 229, 0.25);
-            color: #a5b4fc;
+        .feature-glass-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.16);
+            transform: translateX(4px);
+        }
+
+        .feature-icon-box {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1px solid;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .feature-card-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .feature-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 3px;
+            letter-spacing: -0.01em;
+        }
+
+        .feature-card-desc {
+            font-size: 12.5px;
+            line-height: 1.5;
+            color: #94a3b8;
         }
 
         /* ===== Responsive Breakpoints ===== */
@@ -461,11 +458,11 @@
             }
             .auth-header {
                 width: 100%;
-                max-width: 400px;
+                max-width: 410px;
             }
             .auth-footer {
                 width: 100%;
-                max-width: 400px;
+                max-width: 410px;
             }
         }
     </style>
@@ -514,6 +511,12 @@
                     <div class="form-group">
                         <label for="email">Email address</label>
                         <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                                </svg>
+                            </span>
                             <input
                                 type="email"
                                 id="email"
@@ -534,6 +537,12 @@
                     <div class="form-group">
                         <label for="password">Password</label>
                         <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </span>
                             <input
                                 type="password"
                                 id="password"
@@ -603,7 +612,7 @@
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
-                    <span>Client Portal Workspace</span>
+                    <span>Client Portal Platform</span>
                 </div>
 
                 <h2 class="showcase-title">
@@ -613,54 +622,36 @@
                     Collaborate on deliverables, approve milestones in real time, and handle payments inside one unified workspace.
                 </p>
 
-                {{-- Client Testimonial Card --}}
-                <div class="testimonial-card">
-                    <div class="stars-row">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    </div>
-
-                    <p class="testimonial-quote">
-                        &ldquo;ClientHub gave our clients total clarity into project milestones and deliverables. Sign-offs and payments that used to take weeks now happen seamlessly.&rdquo;
-                    </p>
-
-                    <div class="testimonial-author-row">
-                        <div class="testimonial-avatar">AR</div>
-                        <div>
-                            <div class="testimonial-author-name">Alex Rivera</div>
-                            <div class="testimonial-author-role">Founder &middot; Apex Digital Agency</div>
+                {{-- Glass Feature Cards Stack --}}
+                <div class="showcase-cards-stack">
+                    <div class="feature-glass-card">
+                        <div class="feature-icon-box" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; border-color: rgba(99, 102, 241, 0.3);">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                        <div class="feature-card-body">
+                            <h3 class="feature-card-title">Real-Time Milestone Roadmaps</h3>
+                            <p class="feature-card-desc">Track project phases live, submit revision feedback, and approve deliverables in one click.</p>
                         </div>
                     </div>
-                </div>
 
-                {{-- Highlights List --}}
-                <div class="showcase-features-list">
-                    <div class="showcase-feature-item">
-                        <span class="showcase-check-icon">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                        </span>
-                        <span>1-Click Milestone Approvals & Revisions</span>
+                    <div class="feature-glass-card">
+                        <div class="feature-icon-box" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.3);">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+                        </div>
+                        <div class="feature-card-body">
+                            <h3 class="feature-card-title">Secure Deliverables & Files</h3>
+                            <p class="feature-card-desc">High-speed file delivery with automatic client notification and strict role permissions.</p>
+                        </div>
                     </div>
-                    <div class="showcase-feature-item">
-                        <span class="showcase-check-icon">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                        </span>
-                        <span>Secure File Exchange & Automated Reminders</span>
-                    </div>
-                    <div class="showcase-feature-item">
-                        <span class="showcase-check-icon">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                        </span>
-                        <span>Integrated eSewa Invoicing with PDF Receipts</span>
+
+                    <div class="feature-glass-card">
+                        <div class="feature-icon-box" style="background: rgba(52, 211, 153, 0.15); color: #34d399; border-color: rgba(52, 211, 153, 0.3);">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
+                        </div>
+                        <div class="feature-card-body">
+                            <h3 class="feature-card-title">Direct eSewa Invoicing</h3>
+                            <p class="feature-card-desc">Integrated digital invoice payments with automated overdue checks and instant PDF receipts.</p>
+                        </div>
                     </div>
                 </div>
             </div>
