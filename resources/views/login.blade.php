@@ -361,76 +361,66 @@
             margin-bottom: 36px;
         }
 
-        /* Glass Preview Card */
-        .showcase-card {
+        /* Testimonial Quote Card */
+        .testimonial-card {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border-radius: 16px;
-            padding: 24px;
+            padding: 24px 28px;
             box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
             margin-bottom: 32px;
         }
 
-        .showcase-card-header {
+        .stars-row {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
+            gap: 4px;
+            margin-bottom: 14px;
         }
 
-        .showcase-card-project {
-            font-size: 14.5px;
+        .testimonial-quote {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #e2e8f0;
+            font-style: italic;
+            margin-bottom: 18px;
+        }
+
+        .testimonial-author-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .testimonial-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .testimonial-author-name {
+            font-size: 14px;
             font-weight: 700;
             color: #ffffff;
+            line-height: 1.2;
         }
 
-        .showcase-card-badge {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 999px;
-            background: rgba(34, 197, 94, 0.2);
-            color: #4ade80;
-            border: 1px solid rgba(34, 197, 94, 0.3);
-        }
-
-        .showcase-progress-wrap {
-            margin-bottom: 16px;
-        }
-
-        .showcase-progress-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12.5px;
-            color: #cbd5e1;
-            margin-bottom: 8px;
-        }
-
-        .showcase-progress-bar {
-            height: 6px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 999px;
-            overflow: hidden;
-        }
-
-        .showcase-progress-fill {
-            height: 100%;
-            width: 80%;
-            background: linear-gradient(90deg, #6366f1, #38bdf8);
-            border-radius: 999px;
-        }
-
-        .showcase-milestones-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .testimonial-author-role {
             font-size: 12px;
             color: #94a3b8;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 2px;
         }
 
         .showcase-features-list {
@@ -623,28 +613,26 @@
                     Collaborate on deliverables, approve milestones in real time, and handle payments inside one unified workspace.
                 </p>
 
-                {{-- Interactive-looking Showcase Card --}}
-                <div class="showcase-card">
-                    <div class="showcase-card-header">
-                        <div class="showcase-card-project">Mobile App Design System</div>
-                        <span class="showcase-card-badge">Active</span>
+                {{-- Client Testimonial Card --}}
+                <div class="testimonial-card">
+                    <div class="stars-row">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                     </div>
 
-                    <div class="showcase-progress-wrap">
-                        <div class="showcase-progress-info">
-                            <span>Project Progress</span>
-                            <strong>80% Completed</strong>
-                        </div>
-                        <div class="showcase-progress-bar">
-                            <div class="showcase-progress-fill"></div>
-                        </div>
-                    </div>
+                    <p class="testimonial-quote">
+                        &ldquo;ClientHub gave our clients total clarity into project milestones and deliverables. Sign-offs and payments that used to take weeks now happen seamlessly.&rdquo;
+                    </p>
 
-                    <div class="showcase-milestones-row">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                        <span>4 of 5 milestones signed off &middot; Next: Final Review</span>
+                    <div class="testimonial-author-row">
+                        <div class="testimonial-avatar">AR</div>
+                        <div>
+                            <div class="testimonial-author-name">Alex Rivera</div>
+                            <div class="testimonial-author-role">Founder &middot; Apex Digital Agency</div>
+                        </div>
                     </div>
                 </div>
 
