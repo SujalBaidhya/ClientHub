@@ -101,6 +101,27 @@
             bottom: 0;
             z-index: 100;
             transition: transform 0.25s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 999px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .sidebar-brand {
@@ -119,6 +140,7 @@
             flex-direction: column;
             gap: 2px;
             flex: 1;
+            flex-shrink: 0;
         }
 
         .sidebar-link {
@@ -164,6 +186,10 @@
             display: flex;
             flex-direction: column;
             gap: 2px;
+            margin-top: auto;
+            flex-shrink: 0;
+            padding-top: 14px;
+            padding-bottom: 8px;
         }
 
         .sidebar-footer form {
@@ -357,7 +383,7 @@
     position: absolute;
     top: calc(100% + 8px);
     left: 0;
-    width: 300px;
+    width: 100%;
     max-height: 360px;
     overflow-y: auto;
     background: white;
