@@ -78,4 +78,24 @@ class ActivityLog extends Model
     {
         static::markReadFor($user, static::visibleTo($user)->unreadFor($user)->pluck('id'));
     }
+
+    public function urlFor(User $user): ?string
+    {
+        // Admins open the stored link as is
+        if ($user->role === 'admin') {
+            return $this->url;
+        }
+
+        // Clients open it only if it's not an admin page
+        $path = $this->url ? (parse_url($this->url, PHP_URL_PATH) ?? '') : '';
+
+        if ($this->url && ! str_starts_with($path, '/admin')) {
+            return $this->url;
+        }
+
+        // Otherwise send them to their project page
+        return $this->project_id
+            ? route('dashboard.project', $this->project_id)
+            : route('dashboard');
+    }
 }
