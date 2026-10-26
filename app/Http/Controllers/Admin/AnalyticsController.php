@@ -55,7 +55,7 @@ class AnalyticsController extends Controller
         if ($prevMonthRevenue > 0) {
             $momGrowth = round((($currentMonthRevenue - $prevMonthRevenue) / $prevMonthRevenue) * 100, 1);
         } else {
-            $momGrowth = $currentMonthRevenue > 0 ? 100.0 : 0.0;
+            $momGrowth = $currentMonthRevenue > 0 ? 100.0 : null;
         }
 
         // Monthly breakdown for selected year (Jan - Dec)
@@ -66,6 +66,7 @@ class AnalyticsController extends Controller
             $monthDate = Carbon::createFromDate($selectedYear, $m, 1);
             $monthLabel = $monthDate->format('M');
             $fullLabel = $monthDate->format('F Y');
+            $isFutureMonth = ($selectedYear === now()->year && $m > now()->month) || ($selectedYear > now()->year);
 
             // Billed in this month (issued_at or created_at)
             $billedQuery = Invoice::where(function ($q) use ($selectedYear, $m) {
@@ -83,7 +84,7 @@ class AnalyticsController extends Controller
             $billedAmount = (clone $billedQuery)->sum('amount');
             $billedCount = (clone $billedQuery)->count();
 
-            // Collected in this month (paid_at)
+            // Cash collected in this month (actual cashflow received in month $m)
             $collectedQuery = Invoice::where('status', 'paid')
                 ->whereYear('paid_at', $selectedYear)
                 ->whereMonth('paid_at', $m);
@@ -91,27 +92,39 @@ class AnalyticsController extends Controller
             $collectedAmount = (clone $collectedQuery)->sum('amount');
             $collectedCount = (clone $collectedQuery)->count();
 
-            // Unpaid from this month
+            // Cohort Collection Rate: Of the invoices billed in this month, how much was paid vs unpaid?
+            $cohortPaidAmount = (clone $billedQuery)->where('status', 'paid')->sum('amount');
             $unpaidAmount = (clone $billedQuery)->whereIn('status', ['pending', 'overdue'])->sum('amount');
 
-            // Month rate
-            $monthRate = $billedAmount > 0 ? round(($collectedAmount / $billedAmount) * 100, 1) : ($collectedAmount > 0 ? 100.0 : 0.0);
-
-            // Month-over-month rate for this specific month
-            $monthMom = null;
-            if ($previousMonthCollected !== null) {
-                if ($previousMonthCollected > 0) {
-                    $monthMom = round((($collectedAmount - $previousMonthCollected) / $previousMonthCollected) * 100, 1);
-                } else {
-                    $monthMom = $collectedAmount > 0 ? 100.0 : 0.0;
-                }
+            // Proper mathematically bounded collection rate (0% - 100%)
+            $monthRate = null;
+            if ($billedAmount > 0) {
+                $monthRate = min(100.0, round(($cohortPaidAmount / $billedAmount) * 100, 1));
             }
-            $previousMonthCollected = $collectedAmount;
+
+            // Month-over-month cash revenue growth
+            $monthMom = null;
+            if (!$isFutureMonth) {
+                if ($previousMonthCollected !== null) {
+                    if ($previousMonthCollected > 0 && $collectedAmount > 0) {
+                        $monthMom = round((($collectedAmount - $previousMonthCollected) / $previousMonthCollected) * 100, 1);
+                    } elseif ($previousMonthCollected > 0 && $collectedAmount == 0) {
+                        $monthMom = -100.0;
+                    } elseif ($previousMonthCollected == 0 && $collectedAmount > 0) {
+                        $monthMom = 100.0;
+                    } else {
+                        // Both 0: no change, show dash
+                        $monthMom = null;
+                    }
+                }
+                $previousMonthCollected = $collectedAmount;
+            }
 
             $monthlyData[] = [
                 'month' => $monthLabel,
                 'full_month' => $fullLabel,
                 'month_num' => $m,
+                'is_future' => $isFutureMonth,
                 'billed_amount' => (float) $billedAmount,
                 'billed_count' => $billedCount,
                 'collected_amount' => (float) $collectedAmount,
@@ -225,6 +238,7 @@ class AnalyticsController extends Controller
             for ($m = 1; $m <= 12; $m++) {
                 $monthDate = Carbon::createFromDate($selectedYear, $m, 1);
                 $monthName = $monthDate->format('F Y');
+                $isFutureMonth = ($selectedYear === now()->year && $m > now()->month) || ($selectedYear > now()->year);
 
                 $billedQuery = Invoice::where(function ($q) use ($selectedYear, $m) {
                     $q->where(function ($sub) use ($selectedYear, $m) {
@@ -248,8 +262,13 @@ class AnalyticsController extends Controller
                 $collectedAmount = (clone $collectedQuery)->sum('amount');
                 $collectedCount = (clone $collectedQuery)->count();
 
+                $cohortPaidAmount = (clone $billedQuery)->where('status', 'paid')->sum('amount');
                 $unpaidAmount = (clone $billedQuery)->whereIn('status', ['pending', 'overdue'])->sum('amount');
-                $rate = $billedAmount > 0 ? round(($collectedAmount / $billedAmount) * 100, 1) : ($collectedAmount > 0 ? 100.0 : 0.0);
+
+                $rateStr = '—';
+                if (!$isFutureMonth && $billedAmount > 0) {
+                    $rateStr = min(100.0, round(($cohortPaidAmount / $billedAmount) * 100, 1)) . '%';
+                }
 
                 $totalBilled += $billedAmount;
                 $totalCollected += $collectedAmount;
@@ -264,7 +283,7 @@ class AnalyticsController extends Controller
                     $collectedCount,
                     number_format($collectedAmount, 2, '.', ''),
                     number_format($unpaidAmount, 2, '.', ''),
-                    $rate . '%',
+                    $rateStr,
                 ]);
             }
 

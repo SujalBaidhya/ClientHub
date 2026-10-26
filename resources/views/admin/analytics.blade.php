@@ -455,10 +455,14 @@
                     NPR {{ number_format($totalCollected, 0) }}
                 </div>
                 <div class="kpi-footer">
-                    @if($momGrowth >= 0)
-                        <span class="trend-pill positive">↑ {{ $momGrowth }}%</span>
+                    @if($momGrowth === null)
+                        <span style="color: var(--muted);">—</span>
+                    @elseif($momGrowth > 999)
+                        <span class="trend-pill positive" title="+{{ number_format($momGrowth, 1) }}%">↑ >999%</span>
+                    @elseif($momGrowth >= 0)
+                        <span class="trend-pill positive">↑ {{ number_format($momGrowth, 1) }}%</span>
                     @else
-                        <span class="trend-pill negative">↓ {{ abs($momGrowth) }}%</span>
+                        <span class="trend-pill negative">↓ {{ number_format(abs($momGrowth), 1) }}%</span>
                     @endif
                     <span>vs last month</span>
                 </div>
@@ -701,17 +705,23 @@
                                         {{ number_format($row['unpaid_amount'], 0) }}
                                     </td>
                                     <td>
-                                        <span class="badge {{ $row['collection_rate'] >= 80 ? 'badge-success' : ($row['collection_rate'] > 0 ? 'badge-warning' : 'badge-neutral') }}" style="font-size: 11.5px;">
-                                            {{ $row['collection_rate'] }}%
-                                        </span>
+                                        @if($row['collection_rate'] === null)
+                                            <span style="color: var(--muted);">—</span>
+                                        @else
+                                            <span class="badge {{ $row['collection_rate'] >= 80 ? 'badge-success' : ($row['collection_rate'] > 0 ? 'badge-warning' : 'badge-neutral') }}" style="font-size: 11.5px;">
+                                                {{ $row['collection_rate'] }}%
+                                            </span>
+                                        @endif
                                     </td>
                                     <td>
                                         @if($row['mom_growth'] === null)
                                             <span style="color: var(--muted);">—</span>
+                                        @elseif($row['mom_growth'] > 999)
+                                            <span style="color: #16a34a; font-weight: 600;" title="+{{ number_format($row['mom_growth'], 1) }}%">> +999%</span>
                                         @elseif($row['mom_growth'] >= 0)
-                                            <span style="color: #16a34a; font-weight: 600;">+{{ $row['mom_growth'] }}%</span>
+                                            <span style="color: #16a34a; font-weight: 600;">+{{ number_format($row['mom_growth'], 1) }}%</span>
                                         @else
-                                            <span style="color: #dc2626; font-weight: 600;">{{ $row['mom_growth'] }}%</span>
+                                            <span style="color: #dc2626; font-weight: 600;">{{ number_format($row['mom_growth'], 1) }}%</span>
                                         @endif
                                     </td>
                                 </tr>
