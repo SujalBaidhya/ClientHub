@@ -45,6 +45,10 @@
             flex: 1;
         }
 
+        .activity-content a:hover .activity-description {
+            text-decoration: underline;
+        }
+        
         .activity-description {
             margin: 0 0 6px;
             font-size: 14px;
@@ -115,9 +119,11 @@
                             <div class="activity-item">
                                 <div class="activity-dot"></div>
                                 <div class="activity-content">
-                                    <p class="activity-description">
-                                        {{ $log->description }}
-                                    </p>
+                                    <a href="{{ $log->urlFor(auth()->user()) }}" style="text-decoration: none; color: inherit; display: block;">
+                                        <p class="activity-description">
+                                            {{ $log->description }}
+                                        </p>
+                                    </a>
                                     <span class="activity-time">
                                         {{ $log->created_at->format('M d, Y \a\t g:i A') }}
                                         &middot; {{ $log->created_at->diffForHumans() }}
