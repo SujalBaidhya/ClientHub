@@ -32,106 +32,108 @@
             border-radius: 10px;
             border: 1px solid var(--border);
             font-size: 14px;
-            background: #ffffff;
+            background: var(--surface);
+            color: var(--text);
             transition: border-color 0.15s, box-shadow 0.15s;
         }
 
         .projects-search-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
         }
 
-        .view-toggle-group {
+        /* PREMIUM SEGMENTED VIEW SWITCHER */
+        .view-segmented-control {
             display: inline-flex;
-            background: #ffffff;
+            background: #eef2f6;
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 999px;
             padding: 3px;
-            gap: 2px;
+            gap: 3px;
+            position: relative;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
-        .view-toggle-btn {
-            background: none;
+        [data-theme="dark"] .view-segmented-control {
+            background: #182234;
+            border-color: #243048;
+        }
+
+        .view-seg-btn {
             border: none;
-            padding: 6px 12px;
-            border-radius: 7px;
-            cursor: pointer;
-            font-size: 13px;
+            background: transparent;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 12.5px;
             font-weight: 500;
             color: var(--muted);
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.15s ease;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            user-select: none;
         }
 
-        .view-toggle-btn.active {
-            background: #1e1b4b;
+        .view-seg-btn:hover {
+            color: var(--text);
+        }
+
+        .view-seg-btn.active {
+            background: var(--surface);
+            color: var(--text);
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        [data-theme="dark"] .view-seg-btn.active {
+            background: #243048;
             color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
         }
 
-        /* GRID VIEW LAYOUT */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 20px;
-        }
-
+        /* BASE CARD ARCHITECTURE */
         .project-card {
-            background: #ffffff;
+            background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 14px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
         }
 
         .project-card:hover {
-            transform: translateY(-2px);
             border-color: #cbd5e1;
-            box-shadow: 0 12px 24px -8px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.03);
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.03);
         }
 
-        .project-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
+        [data-theme="dark"] .project-card:hover {
+            border-color: #3b4d6e;
+            box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.5);
         }
 
         .project-card-title {
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 700;
-            color: #0f172a;
+            color: var(--text);
             margin: 0;
             line-height: 1.3;
-            text-decoration: none;
+            letter-spacing: -0.01em;
         }
 
         .project-card-title a {
             color: inherit;
             text-decoration: none;
+            transition: color 0.15s ease;
         }
 
         .project-card-title a:hover {
             color: var(--primary);
         }
 
-        .project-client-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: #475569;
-        }
-
         .client-avatar-circle {
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
             color: #3730a3;
@@ -144,18 +146,17 @@
             flex-shrink: 0;
         }
 
-        .project-dates-row {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            font-size: 12.5px;
-            color: #64748b;
+        [data-theme="dark"] .client-avatar-circle {
+            background: linear-gradient(135deg, #312e81 0%, #3730a3 100%);
+            color: #e0e7ff;
         }
 
         .date-item {
             display: inline-flex;
             align-items: center;
             gap: 5px;
+            font-size: 12.5px;
+            color: var(--muted);
         }
 
         /* PROGRESS TRACKER */
@@ -163,23 +164,32 @@
             background: #f8fafc;
             border: 1px solid #edf2f7;
             border-radius: 10px;
-            padding: 12px 14px;
+            padding: 10px 12px;
+        }
+
+        [data-theme="dark"] .progress-box {
+            background: #162032;
+            border-color: #223048;
         }
 
         .progress-box-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 12.5px;
-            margin-bottom: 8px;
+            font-size: 12px;
+            margin-bottom: 7px;
         }
 
         .progress-bar-track {
             width: 100%;
-            height: 7px;
+            height: 6px;
             background: #e2e8f0;
             border-radius: 999px;
             overflow: hidden;
+        }
+
+        [data-theme="dark"] .progress-bar-track {
+            background: #243048;
         }
 
         .progress-bar-fill {
@@ -200,82 +210,117 @@
             background: #cbd5e1;
         }
 
-        /* STATS PILLS */
-        .project-stats-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
+        [data-theme="dark"] .progress-bar-fill.empty {
+            background: #334155;
         }
 
+        /* STATS PILLS */
         .stat-pill {
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 500;
-            color: #475569;
+            color: var(--muted);
             background: #f1f5f9;
-            padding: 4px 10px;
+            padding: 4px 9px;
             border-radius: 6px;
         }
 
-        /* ACTION BAR */
-        .project-card-actions {
+        [data-theme="dark"] .stat-pill {
+            background: #1a2538;
+            color: #94a3b8;
+        }
+
+        /* ============================================================
+           GRID VIEW SPECIFICS
+           ============================================================ */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        .projects-grid .project-card {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .projects-grid .project-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .projects-grid .project-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .projects-grid .project-card-actions {
             display: flex;
             align-items: center;
             gap: 6px;
             flex-wrap: wrap;
             padding-top: 12px;
-            border-top: 1px solid #f1f5f9;
+            border-top: 1px solid var(--border);
             margin-top: auto;
         }
 
-        .project-card-actions .btn-small {
-            font-size: 12px;
-            padding: 6px 10px;
-            border-radius: 7px;
-        }
-
-        /* LIST VIEW LAYOUT */
+        /* ============================================================
+           PREMIUM LIST VIEW (ALIGNED MODERN SAAS ROWS)
+           ============================================================ */
         .projects-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .projects-list .project-card {
-            padding: 16px 20px;
-            flex-direction: row;
+            padding: 14px 20px;
+            display: grid;
+            grid-template-columns: minmax(240px, 1.8fr) minmax(130px, 1fr) minmax(180px, 1.2fr) minmax(140px, 1fr) auto auto;
             align-items: center;
-            justify-content: space-between;
-            gap: 20px;
+            gap: 16px;
         }
 
-        .projects-list .project-list-main {
+        .projects-list .project-top-row {
             display: flex;
             align-items: center;
-            gap: 20px;
-            flex: 1;
+            gap: 12px;
             min-width: 0;
         }
 
-        .projects-list .project-list-info {
-            min-width: 220px;
-            max-width: 280px;
+        .projects-list .project-top-meta {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .projects-list .project-dates-row {
+            display: flex;
+            align-items: center;
         }
 
         .projects-list .progress-box {
-            width: 220px;
-            padding: 8px 12px;
-            flex-shrink: 0;
+            padding: 7px 11px;
+        }
+
+        .projects-list .project-stats-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
         }
 
         .projects-list .project-card-actions {
-            border-top: none;
-            padding-top: 0;
-            margin-top: 0;
-            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            justify-content: flex-end;
         }
 
         .pagination-container {
@@ -287,21 +332,17 @@
             flex-wrap: wrap;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1050px) {
             .projects-list .project-card {
-                flex-direction: column;
-                align-items: stretch;
+                grid-template-columns: 1fr 1fr;
+                gap: 14px;
             }
 
-            .projects-list .project-list-main {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .projects-list .project-list-info,
-            .projects-list .progress-box {
-                width: 100%;
-                max-width: 100%;
+            .projects-list .project-card-actions {
+                grid-column: span 2;
+                justify-content: flex-start;
+                border-top: 1px solid var(--border);
+                padding-top: 10px;
             }
         }
 
@@ -324,7 +365,14 @@
                 max-width: 100%;
             }
 
-            .project-card-actions {
+            .projects-list .project-card {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .projects-grid .project-card-actions,
+            .projects-list .project-card-actions {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
                 gap: 8px;
@@ -355,7 +403,7 @@
             <div>
                 <p class="dashboard-eyebrow">Admin Workspace</p>
                 <h1 style="margin: 0 0 6px 0;">All Projects</h1>
-                <p style="margin: 0; color: #6b7280; font-size: 14px;">Select a project to manage its milestones, deliverables, and invoices.</p>
+                <p style="margin: 0; color: var(--muted); font-size: 14px;">Select a project to manage milestones, deliverables, and invoices.</p>
             </div>
             <a href="{{ route('admin.projects.create') }}" class="btn btn-success" style="display: inline-flex; align-items: center; gap: 6px;">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -389,24 +437,24 @@
             <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                 <div style="display: flex; gap: 6px;">
                     <a href="{{ route('admin.projects.index') }}"
-                       style="padding: 7px 14px; border: 1px solid {{ $view === 'active' ? '#1e1b4b' : 'var(--border)' }}; border-radius: 999px; text-decoration: none; font-size: 13px; font-weight: 500; background: {{ $view === 'active' ? '#1e1b4b' : '#ffffff' }}; color: {{ $view === 'active' ? '#ffffff' : 'inherit' }}; display: inline-flex; align-items: center; gap: 6px;">
+                       style="padding: 7px 14px; border: 1px solid {{ $view === 'active' ? '#1e1b4b' : 'var(--border)' }}; border-radius: 999px; text-decoration: none; font-size: 13px; font-weight: 500; background: {{ $view === 'active' ? '#1e1b4b' : 'var(--surface)' }}; color: {{ $view === 'active' ? '#ffffff' : 'inherit' }}; display: inline-flex; align-items: center; gap: 6px;">
                         <span>Active</span>
-                        <span style="background: {{ $view === 'active' ? 'rgba(255,255,255,0.2)' : '#f1f5f9' }}; padding: 1px 7px; border-radius: 999px; font-size: 11px;">{{ $activeCount }}</span>
+                        <span style="background: {{ $view === 'active' ? 'rgba(255,255,255,0.2)' : 'var(--border)' }}; padding: 1px 7px; border-radius: 999px; font-size: 11px;">{{ $activeCount }}</span>
                     </a>
                     <a href="{{ route('admin.projects.index', ['view' => 'archived']) }}"
-                       style="padding: 7px 14px; border: 1px solid {{ $view === 'archived' ? '#1e1b4b' : 'var(--border)' }}; border-radius: 999px; text-decoration: none; font-size: 13px; font-weight: 500; background: {{ $view === 'archived' ? '#1e1b4b' : '#ffffff' }}; color: {{ $view === 'archived' ? '#ffffff' : 'inherit' }}; display: inline-flex; align-items: center; gap: 6px;">
+                       style="padding: 7px 14px; border: 1px solid {{ $view === 'archived' ? '#1e1b4b' : 'var(--border)' }}; border-radius: 999px; text-decoration: none; font-size: 13px; font-weight: 500; background: {{ $view === 'archived' ? '#1e1b4b' : 'var(--surface)' }}; color: {{ $view === 'archived' ? '#ffffff' : 'inherit' }}; display: inline-flex; align-items: center; gap: 6px;">
                         <span>Archived</span>
-                        <span style="background: {{ $view === 'archived' ? 'rgba(255,255,255,0.2)' : '#f1f5f9' }}; padding: 1px 7px; border-radius: 999px; font-size: 11px;">{{ $archivedCount }}</span>
+                        <span style="background: {{ $view === 'archived' ? 'rgba(255,255,255,0.2)' : 'var(--border)' }}; padding: 1px 7px; border-radius: 999px; font-size: 11px;">{{ $archivedCount }}</span>
                     </a>
                 </div>
 
-                {{-- Grid / List View Switcher --}}
-                <div class="view-toggle-group">
-                    <button type="button" class="view-toggle-btn active" id="btnGridView" onclick="switchView('grid')" title="Grid View">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                {{-- LUXURY SEGMENTED VIEW SWITCHER --}}
+                <div class="view-segmented-control" role="group" aria-label="Layout view">
+                    <button type="button" class="view-seg-btn active" id="btnGridView" onclick="switchView('grid')" title="Grid View">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>
                         <span>Grid</span>
                     </button>
-                    <button type="button" class="view-toggle-btn" id="btnListView" onclick="switchView('list')" title="List View">
+                    <button type="button" class="view-seg-btn" id="btnListView" onclick="switchView('list')" title="List View">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                         <span>List</span>
                     </button>
@@ -415,7 +463,7 @@
         </div>
 
         @if(!empty($status))
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; background: #ffffff; border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; font-size: 13.5px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; background: var(--surface); border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; font-size: 13.5px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
                 <span style="color: var(--muted); font-size: 13px;">Filtered by status:</span>
                 <x-status-badge :status="$status" />
                 <a href="{{ route('admin.projects.index', array_filter(['view' => $view === 'archived' ? 'archived' : null, 'search' => $search])) }}" style="margin-left: auto; color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
@@ -466,21 +514,22 @@
                     @endphp
 
                     <div class="project-card">
-                        <div class="project-card-header">
-                            <div style="min-width: 0;">
+                        {{-- Identity / Top Info --}}
+                        <div class="project-top-row">
+                            <span class="client-avatar-circle" title="Client avatar">{{ $clientInitials }}</span>
+                            <div class="project-top-meta">
                                 <h3 class="project-card-title">
                                     <a href="{{ route('admin.milestones.create', $project) }}" title="{{ $project->name }}">
                                         {{ $project->name }}
                                     </a>
                                 </h3>
-                                <div class="project-client-badge" style="margin-top: 6px;">
-                                    <span class="client-avatar-circle" title="Client avatar">{{ $clientInitials }}</span>
-                                    <span style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                        Client: {{ $project->client->name ?? 'N/A' }}
-                                    </span>
-                                </div>
+                                <span style="font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    Client: {{ $project->client->name ?? 'N/A' }}
+                                </span>
                             </div>
-                            <x-status-badge :status="$project->status" />
+                            <div class="project-status-wrapper">
+                                <x-status-badge :status="$project->status" />
+                            </div>
                         </div>
 
                         {{-- Dates & Timing --}}
@@ -490,7 +539,7 @@
                                 @if($project->due_date)
                                     Due {{ $project->due_date->format('M d, Y') }}
                                 @else
-                                    <span style="color: #94a3b8; font-style: italic;">No due date</span>
+                                    <span style="color: var(--muted); font-style: italic;">No due date</span>
                                 @endif
                             </span>
                         </div>
@@ -498,11 +547,11 @@
                         {{-- Milestone Progress Bar --}}
                         <div class="progress-box">
                             <div class="progress-box-header">
-                                <span style="font-weight: 600; color: #334155; display: inline-flex; align-items: center; gap: 5px;">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+                                <span style="font-weight: 600; color: var(--text); display: inline-flex; align-items: center; gap: 5px;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
                                     Milestones
                                 </span>
-                                <span style="font-weight: 600; color: {{ $percent === 100 ? '#10b981' : '#4f46e5' }};">
+                                <span style="font-weight: 600; color: {{ $percent === 100 ? '#10b981' : 'var(--primary)' }};">
                                     {{ $completedMilestones }}/{{ $totalMilestones }} ({{ $percent }}%)
                                 </span>
                             </div>
@@ -572,11 +621,11 @@
             <div class="pagination-container">
                 {{-- Previous --}}
                 @if($projects->onFirstPage())
-                    <span style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; color: #999; background: #f5f5f5;">
+                    <span style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; color: #999; background: var(--surface);">
                         Previous
                     </span>
                 @else
-                    <a href="{{ $projects->previousPageUrl() }}" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: inherit; background: white;">
+                    <a href="{{ $projects->previousPageUrl() }}" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: inherit; background: var(--surface);">
                         Previous
                     </a>
                 @endif
@@ -588,7 +637,7 @@
                             {{ $page }}
                         </span>
                     @else
-                        <a href="{{ $url }}" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: inherit; background: white;">
+                        <a href="{{ $url }}" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: inherit; background: var(--surface);">
                             {{ $page }}
                         </a>
                     @endif
@@ -596,11 +645,11 @@
 
                 {{-- Next --}}
                 @if($projects->hasMorePages())
-                    <a href="{{ $projects->nextPageUrl() }}" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: inherit; background: white;">
+                    <a href="{{ $projects->nextPageUrl() }}" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: inherit; background: var(--surface);">
                         Next
                     </a>
                 @else
-                    <span style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; color: #999; background: #f5f5f5;">
+                    <span style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; color: #999; background: var(--surface);">
                         Next
                     </span>
                 @endif

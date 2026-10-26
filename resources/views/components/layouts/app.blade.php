@@ -8,6 +8,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+    <script>
+        (function () {
+            try {
+                var theme = localStorage.getItem('clienthub_theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+            } catch (e) {}
+        })();
+    </script>
     <style>
         :root {
             --bg: #f6f7fb;
@@ -30,6 +38,31 @@
             --neutral-text: #374151;
             --font-display: 'Fraunces', serif;
             --font-body: 'Inter', -apple-system, sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg: #090d16;
+            --surface: #111827;
+            --text: #f3f4f6;
+            --muted: #94a3b8;
+            --border: #1f293d;
+            --primary: #6366f1;
+            --accent-gold: #fbbf24;
+            --sidebar-bg: #070a12;
+            --sidebar-text: rgba(255, 255, 255, 0.72);
+            --sidebar-text-active: #ffffff;
+            --success-bg: rgba(34, 197, 94, 0.16);
+            --success-text: #4ade80;
+            --warning-bg: rgba(245, 158, 11, 0.16);
+            --warning-text: #fbbf24;
+            --danger-bg: rgba(239, 68, 68, 0.16);
+            --danger-text: #f87171;
+            --neutral-bg: rgba(148, 163, 184, 0.15);
+            --neutral-text: #cbd5e1;
+        }
+
+        html, body, .card, .sidebar, .btn, .search-result-row, .milestone-card, .file-item, .project-card {
+            transition: background-color 0.25s ease, border-color 0.25s ease, color 0.2s ease, box-shadow 0.25s ease;
         }
 
         * { box-sizing: border-box; }
@@ -1059,6 +1092,332 @@
             color: #64748b;
         }
 
+
+        /* ===== Ultra-Premium Theme Switcher ===== */
+        .theme-toggle-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            color: var(--sidebar-text);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 100%;
+            text-align: left;
+            margin-bottom: 6px;
+        }
+
+        .theme-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.16);
+        }
+
+        .theme-text {
+            flex: 1;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .theme-toggle-pill {
+            width: 36px;
+            height: 20px;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.18);
+            position: relative;
+            padding: 2px;
+            transition: background 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle-circle {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+            transform: translateX(0);
+        }
+
+        [data-theme="dark"] .theme-toggle-pill {
+            background: #6366f1;
+        }
+
+        [data-theme="dark"] .theme-toggle-circle {
+            transform: translateX(16px);
+            background: #ffffff;
+        }
+
+        .theme-icon-dark { display: none; }
+        .theme-icon-light { display: inline-flex; align-items: center; color: #fbbf24; }
+
+        [data-theme="dark"] .theme-icon-light { display: none; }
+        [data-theme="dark"] .theme-icon-dark { display: inline-flex; align-items: center; color: #a5b4fc; }
+
+        .theme-toggle-mobile {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* ===== Dark Mode Component Overrides ===== */
+        [data-theme="dark"] input[type="text"],
+        [data-theme="dark"] input[type="email"],
+        [data-theme="dark"] input[type="password"],
+        [data-theme="dark"] input[type="number"],
+        [data-theme="dark"] input[type="date"],
+        [data-theme="dark"] select,
+        [data-theme="dark"] textarea {
+            background: #0c121e !important;
+            color: #f1f5f9 !important;
+            border-color: #232f48 !important;
+        }
+
+        [data-theme="dark"] input::placeholder,
+        [data-theme="dark"] textarea::placeholder {
+            color: #64748b;
+        }
+
+        [data-theme="dark"] .card {
+            background: var(--surface);
+            border-color: var(--border);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45);
+        }
+
+        [data-theme="dark"] .current-project-card {
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .current-project-title {
+            color: var(--text);
+        }
+
+        [data-theme="dark"] .project-info-grid {
+            background: #0c121e;
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .project-info-item:not(:last-child) {
+            border-right-color: var(--border);
+        }
+
+        [data-theme="dark"] .progress-bar {
+            background: #1e293b;
+        }
+
+        [data-theme="dark"] .dashboard-date {
+            background: var(--surface);
+            border-color: var(--border);
+            color: var(--muted);
+        }
+
+        [data-theme="dark"] .file-item {
+            background: #0c121e;
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .file-item:hover {
+            background: #131b2c;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .file-icon {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+        }
+
+        [data-theme="dark"] .milestone-card {
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .milestone-card:hover {
+            border-color: #4f46e5;
+        }
+
+        [data-theme="dark"] .milestone-card-details {
+            background: #0c121e;
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .milestone-chevron {
+            background: #1e293b;
+            color: #cbd5e1;
+        }
+
+        [data-theme="dark"] .milestone-summary {
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .milestone-detail strong {
+            color: #f1f5f9;
+        }
+
+        [data-theme="dark"] .invoice-create {
+            background: #0c121e;
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .invoice-table td {
+            background: var(--surface);
+            border-color: var(--border);
+            color: var(--text);
+        }
+
+        [data-theme="dark"] .client-invoice-card {
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .empty-state {
+            background: #0c121e;
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .empty-state-icon {
+            background: rgba(99, 102, 241, 0.12);
+            color: #818cf8;
+        }
+
+        [data-theme="dark"] .empty-state-title {
+            color: var(--text);
+        }
+
+        [data-theme="dark"] .btn {
+            background: var(--surface);
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .btn:hover {
+            background: #1e293b;
+        }
+
+        [data-theme="dark"] .btn-success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        [data-theme="dark"] .btn-success:hover {
+            background: rgba(34, 197, 94, 0.3);
+        }
+
+        [data-theme="dark"] table th,
+        [data-theme="dark"] table td {
+            border-bottom-color: var(--border);
+            color: var(--text);
+        }
+
+        [data-theme="dark"] .plain-list li {
+            border-bottom-color: var(--border);
+        }
+
+        [data-theme="dark"] .activity-dropdown {
+            background: #111827;
+            border: 1px solid var(--border);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+        }
+
+        [data-theme="dark"] .activity-dropdown-item {
+            border-bottom-color: #1f293d !important;
+        }
+
+        [data-theme="dark"] .activity-dropdown-item p {
+            color: #f1f5f9;
+        }
+
+        [data-theme="dark"] .activity-dropdown-footer {
+            color: #a5b4fc;
+        }
+
+        [data-theme="dark"] .activity-dropdown-footer:hover {
+            background: #1a243b;
+        }
+
+        [data-theme="dark"] .activity-description {
+            color: #f1f5f9;
+        }
+
+        [data-theme="dark"] .activity-dot {
+            background: var(--primary);
+        }
+
+        [data-theme="dark"] .activity-item:not(:last-child)::before {
+            background: var(--border);
+        }
+
+        [data-theme="dark"] .toast-item {
+            background: #111827;
+            border-color: var(--border);
+            color: #f1f5f9;
+            box-shadow: 0 16px 36px rgba(0,0,0,0.5);
+        }
+
+        [data-theme="dark"] .toast-title {
+            color: #f1f5f9;
+        }
+
+        [data-theme="dark"] .toast-message {
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .toast-close-btn:hover {
+            color: #f1f5f9;
+            background: #1f293d;
+        }
+
+        [data-theme="dark"] .cmd-palette-modal {
+            background: #111827;
+            border: 1px solid var(--border);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
+        }
+
+        [data-theme="dark"] .cmd-palette-header {
+            border-bottom-color: var(--border);
+        }
+
+        [data-theme="dark"] .cmd-palette-footer {
+            background: #0c121e;
+            border-top-color: var(--border);
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .cmd-item:hover,
+        [data-theme="dark"] .cmd-item.is-selected {
+            background: #1a243b;
+        }
+
+        [data-theme="dark"] .cmd-item-title {
+            color: #f1f5f9;
+        }
+
+        [data-theme="dark"] .cmd-kbd {
+            background: #0c121e;
+            border-color: #232f48;
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .search-result-row {
+            border-top-color: var(--border);
+            color: var(--text);
+        }
+
+        [data-theme="dark"] .search-result-row:hover {
+            background: #1a243b;
+        }
     </style>
 </head>
 <body>
@@ -1257,26 +1616,43 @@
                 @endif
                 @endunless
 
-                @unless($isGuest)
                 <div class="sidebar-divider"></div>
 
                 <div class="sidebar-footer">
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="sidebar-link">
-                            <x-icon name="log-out" size="18" />
-                            <span>Logout</span>
-                        </button>
-                    </form>
+                    <button type="button" id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle Dark Mode" onclick="toggleTheme()">
+                        <span class="theme-icon-light"><x-icon name="sun" size="16" /></span>
+                        <span class="theme-icon-dark"><x-icon name="moon" size="16" /></span>
+                        <span class="theme-text">
+                            <span>Dark Theme</span>
+                            <span class="theme-toggle-pill">
+                                <span class="theme-toggle-circle"></span>
+                            </span>
+                        </span>
+                    </button>
+
+                    @unless($isGuest)
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="sidebar-link">
+                                <x-icon name="log-out" size="18" />
+                                <span>Logout</span>
+                            </button>
+                        </form>
+                    @endunless
                 </div>
-            @endunless
         </aside>
 
         <div class="main-content">
 
             <div class="mobile-topbar">
                 <a href="{{ $homeRoute }}" class="sidebar-brand" style="color: white;">ClientHub</a>
-                <button class="mobile-menu-button" id="mobileMenuButton" aria-label="Open menu">&#9776;</button>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="button" class="mobile-menu-button theme-toggle-mobile" onclick="toggleTheme()" aria-label="Toggle Theme">
+                        <span class="theme-icon-light"><x-icon name="sun" size="16" /></span>
+                        <span class="theme-icon-dark"><x-icon name="moon" size="16" /></span>
+                    </button>
+                    <button class="mobile-menu-button" id="mobileMenuButton" aria-label="Open menu">&#9776;</button>
+                </div>
             </div>
 
             <main class="container">
@@ -1593,6 +1969,14 @@
                 });
             });
         }
+        window.toggleTheme = function () {
+            var current = document.documentElement.getAttribute('data-theme') || 'light';
+            var next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            try {
+                localStorage.setItem('clienthub_theme', next);
+            } catch (e) {}
+        };
     })();
 </script>
     
