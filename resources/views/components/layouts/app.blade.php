@@ -1579,6 +1579,10 @@
                         <x-icon name="layout-dashboard" size="18" />
                         <span>Overview</span>
                     </a>
+                    <a href="{{ route('admin.analytics.index') }}" class="sidebar-link {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
+                        <x-icon name="trending-up" size="18" />
+                        <span>Analytics</span>
+                    </a>
                     <a href="{{ route('admin.projects.index') }}" class="sidebar-link {{ request()->routeIs('admin.projects.*') ? 'active' : '' }}">
                         <x-icon name="folder" size="18" />
                         <span>Projects</span>
@@ -1816,6 +1820,7 @@
 
         var defaultCommands = [
             @if($isAdmin)
+            { title: "Financial Analytics & Reports", subtitle: "Cash flow, monthly billed vs collected, and revenue trends", url: "{{ route('admin.analytics.index') }}", icon: "trending-up" },
             { title: "Create New Project", subtitle: "Assign project and milestones to client", url: "{{ route('admin.projects.create') }}", icon: "plus" },
             { title: "All Projects", subtitle: "View and filter all client projects", url: "{{ route('admin.projects.index') }}", icon: "folder" },
             { title: "All Invoices", subtitle: "Manage project invoices and CSV export", url: "{{ route('admin.invoices.index') }}", icon: "file-text" },

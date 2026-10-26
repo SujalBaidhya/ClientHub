@@ -305,7 +305,10 @@
                     <h2 class="stat-number" style="font-family: var(--font-display); color: var(--accent-gold);">
                         NPR {{ number_format($stats['total_revenue'], 0) }}
                     </h2>
-                    <p class="stat-subtext">Received payments</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <p class="stat-subtext" style="margin: 0;">Received payments</p>
+                        <a href="{{ route('admin.analytics.index') }}" style="font-size: 11.5px; font-weight: 600; text-decoration: none; color: var(--primary);">Analytics →</a>
+                    </div>
                 </div>
             </x-card>
 
@@ -327,7 +330,14 @@
         </div>
 
         {{-- Revenue Trend --}}
-        <x-card title="Revenue — Last 6 Months">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; margin-top: 10px;">
+            <h3 style="margin: 0; font-size: 17px; font-weight: 700; color: var(--text);">Revenue — Last 6 Months</h3>
+            <a href="{{ route('admin.analytics.index') }}" class="btn btn-small" style="display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 5px 12px;">
+                <span>Deep Analytics</span>
+                <x-icon name="arrow-right" size="12" />
+            </a>
+        </div>
+        <x-card>
             <div style="height: 220px;">
                 <canvas id="revenueChart"></canvas>
             </div>

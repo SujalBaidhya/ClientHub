@@ -19,6 +19,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ActivityLogController as ClientActivityLogController;
+use App\Http\Controllers\Admin\AnalyticsController;
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/milestones/{milestone}/approve', [AdminMilestoneController::class, 'approve'])
@@ -106,21 +107,21 @@ Route::prefix('admin')->middleware(['auth', 'admin','no-cache'])->scopeBindings(
     Route::get('/projects/{project}/edit', [AdminProjectController::class, 'edit'])->name('admin.projects.edit');
     Route::put('/projects/{project}', [AdminProjectController::class, 'update'])->name('admin.projects.update');
     Route::delete('/projects/{project}', [AdminProjectController::class, 'destroy'])->name('admin.projects.destroy');
-        Route::patch('/projects/{project}/archive', [AdminProjectController::class, 'archive'])->name('admin.projects.archive');
+    Route::patch('/projects/{project}/archive', [AdminProjectController::class, 'archive'])->name('admin.projects.archive');
     Route::patch('/projects/{project}/restore', [AdminProjectController::class, 'restore'])->name('admin.projects.restore');
     Route::get('/projects/{project}/milestones', [AdminMilestoneController::class, 'create'])->name('admin.milestones.create');
     Route::post('/projects/{project}/milestones', [AdminMilestoneController::class, 'store'])->name('admin.milestones.store');
     Route::put('/projects/{project}/milestones/{milestone}', [AdminMilestoneController::class, 'update'])->name('admin.milestones.update');
     Route::delete('/projects/{project}/milestones/{milestone}', [AdminMilestoneController::class, 'destroy'])->name('admin.milestones.destroy');
-        Route::get('/invoices', [AdminInvoiceController::class, 'index'])->name('admin.invoices.index');
+    Route::get('/invoices', [AdminInvoiceController::class, 'index'])->name('admin.invoices.index');
     Route::get('/invoices/export', [AdminInvoiceController::class, 'exportCsv'])->name('admin.invoices.export');
     Route::get('/projects/{project}/invoices', [AdminInvoiceController::class, 'create'])->name('admin.invoices.create');
     Route::post('/projects/{project}/invoices', [AdminInvoiceController::class, 'store'])->name('admin.invoices.store');
     Route::put('/projects/{project}/invoices/{invoice}', [AdminInvoiceController::class, 'update'])->name('admin.invoices.update');
     Route::delete('/projects/{project}/invoices/{invoice}', [AdminInvoiceController::class, 'destroy'])->name('admin.invoices.destroy');
     Route::get('/projects/{project}/files', [AdminFileController::class, 'create'])->name('admin.files.create');
-Route::post('/projects/{project}/files', [AdminFileController::class, 'store'])->name('admin.files.store');
-Route::delete('/projects/{project}/files/{file}', [AdminFileController::class, 'destroy'])->name('admin.files.destroy');
+    Route::post('/projects/{project}/files', [AdminFileController::class, 'store'])->name('admin.files.store');
+    Route::delete('/projects/{project}/files/{file}', [AdminFileController::class, 'destroy'])->name('admin.files.destroy');
 
     Route::get('/clients', [AdminClientController::class, 'create'])->name('admin.clients.create');
     Route::post('/clients', [AdminClientController::class, 'store'])->name('admin.clients.store');
@@ -130,11 +131,15 @@ Route::delete('/projects/{project}/files/{file}', [AdminFileController::class, '
 
     Route::get('/payments', [AdminPaymentController::class, 'index'])->name('admin.payments.index');
     Route::get('/payments/export', [AdminPaymentController::class, 'exportCsv'])->name('admin.payments.export');
-Route::post('/activity-logs/mark-read', [\App\Http\Controllers\Admin\ActivityLogController::class, 'markRead'])->name('admin.activity_logs.mark_read');
-Route::get('/activity', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('admin.activity.index');
-Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('admin.search');
+
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('admin.analytics.index');
+    Route::get('/analytics/export', [AnalyticsController::class, 'exportCsv'])->name('admin.analytics.export');
+
+    Route::post('/activity-logs/mark-read', [\App\Http\Controllers\Admin\ActivityLogController::class, 'markRead'])->name('admin.activity_logs.mark_read');
+    Route::get('/activity', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('admin.activity.index');
+    Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('admin.search');
 });
 Route::middleware('auth')->group(function () {
     Route::get('/activity', [ClientActivityLogController::class, 'index'])->name('client.activity.index');
     Route::post('/activity/mark-read', [ClientActivityLogController::class, 'markRead'])->name('client.activity.mark_read');
-}); 
+});
