@@ -27,13 +27,14 @@
             gap: 16px;
             padding: 16px;
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 12px;
             background: #ffffff;
-            transition: border-color 0.15s ease;
+            transition: all 0.2s ease;
         }
 
         .file-card-item:hover {
             border-color: #cbd5e1;
+            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
         }
 
         .file-details {
@@ -46,17 +47,15 @@
 
         .file-badge-icon {
             flex-shrink: 0;
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             border-radius: 10px;
-            background: #eef2ff;
-            color: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 700;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.04em;
         }
 
         .file-meta {
@@ -107,14 +106,122 @@
                 padding: 9px 14px;
             }
         }
+        .dropzone-box {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            background: #f8fafc;
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .dropzone-box:hover, .dropzone-box.is-dragover {
+            border-color: var(--primary, #4f46e5);
+            background: #eef2ff;
+        }
+        .dropzone-hidden-input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+        .dropzone-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            pointer-events: none;
+        }
+        .dropzone-icon-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #e0e7ff;
+            color: var(--primary, #4f46e5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+        .dropzone-box:hover .dropzone-icon-wrap {
+            transform: translateY(-2px);
+        }
+        .dropzone-title {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #1e1b4b;
+            display: block;
+        }
+        .dropzone-hint {
+            font-size: 11.5px;
+            color: #6b7280;
+            display: block;
+            margin-top: 2px;
+        }
+        .dropzone-preview {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #ffffff;
+            border: 1px solid var(--border, #e4e4f0);
+            border-radius: 8px;
+            padding: 10px 14px;
+            text-align: left;
+            position: relative;
+            z-index: 3;
+        }
+        .dropzone-preview-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .dropzone-preview-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e1b4b;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .dropzone-preview-size {
+            font-size: 11px;
+            color: #6b7280;
+            display: block;
+        }
+        .dropzone-remove-btn {
+            background: #fee2e2;
+            color: #991b1b;
+            border: none;
+            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .dropzone-remove-btn:hover {
+            background: #fecaca;
+        }
     </style>
 
     <div class="dashboard">
 
+        <x-breadcrumbs :links="[
+            ['label' => 'Projects', 'url' => route('admin.projects.index'), 'icon' => true],
+            ['label' => $project->name, 'url' => route('admin.projects.edit', $project)],
+            ['label' => 'Deliverables & Files'],
+        ]" />
+
         <div class="files-header">
-            <p class="dashboard-eyebrow">Admin</p>
+            <p class="dashboard-eyebrow">Admin Workspace</p>
             <h1 style="margin: 0 0 6px 0;">{{ $project->name }}</h1>
-            <p style="margin: 0; color: #6b7280; font-size: 14px;">Upload and manage files for this project.</p>
+            <p style="margin: 0; color: #6b7280; font-size: 14px;">Upload deliverables and manage files for this project.</p>
         </div>
 
         <x-card title="Upload File">
@@ -122,16 +229,95 @@
             <form method="POST" action="{{ route('admin.files.store', $project) }}" enctype="multipart/form-data">
                 @csrf
 
-                <div style="margin-bottom: 16px;">
-                    <label style="display:block; margin-bottom: 6px; font-weight: 600; font-size: 14px;">Select File</label>
-                    <input type="file" name="file" required class="file-upload-input">
+                <div class="dropzone-box" id="adminDropzoneBox">
+                    <input type="file" name="file" id="adminDropzoneInput" required accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip" class="dropzone-hidden-input">
+                    <div class="dropzone-content" id="adminDropzonePrompt">
+                        <div class="dropzone-icon-wrap">
+                            <x-icon name="upload-cloud" size="24" />
+                        </div>
+                        <div>
+                            <span class="dropzone-title">Click to upload or drag & drop</span>
+                            <span class="dropzone-hint">PDF, Images, Word, Excel, ZIP up to 20MB</span>
+                        </div>
+                    </div>
+                    <div class="dropzone-preview" id="adminDropzonePreview" style="display: none;">
+                        <div style="color: var(--primary);"><x-icon name="file-text" size="22" /></div>
+                        <div class="dropzone-preview-info">
+                            <span id="adminDropzoneFileName" class="dropzone-preview-name"></span>
+                            <span id="adminDropzoneFileSize" class="dropzone-preview-size"></span>
+                        </div>
+                        <button type="button" id="adminDropzoneClearBtn" class="dropzone-remove-btn" title="Remove file">
+                            <x-icon name="x" size="14" />
+                        </button>
+                    </div>
                 </div>
 
-                <button type="submit" class="btn btn-success" style="padding: 10px 18px;">
-                    Upload File
-                </button>
+                <div id="adminDropzoneActions" style="display: none; margin-top: 14px;">
+                    <button type="submit" class="btn btn-success" style="padding: 9px 18px; display: inline-flex; align-items: center; gap: 6px;">
+                        <x-icon name="upload-cloud" size="15" />
+                        <span>Upload File</span>
+                    </button>
+                </div>
 
             </form>
+
+            <script>
+                (function() {
+                    var box = document.getElementById("adminDropzoneBox");
+                    var input = document.getElementById("adminDropzoneInput");
+                    var prompt = document.getElementById("adminDropzonePrompt");
+                    var preview = document.getElementById("adminDropzonePreview");
+                    var nameEl = document.getElementById("adminDropzoneFileName");
+                    var sizeEl = document.getElementById("adminDropzoneFileSize");
+                    var clearBtn = document.getElementById("adminDropzoneClearBtn");
+                    var actions = document.getElementById("adminDropzoneActions");
+
+                    if (!input || !box) return;
+
+                    function formatBytes(bytes) {
+                        if (bytes === 0) return "0 Bytes";
+                        var k = 1024, sizes = ["Bytes", "KB", "MB", "GB"];
+                        var i = Math.floor(Math.log(bytes) / Math.log(k));
+                        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+                    }
+
+                    input.addEventListener("change", function() {
+                        if (input.files && input.files[0]) {
+                            var file = input.files[0];
+                            nameEl.textContent = file.name;
+                            sizeEl.textContent = formatBytes(file.size);
+                            prompt.style.display = "none";
+                            preview.style.display = "flex";
+                            actions.style.display = "block";
+                        }
+                    });
+
+                    if (clearBtn) {
+                        clearBtn.addEventListener("click", function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            input.value = "";
+                            preview.style.display = "none";
+                            prompt.style.display = "flex";
+                            actions.style.display = "none";
+                        });
+                    }
+
+                    ["dragenter", "dragover"].forEach(function(evt) {
+                        box.addEventListener(evt, function(e) {
+                            e.preventDefault();
+                            box.classList.add("is-dragover");
+                        });
+                    });
+
+                    ["dragleave", "drop"].forEach(function(evt) {
+                        box.addEventListener(evt, function(e) {
+                            e.preventDefault();
+                            box.classList.remove("is-dragover");
+                        });
+                    });
+                })();
+            </script>
 
         </x-card>
 
@@ -185,39 +371,66 @@
             @else
                 <div style="display: flex; flex-direction: column; gap: 12px;">
                     @foreach($files as $file)
+                        @php
+                            $ext = strtolower(pathinfo($file->original_name, PATHINFO_EXTENSION));
+                            $typeConfig = match(true) {
+                                $ext === 'pdf' => ['bg' => '#fee2e2', 'color' => '#dc2626', 'label' => 'PDF'],
+                                in_array($ext, ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg']) => ['bg' => '#d1fae5', 'color' => '#059669', 'label' => strtoupper($ext)],
+                                in_array($ext, ['doc', 'docx', 'txt', 'rtf']) => ['bg' => '#dbeafe', 'color' => '#2563eb', 'label' => strtoupper($ext)],
+                                in_array($ext, ['xls', 'xlsx', 'csv']) => ['bg' => '#fef3c7', 'color' => '#d97706', 'label' => strtoupper($ext)],
+                                in_array($ext, ['zip', 'rar', 'tar', 'gz', '7z']) => ['bg' => '#ede9fe', 'color' => '#7c3aed', 'label' => 'ZIP'],
+                                default => ['bg' => '#f1f5f9', 'color' => '#475569', 'label' => strtoupper($ext) ?: 'FILE'],
+                            };
+                            $formattedSize = $file->file_size ? ($file->file_size < 1048576 ? round($file->file_size / 1024, 1) . ' KB' : round($file->file_size / 1048576, 1) . ' MB') : null;
+                        @endphp
                         <div class="file-card-item">
                             <div class="file-details">
-                                <div class="file-badge-icon">
-                                    {{ strtoupper(pathinfo($file->original_name, PATHINFO_EXTENSION)) ?: 'FILE' }}
+                                <div class="file-badge-icon" style="background: {{ $typeConfig['bg'] }}; color: {{ $typeConfig['color'] }};">
+                                    {{ $typeConfig['label'] }}
                                 </div>
                                 <div class="file-meta">
                                     <strong title="{{ $file->original_name }}">{{ $file->original_name }}</strong>
-                                                                        <span>
-                                        Uploaded {{ $file->created_at->format('M d, Y') }}
+                                    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-top: 2px;">
+                                        @if($formattedSize)
+                                            <span style="background: #f1f5f9; padding: 1px 6px; border-radius: 4px; font-weight: 500; color: #475569;">{{ $formattedSize }}</span>
+                                            <span>&middot;</span>
+                                        @endif
+                                        <span>Uploaded {{ $file->created_at->format('M d, Y') }}</span>
                                         @if($file->uploadedBy)
-                                            by {{ $file->uploadedBy->name }}
-                                            <span class="badge badge-{{ $file->uploadedBy->role === 'client' ? 'neutral' : 'success' }}" style="margin-left: 6px; font-size: 10px; padding: 1px 7px;">
+                                            <span>&middot;</span>
+                                            <span>by {{ $file->uploadedBy->name }}</span>
+                                            <span class="badge badge-{{ $file->uploadedBy->role === 'client' ? 'neutral' : 'success' }}" style="font-size: 10px; padding: 1px 7px;">
                                                 {{ ucfirst($file->uploadedBy->role) }}
                                             </span>
                                         @endif
-                                    </span>
+                                    </div>
                                 </div>
                             </div>
 
-                            @if(strtolower(pathinfo($file->original_name, PATHINFO_EXTENSION)) === 'pdf')
-                                <a href="{{ route('admin.files.view', [$project, $file]) }}" target="_blank" rel="noopener noreferrer" class="btn btn-small"
-                                    style="background: #2563eb; color: white; border: none; text-decoration: none;">
+                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                @if(strtolower(pathinfo($file->original_name, PATHINFO_EXTENSION)) === 'pdf')
+                                    <a href="{{ route('files.view', $file) }}" target="_blank" rel="noopener noreferrer" class="btn btn-small"
+                                        style="background: #2563eb; color: white; border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                         View PDF
-                                </a>
-                            @endif
-                            
-                            <form method="POST" action="{{ route('admin.files.destroy', [$project, $file]) }}" onsubmit="return confirm('Delete this file?');" class="file-delete-form">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-small" style="background: #dc2626; color: white; border: none;">
-                                    Delete File
-                                </button>
-                            </form>
+                                    </a>
+                                @else
+                                    <a href="{{ route('files.view', $file) }}" class="btn btn-small"
+                                        style="background: #2563eb; color: white; border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                        Download
+                                    </a>
+                                @endif
+                                
+                                <form method="POST" action="{{ route('admin.files.destroy', [$project, $file]) }}" onsubmit="return confirm('Delete this file?');" class="file-delete-form">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-small" style="background: #dc2626; color: white; border: none; display: inline-flex; align-items: center; gap: 5px;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                        Delete File
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     @endforeach
                 </div>

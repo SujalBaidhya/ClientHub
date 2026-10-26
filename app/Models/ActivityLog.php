@@ -96,6 +96,6 @@ class ActivityLog extends Model
         // Otherwise send them to their project page
         return $this->project_id
             ? route('dashboard.project', $this->project_id)
-            : route('dashboard');
+            : route('client.activity.index');
     }
 }

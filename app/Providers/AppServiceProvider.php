@@ -36,8 +36,8 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
-        Mail::extend('brevo', function (array $config = []) {
-            return new BrevoTransport(env('BREVO_API_KEY'));
-        });
+      Mail::extend('brevo', function (array $config = []) {
+    return new BrevoTransport(config('services.brevo.key'));
+});
     }
 }

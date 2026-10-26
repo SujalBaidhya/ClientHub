@@ -34,6 +34,11 @@
             display: flex;
             flex-direction: column;
             gap: 14px;
+            transition: border-color 0.15s ease;
+        }
+
+        .invoice-card-custom:hover {
+            border-color: #cbd5e1;
         }
 
         .invoice-actions-footer {
@@ -74,10 +79,16 @@
 
     <div class="dashboard">
 
+        <x-breadcrumbs :links="[
+            ['label' => 'Projects', 'url' => route('admin.projects.index'), 'icon' => true],
+            ['label' => $project->name, 'url' => route('admin.projects.edit', $project)],
+            ['label' => 'Invoices'],
+        ]" />
+
         <div class="invoices-header">
-            <p class="dashboard-eyebrow">Admin</p>
+            <p class="dashboard-eyebrow">Admin Workspace</p>
             <h1 style="margin: 0 0 6px 0;">{{ $project->name }}</h1>
-            <p style="margin: 0; color: #6b7280; font-size: 14px;">Add and manage invoices for this project.</p>
+            <p style="margin: 0; color: #6b7280; font-size: 14px;">Add and manage billing invoices for this project.</p>
         </div>
 
         <x-card title="Add Invoice">
@@ -116,7 +127,8 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-success" style="padding: 10px 18px;">
+                <button type="submit" class="btn btn-success" style="padding: 10px 18px; display: inline-flex; align-items: center; gap: 6px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     Add Invoice
                 </button>
 

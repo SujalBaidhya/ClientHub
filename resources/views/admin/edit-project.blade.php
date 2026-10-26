@@ -73,10 +73,16 @@
 
     <div class="dashboard">
 
+        <x-breadcrumbs :links="[
+            ['label' => 'Projects', 'url' => route('admin.projects.index'), 'icon' => true],
+            ['label' => $project->name],
+            ['label' => 'Edit Settings'],
+        ]" />
+
         <div class="form-header">
-            <p class="dashboard-eyebrow">Admin</p>
+            <p class="dashboard-eyebrow">Admin Workspace</p>
             <h1 style="margin: 0 0 6px 0;">Edit Project</h1>
-            <p style="margin: 0; color: #6b7280; font-size: 14px;">Update project details.</p>
+            <p style="margin: 0; color: #6b7280; font-size: 14px;">Update project settings, timeline, and client assignment.</p>
         </div>
 
         <x-card>

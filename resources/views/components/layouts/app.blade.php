@@ -8,6 +8,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+    <script>
+        (function () {
+            try {
+                var theme = localStorage.getItem('clienthub_theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+            } catch (e) {}
+        })();
+    </script>
     <style>
         :root {
             --bg: #f6f7fb;
@@ -30,6 +38,31 @@
             --neutral-text: #374151;
             --font-display: 'Fraunces', serif;
             --font-body: 'Inter', -apple-system, sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg: #090d16;
+            --surface: #111827;
+            --text: #f3f4f6;
+            --muted: #94a3b8;
+            --border: #1f293d;
+            --primary: #6366f1;
+            --accent-gold: #fbbf24;
+            --sidebar-bg: #070a12;
+            --sidebar-text: rgba(255, 255, 255, 0.72);
+            --sidebar-text-active: #ffffff;
+            --success-bg: rgba(34, 197, 94, 0.16);
+            --success-text: #4ade80;
+            --warning-bg: rgba(245, 158, 11, 0.16);
+            --warning-text: #fbbf24;
+            --danger-bg: rgba(239, 68, 68, 0.16);
+            --danger-text: #f87171;
+            --neutral-bg: rgba(148, 163, 184, 0.15);
+            --neutral-text: #cbd5e1;
+        }
+
+        html, body, .card, .sidebar, .btn, .search-result-row, .milestone-card, .file-item, .project-card {
+            transition: background-color 0.25s ease, border-color 0.25s ease, color 0.2s ease, box-shadow 0.25s ease;
         }
 
         * { box-sizing: border-box; }
@@ -423,46 +456,167 @@
     font-size: 12px;
     color: var(--muted);
 }
-        .toast {
-    position: fixed;
-    top: 24px;
-    right: 24px;
-    z-index: 999;
-    padding: 14px 20px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    color: white;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    animation: toast-in 0.3s ease;
-    max-width: 320px;
-}
+        /* ===== Toast Notifications System ===== */
+        .toast-stack {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+            max-width: 380px;
+            width: calc(100% - 48px);
+        }
 
-.toast-success { background: #15803d; }
-.toast-error { background: #b91c1c; }
+        .toast-item {
+            pointer-events: auto;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 13px 16px;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+            animation: toast-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s ease, opacity 0.15s ease;
+        }
 
-.toast.toast-hide {
-    animation: toast-out 0.3s ease forwards;
-}
+        .toast-item.toast-success {
+            border-left: 4px solid #10b981;
+        }
 
-@keyframes toast-in {
-    from { transform: translateX(40px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
+        .toast-item.toast-error {
+            border-left: 4px solid #ef4444;
+        }
 
-@keyframes toast-out {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(40px); opacity: 0; }
-}
+        .toast-icon-wrap {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
 
-@media (max-width: 850px) {
-    .toast {
-        left: 14px;
-        right: 14px;
-        top: 14px;
-        max-width: none;
-    }
-}
+        .toast-success .toast-icon-wrap {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .toast-error .toast-icon-wrap {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .toast-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .toast-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #1e1b4b;
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+
+        .toast-message {
+            font-size: 12.5px;
+            color: #4b5563;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .toast-close-btn {
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.15s ease, background 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .toast-close-btn:hover {
+            color: #1e1b4b;
+            background: #f3f4f6;
+        }
+
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .toast-progress-bar {
+            height: 100%;
+            width: 100%;
+            transform-origin: left;
+            animation: toast-timer 3.8s linear forwards;
+        }
+
+        .toast-success .toast-progress-bar { background: #10b981; }
+        .toast-error .toast-progress-bar { background: #ef4444; }
+
+        .toast-item.toast-hide {
+            animation: toast-out 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+        }
+
+        @keyframes toast-in {
+            from { transform: translateX(30px) scale(0.96); opacity: 0; }
+            to { transform: translateX(0) scale(1); opacity: 1; }
+        }
+
+        @keyframes toast-out {
+            from { transform: translateX(0) scale(1); opacity: 1; }
+            to { transform: translateX(30px) scale(0.96); opacity: 0; }
+        }
+
+        @keyframes toast-timer {
+            from { transform: scaleX(1); }
+            to { transform: scaleX(0); }
+        }
+
+        .btn-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: btn-spin 0.6s linear infinite;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        @keyframes btn-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 900px) {
+            .toast-stack {
+                top: 72px;
+                right: 14px;
+                left: 14px;
+                width: auto;
+                max-width: none;
+            }
+        }
 
         .badge {
             display: inline-block;
@@ -778,6 +932,492 @@
             .milestone-card-details { flex-direction: column; align-items: flex-start; gap: 16px; }
             .milestone-review { margin-left: 0; }
         }
+
+        /* ===== Command Palette (Linear / Stripe style) ===== */
+        .sidebar-search-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--sidebar-text);
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            margin-bottom: 14px;
+            transition: all 0.15s ease;
+            text-align: left;
+        }
+        .sidebar-search-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        .sidebar-search-btn .cmd-kbd {
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.18);
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .cmd-palette-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 12vh 16px 20px;
+        }
+        .cmd-palette-backdrop.is-open {
+            display: flex;
+            animation: cmdFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes cmdFadeIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .cmd-palette-modal {
+            width: 100%;
+            max-width: 580px;
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.28), 0 0 0 1px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .cmd-palette-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+        }
+        .cmd-palette-input {
+            flex: 1;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            font-size: 15px;
+            background: transparent;
+            color: var(--text);
+            padding: 0;
+            font-family: inherit;
+        }
+        .cmd-kbd {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            font-size: 11px;
+            font-family: inherit;
+            font-weight: 600;
+            color: #64748b;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 2px 6px;
+            line-height: 1.2;
+        }
+        .cmd-palette-body {
+            max-height: 380px;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        .cmd-palette-group-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            padding: 8px 10px 4px;
+        }
+        .cmd-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.1s ease;
+        }
+        .cmd-item:hover, .cmd-item.is-selected {
+            background: #f1f5f9;
+        }
+        .cmd-item-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: #eef2ff;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+        .cmd-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .cmd-item-title {
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .cmd-item-subtitle {
+            font-size: 12px;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .cmd-palette-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 18px;
+            background: #f8fafc;
+            border-top: 1px solid var(--border);
+            font-size: 11.5px;
+            color: #64748b;
+        }
+
+
+        /* ===== Ultra-Premium Theme Switcher ===== */
+        .theme-toggle-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            color: var(--sidebar-text);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 100%;
+            text-align: left;
+            margin-bottom: 6px;
+        }
+
+        .theme-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.16);
+        }
+
+        .theme-text {
+            flex: 1;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .theme-toggle-pill {
+            width: 36px;
+            height: 20px;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.18);
+            position: relative;
+            padding: 2px;
+            transition: background 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle-circle {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+            transform: translateX(0);
+        }
+
+        [data-theme="dark"] .theme-toggle-pill {
+            background: #6366f1;
+        }
+
+        [data-theme="dark"] .theme-toggle-circle {
+            transform: translateX(16px);
+            background: #ffffff;
+        }
+
+        .theme-icon-dark { display: none; }
+        .theme-icon-light { display: inline-flex; align-items: center; color: #fbbf24; }
+
+        [data-theme="dark"] .theme-icon-light { display: none; }
+        [data-theme="dark"] .theme-icon-dark { display: inline-flex; align-items: center; color: #a5b4fc; }
+
+        .theme-toggle-mobile {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* ===== Dark Mode Component Overrides ===== */
+        [data-theme="dark"] input[type="text"],
+        [data-theme="dark"] input[type="email"],
+        [data-theme="dark"] input[type="password"],
+        [data-theme="dark"] input[type="number"],
+        [data-theme="dark"] input[type="date"],
+        [data-theme="dark"] select,
+        [data-theme="dark"] textarea {
+            background: #0c121e !important;
+            color: #f1f5f9 !important;
+            border-color: #232f48 !important;
+        }
+
+        [data-theme="dark"] input::placeholder,
+        [data-theme="dark"] textarea::placeholder {
+            color: #64748b;
+        }
+
+        [data-theme="dark"] .card {
+            background: var(--surface);
+            border-color: var(--border);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45);
+        }
+
+        [data-theme="dark"] .current-project-card {
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .current-project-title {
+            color: var(--text);
+        }
+
+        [data-theme="dark"] .project-info-grid {
+            background: #0c121e;
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .project-info-item:not(:last-child) {
+            border-right-color: var(--border);
+        }
+
+        [data-theme="dark"] .progress-bar {
+            background: #1e293b;
+        }
+
+        [data-theme="dark"] .dashboard-date {
+            background: var(--surface);
+            border-color: var(--border);
+            color: var(--muted);
+        }
+
+        [data-theme="dark"] .file-item {
+            background: #0c121e;
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .file-item:hover {
+            background: #131b2c;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .file-icon {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+        }
+
+        [data-theme="dark"] .milestone-card {
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .milestone-card:hover {
+            border-color: #4f46e5;
+        }
+
+        [data-theme="dark"] .milestone-card-details {
+            background: #0c121e;
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .milestone-chevron {
+            background: #1e293b;
+            color: #cbd5e1;
+        }
+
+        [data-theme="dark"] .milestone-summary {
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .milestone-detail strong {
+            color: #f1f5f9;
+        }
+
+        [data-theme="dark"] .invoice-create {
+            background: #0c121e;
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .invoice-table td {
+            background: var(--surface);
+            border-color: var(--border);
+            color: var(--text);
+        }
+
+        [data-theme="dark"] .client-invoice-card {
+            background: var(--surface);
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .empty-state {
+            background: #0c121e;
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .empty-state-icon {
+            background: rgba(99, 102, 241, 0.12);
+            color: #818cf8;
+        }
+
+        [data-theme="dark"] .empty-state-title {
+            color: var(--text);
+        }
+
+        [data-theme="dark"] .btn {
+            background: var(--surface);
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .btn:hover {
+            background: #1e293b;
+        }
+
+        [data-theme="dark"] .btn-success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        [data-theme="dark"] .btn-success:hover {
+            background: rgba(34, 197, 94, 0.3);
+        }
+
+        [data-theme="dark"] table th,
+        [data-theme="dark"] table td {
+            border-bottom-color: var(--border);
+            color: var(--text);
+        }
+
+        [data-theme="dark"] .plain-list li {
+            border-bottom-color: var(--border);
+        }
+
+        [data-theme="dark"] .activity-dropdown {
+            background: #111827;
+            border: 1px solid var(--border);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+        }
+
+        [data-theme="dark"] .activity-dropdown-item {
+            border-bottom-color: #1f293d !important;
+        }
+
+        [data-theme="dark"] .activity-dropdown-item p {
+            color: #f1f5f9;
+        }
+
+        [data-theme="dark"] .activity-dropdown-footer {
+            color: #a5b4fc;
+        }
+
+        [data-theme="dark"] .activity-dropdown-footer:hover {
+            background: #1a243b;
+        }
+
+        [data-theme="dark"] .activity-description {
+            color: #f1f5f9;
+        }
+
+        [data-theme="dark"] .activity-dot {
+            background: var(--primary);
+        }
+
+        [data-theme="dark"] .activity-item:not(:last-child)::before {
+            background: var(--border);
+        }
+
+        [data-theme="dark"] .toast-item {
+            background: #111827;
+            border-color: var(--border);
+            color: #f1f5f9;
+            box-shadow: 0 16px 36px rgba(0,0,0,0.5);
+        }
+
+        [data-theme="dark"] .toast-title {
+            color: #f1f5f9;
+        }
+
+        [data-theme="dark"] .toast-message {
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .toast-close-btn:hover {
+            color: #f1f5f9;
+            background: #1f293d;
+        }
+
+        [data-theme="dark"] .cmd-palette-modal {
+            background: #111827;
+            border: 1px solid var(--border);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
+        }
+
+        [data-theme="dark"] .cmd-palette-header {
+            border-bottom-color: var(--border);
+        }
+
+        [data-theme="dark"] .cmd-palette-footer {
+            background: #0c121e;
+            border-top-color: var(--border);
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .cmd-item:hover,
+        [data-theme="dark"] .cmd-item.is-selected {
+            background: #1a243b;
+        }
+
+        [data-theme="dark"] .cmd-item-title {
+            color: #f1f5f9;
+        }
+
+        [data-theme="dark"] .cmd-kbd {
+            background: #0c121e;
+            border-color: #232f48;
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .search-result-row {
+            border-top-color: var(--border);
+            color: var(--text);
+        }
+
+        [data-theme="dark"] .search-result-row:hover {
+            background: #1a243b;
+        }
     </style>
 </head>
 <body>
@@ -789,18 +1429,57 @@
         $current = request()->path();
     @endphp
 
-    <div class="app-shell">
+    <div class="toast-stack" id="toastStack">
         @if(session('success'))
-    <div class="toast toast-success">{{ session('success') }}</div>
-@endif
+            <div class="toast toast-item toast-success">
+                <div class="toast-icon-wrap">
+                    <x-icon name="check" size="14" strokeWidth="2.5" />
+                </div>
+                <div class="toast-body">
+                    <div class="toast-title">Success</div>
+                    <div class="toast-message">{{ session('success') }}</div>
+                </div>
+                <button type="button" class="toast-close-btn" onclick="this.closest('.toast-item').classList.add('toast-hide'); setTimeout(() => this.closest('.toast-item')?.remove(), 260);" aria-label="Close">
+                    <x-icon name="x" size="14" />
+                </button>
+                <div class="toast-progress"><div class="toast-progress-bar"></div></div>
+            </div>
+        @endif
 
-@if(session('error'))
-    <div class="toast toast-error">{{ session('error') }}</div>
-@endif
+        @if(session('error'))
+            <div class="toast toast-item toast-error">
+                <div class="toast-icon-wrap">
+                    <x-icon name="alert-circle" size="14" strokeWidth="2.5" />
+                </div>
+                <div class="toast-body">
+                    <div class="toast-title">Notice</div>
+                    <div class="toast-message">{{ session('error') }}</div>
+                </div>
+                <button type="button" class="toast-close-btn" onclick="this.closest('.toast-item').classList.add('toast-hide'); setTimeout(() => this.closest('.toast-item')?.remove(), 260);" aria-label="Close">
+                    <x-icon name="x" size="14" />
+                </button>
+                <div class="toast-progress"><div class="toast-progress-bar"></div></div>
+            </div>
+        @endif
 
-@if($errors->any())
-    <div class="toast toast-error">{{ $errors->first() }}</div>
-@endif
+        @if($errors->any())
+            <div class="toast toast-item toast-error">
+                <div class="toast-icon-wrap">
+                    <x-icon name="alert-circle" size="14" strokeWidth="2.5" />
+                </div>
+                <div class="toast-body">
+                    <div class="toast-title">Please review</div>
+                    <div class="toast-message">{{ $errors->first() }}</div>
+                </div>
+                <button type="button" class="toast-close-btn" onclick="this.closest('.toast-item').classList.add('toast-hide'); setTimeout(() => this.closest('.toast-item')?.remove(), 260);" aria-label="Close">
+                    <x-icon name="x" size="14" />
+                </button>
+                <div class="toast-progress"><div class="toast-progress-bar"></div></div>
+            </div>
+        @endif
+    </div>
+
+    <div class="app-shell">
 
         <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
@@ -842,6 +1521,7 @@
         <div class="activity-dropdown" id="activityDropdown">
             @forelse($recentActivity as $item)
                 <a href="{{ $item->urlFor(auth()->user()) ?? $activityIndexRoute }}" class="activity-dropdown-item" style="text-decoration: none; display: block; color: inherit;background: rgba(0,0,0,0.03); font-weight: 500;">
+
                     <p>{{ $item->description }}</p>
                     <span style="font-size: 0.75rem; color: var(--muted);">{{ $item->created_at->diffForHumans() }}</span>
                 </a>
@@ -859,8 +1539,15 @@
     </div>
        @if($isAdmin)
 
-    <a href="{{ route('admin.projects.create') }}" class="btn btn-success" style="justify-content: center; text-align: center; margin: 0 0 18px; display: block;">
-        + New Project
+    <button type="button" class="sidebar-search-btn" id="openCommandPalette">
+        <x-icon name="search" size="14" />
+        <span>Quick search...</span>
+        <kbd class="cmd-kbd">Ctrl K</kbd>
+    </button>
+
+    <a href="{{ route('admin.projects.create') }}" class="btn btn-success" style="justify-content: center; text-align: center; margin: 0 0 18px; display: flex; align-items: center; gap: 6px;">
+        <x-icon name="plus" size="16" />
+        New Project
     </a>
 @endif
 
@@ -868,64 +1555,92 @@
 
                 @if(!$isAdmin)
                     <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') || request()->routeIs('dashboard.project') ? 'active' : '' }}">
-                        Dashboard
+                        <x-icon name="layout-dashboard" size="18" />
+                        <span>Dashboard</span>
                     </a>
                     <a href="{{ route('client.activity.index') }}" class="sidebar-link {{ request()->routeIs('client.activity.*') ? 'active' : '' }}">
-                        Activity Log
+                        <x-icon name="activity" size="18" />
+                        <span>Activity Log</span>
                     </a>
-                                @else
-                    <form method="GET" action="{{ route('admin.search') }}" style="padding: 0 0 14px;">
-                        <input type="text" name="q" placeholder="Search..."
-                               style="width: 100%; padding: 8px 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: white; font-size: 13px;">
-                    </form>
-
+                @else
                     <a href="{{ route('admin.dashboard') }}" class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                        Overview
+                        <x-icon name="layout-dashboard" size="18" />
+                        <span>Overview</span>
                     </a>
                     <a href="{{ route('admin.projects.index') }}" class="sidebar-link {{ request()->routeIs('admin.projects.*') ? 'active' : '' }}">
-                        Projects
+                        <x-icon name="folder" size="18" />
+                        <span>Projects</span>
                     </a>
                     <a href="{{ route('admin.clients.create') }}" class="sidebar-link {{ request()->routeIs('admin.clients.*') ? 'active' : '' }}">
-                        Clients
+                        <x-icon name="users" size="18" />
+                        <span>Clients</span>
+                    </a>
+                    <a href="{{ route('admin.invoices.index') }}" class="sidebar-link {{ request()->routeIs('admin.invoices.index') ? 'active' : '' }}">
+                        <x-icon name="file-text" size="18" />
+                        <span>Invoices</span>
                     </a>
                     <a href="{{ route('admin.payments.index') }}" class="sidebar-link {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
-                        Payments
+                        <x-icon name="credit-card" size="18" />
+                        <span>Payments</span>
                     </a>
-                 <a href="{{ route('admin.activity.index') }}" class="sidebar-link {{ request()->routeIs('admin.activity.*') ? 'active' : '' }}">
-                        Activity Log
+                    <a href="{{ route('admin.activity.index') }}" class="sidebar-link {{ request()->routeIs('admin.activity.*') ? 'active' : '' }}">
+                        <x-icon name="activity" size="18" />
+                        <span>Activity Log</span>
                     </a>   
-                 @endif
+                @endif
 
                 <div class="sidebar-section-label">Account</div>
 
                 <a href="{{ route('account.edit') }}" class="sidebar-link {{ request()->routeIs('account.edit') ? 'active' : '' }}">
-                    Settings
+                    <x-icon name="settings" size="18" />
+                    <span>Settings</span>
                 </a>
 
                 @if(!$isAdmin)
-                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=hello.clienthub@gmail.com" target="_blank" class="sidebar-link">
-                        Contact Support
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=clienthub@gmail.com" target="_blank" class="sidebar-link">
+                        <x-icon name="external-link" size="18" />
+                        <span>Contact Support</span>
                     </a>
                 @endif
                 @endunless
 
-                        @unless($isGuest)
                 <div class="sidebar-divider"></div>
 
                 <div class="sidebar-footer">
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="sidebar-link">Logout</button>
-                    </form>
+                    <button type="button" id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle Dark Mode" onclick="toggleTheme()">
+                        <span class="theme-icon-light"><x-icon name="sun" size="16" /></span>
+                        <span class="theme-icon-dark"><x-icon name="moon" size="16" /></span>
+                        <span class="theme-text">
+                            <span>Dark Theme</span>
+                            <span class="theme-toggle-pill">
+                                <span class="theme-toggle-circle"></span>
+                            </span>
+                        </span>
+                    </button>
+
+                    @unless($isGuest)
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="sidebar-link">
+                                <x-icon name="log-out" size="18" />
+                                <span>Logout</span>
+                            </button>
+                        </form>
+                    @endunless
                 </div>
-            @endunless
         </aside>
 
         <div class="main-content">
 
             <div class="mobile-topbar">
                 <a href="{{ $homeRoute }}" class="sidebar-brand" style="color: white;">ClientHub</a>
-                <button class="mobile-menu-button" id="mobileMenuButton" aria-label="Open menu">&#9776;</button>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="button" class="mobile-menu-button theme-toggle-mobile" onclick="toggleTheme()" aria-label="Toggle Theme">
+                        <span class="theme-icon-light"><x-icon name="sun" size="16" /></span>
+                        <span class="theme-icon-dark"><x-icon name="moon" size="16" /></span>
+                    </button>
+                    <button class="mobile-menu-button" id="mobileMenuButton" aria-label="Open menu">&#9776;</button>
+                </div>
             </div>
 
             <main class="container">
@@ -934,6 +1649,24 @@
 
         </div>
 
+    </div>
+    <!-- ===== Command Palette Modal ===== -->
+    <div id="commandPalette" class="cmd-palette-backdrop">
+        <div class="cmd-palette-modal" id="commandPaletteModal">
+            <div class="cmd-palette-header">
+                <x-icon name="search" size="18" style="color: var(--muted);" />
+                <input type="text" id="cmdPaletteInput" class="cmd-palette-input" placeholder="Search projects, clients, invoices, or jump to..." autocomplete="off">
+                <kbd class="cmd-kbd" id="closeCmdPaletteBtn" style="cursor: pointer;">ESC</kbd>
+            </div>
+            <div id="cmdPaletteResults" class="cmd-palette-body">
+                <!-- Dynamically populated -->
+            </div>
+            <div class="cmd-palette-footer">
+                <span>Navigate <kbd class="cmd-kbd">↑</kbd> <kbd class="cmd-kbd">↓</kbd></span>
+                <span>Select <kbd class="cmd-kbd">↵</kbd></span>
+                <span>Close <kbd class="cmd-kbd">esc</kbd></span>
+            </div>
+        </div>
     </div>
 <script>
     (function () {
@@ -958,25 +1691,74 @@
             backdrop.addEventListener('click', closeMenu);
         }
 
-        document.querySelectorAll('.toast').forEach(function (toast, i) {
-            setTimeout(function () {
+        // Auto-dismiss initial toasts & setup dismiss timers
+        function initToast(toast, delay = 3800) {
+            let timer = setTimeout(function () {
                 toast.classList.add('toast-hide');
-            }, 3500 + i * 300);
+                setTimeout(() => toast.remove(), 260);
+            }, delay);
 
-            setTimeout(function () {
-                toast.remove();
-            }, 3900 + i * 300);
+            toast.addEventListener('mouseenter', () => clearTimeout(timer));
+            toast.addEventListener('mouseleave', () => {
+                timer = setTimeout(function () {
+                    toast.classList.add('toast-hide');
+                    setTimeout(() => toast.remove(), 260);
+                }, 2000);
+            });
+        }
+
+        document.querySelectorAll('.toast-item').forEach(function (toast, i) {
+            initToast(toast, 3800 + i * 300);
         });
 
+        // Global toast trigger for interactive client feedback
+        window.showToast = function (message, type = 'success', title = null) {
+            let stack = document.getElementById('toastStack');
+            if (!stack) {
+                stack = document.createElement('div');
+                stack.id = 'toastStack';
+                stack.className = 'toast-stack';
+                document.body.appendChild(stack);
+            }
+
+            const item = document.createElement('div');
+            item.className = `toast toast-item toast-${type}`;
+            const isSuccess = type === 'success';
+            const iconSvg = isSuccess
+                ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+                : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+
+            item.innerHTML = `
+                <div class="toast-icon-wrap">${iconSvg}</div>
+                <div class="toast-body">
+                    <div class="toast-title">${title || (isSuccess ? 'Success' : 'Notice')}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button type="button" class="toast-close-btn" aria-label="Close">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+                <div class="toast-progress"><div class="toast-progress-bar"></div></div>
+            `;
+
+            item.querySelector('.toast-close-btn').addEventListener('click', () => {
+                item.classList.add('toast-hide');
+                setTimeout(() => item.remove(), 260);
+            });
+
+            stack.appendChild(item);
+            initToast(item, 3800);
+        };
+
+        // Form submit loading states with clean micro-spinner
         document.querySelectorAll('form').forEach(function (form) {
             form.addEventListener('submit', function () {
                 var btn = form.querySelector('button[type="submit"]');
-                if (btn && !btn.disabled) {
+                if (btn && !btn.disabled && !form.hasAttribute('data-no-loader')) {
                     btn.disabled = true;
                     btn.dataset.originalText = btn.innerHTML;
-                    btn.innerHTML = 'Please wait...';
-                    btn.style.opacity = '0.7';
-                    btn.style.cursor = 'default';
+                    btn.innerHTML = '<span class="btn-spinner"></span> Processing...';
+                    btn.style.opacity = '0.85';
+                    btn.style.cursor = 'wait';
                 }
             });
         });
@@ -1013,6 +1795,176 @@
                 }
             });
         }
+        // ===== Command Palette Logic =====
+        var cmdPalette = document.getElementById("commandPalette");
+        var cmdInput = document.getElementById("cmdPaletteInput");
+        var cmdResults = document.getElementById("cmdPaletteResults");
+        var openCmdBtn = document.getElementById("openCommandPalette");
+        var closeCmdBtn = document.getElementById("closeCmdPaletteBtn");
+
+        var defaultCommands = [
+            @if($isAdmin)
+            { title: "Create New Project", subtitle: "Assign project and milestones to client", url: "{{ route('admin.projects.create') }}", icon: "plus" },
+            { title: "All Projects", subtitle: "View and filter all client projects", url: "{{ route('admin.projects.index') }}", icon: "folder" },
+            { title: "All Invoices", subtitle: "Manage project invoices and CSV export", url: "{{ route('admin.invoices.index') }}", icon: "file-text" },
+            { title: "Payment History", subtitle: "View verified client payments", url: "{{ route('admin.payments.index') }}", icon: "credit-card" },
+            { title: "Client Accounts", subtitle: "Invite new clients and manage accounts", url: "{{ route('admin.clients.create') }}", icon: "users" },
+            { title: "Activity Audit Log", subtitle: "Recent actions across projects", url: "{{ route('admin.activity.index') }}", icon: "activity" },
+            @else
+            { title: "Project Dashboard", subtitle: "View your active project and milestones", url: "{{ route('dashboard') }}", icon: "layout-dashboard" },
+            { title: "Recent Updates & Notifications", subtitle: "View project activity feed", url: "{{ route('client.activity.index') }}", icon: "activity" },
+            { title: "Account Settings", subtitle: "Manage profile and password", url: "{{ route('account.edit') }}", icon: "settings" },
+            @endif
+            { title: "Account Settings", subtitle: "Update email preferences & security", url: "{{ route('account.edit') }}", icon: "settings" }
+        ];
+
+        function renderDefaultCommands() {
+            if (!cmdResults) return;
+            var html = '<div class="cmd-palette-group-title">Quick Actions</div>';
+            defaultCommands.forEach(function (cmd, idx) {
+                html += '<a href="' + cmd.url + '" class="cmd-item ' + (idx === 0 ? 'is-selected' : '') + '" data-idx="' + idx + '"><div class="cmd-item-icon">★</div><div class="cmd-item-info"><div class="cmd-item-title">' + cmd.title + '</div><div class="cmd-item-subtitle">' + cmd.subtitle + '</div></div><span style="color: var(--muted); font-size: 11px;">Jump →</span></a>';
+            });
+            cmdResults.innerHTML = html;
+            attachCmdItemEvents();
+        }
+
+        function openPalette() {
+            if (!cmdPalette) return;
+            cmdPalette.classList.add("is-open");
+            cmdInput.value = "";
+            renderDefaultCommands();
+            setTimeout(function () { cmdInput.focus(); }, 50);
+        }
+
+        function closePalette() {
+            if (!cmdPalette) return;
+            cmdPalette.classList.remove("is-open");
+        }
+
+        if (openCmdBtn) openCmdBtn.addEventListener("click", openPalette);
+        if (closeCmdBtn) closeCmdBtn.addEventListener("click", closePalette);
+
+        if (cmdPalette) {
+            cmdPalette.addEventListener("click", function (e) {
+                if (e.target === cmdPalette) closePalette();
+            });
+        }
+
+        document.addEventListener("keydown", function (e) {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+                e.preventDefault();
+                if (cmdPalette && cmdPalette.classList.contains("is-open")) {
+                    closePalette();
+                } else {
+                    openPalette();
+                }
+            } else if (e.key === "Escape" && cmdPalette && cmdPalette.classList.contains("is-open")) {
+                closePalette();
+            }
+        });
+
+        var debounceTimer = null;
+        if (cmdInput) {
+            cmdInput.addEventListener("input", function () {
+                var query = cmdInput.value.trim();
+                clearTimeout(debounceTimer);
+
+                if (query.length < 2) {
+                    renderDefaultCommands();
+                    return;
+                }
+
+                debounceTimer = setTimeout(function () {
+                    var searchUrl = @if($isAdmin) "{{ route('admin.search') }}" @else "{{ url('/search') }}" @endif;
+                    fetch(searchUrl + "?q=" + encodeURIComponent(query), {
+                        headers: { "Accept": "application/json" }
+                    })
+                    .then(function (res) { return res.json(); })
+                    .then(function (data) {
+                        var html = "";
+                        var total = 0;
+
+                        if (data.projects && data.projects.length) {
+                            html += '<div class="cmd-palette-group-title">Projects</div>';
+                            data.projects.forEach(function (p) {
+                                total++;
+                                html += '<a href="' + p.url + '" class="cmd-item ' + (total === 1 ? 'is-selected' : '') + '"><div class="cmd-item-icon">📁</div><div class="cmd-item-info"><div class="cmd-item-title">' + p.title + '</div><div class="cmd-item-subtitle">' + p.subtitle + '</div></div><span style="font-size: 11px; color: var(--muted); text-transform: capitalize;">' + p.status + '</span></a>';
+                            });
+                        }
+
+                        if (data.invoices && data.invoices.length) {
+                            html += '<div class="cmd-palette-group-title">Invoices</div>';
+                            data.invoices.forEach(function (inv) {
+                                total++;
+                                html += '<a href="' + inv.url + '" class="cmd-item ' + (total === 1 ? 'is-selected' : '') + '"><div class="cmd-item-icon">💳</div><div class="cmd-item-info"><div class="cmd-item-title">' + inv.title + '</div><div class="cmd-item-subtitle">' + inv.subtitle + '</div></div><span style="font-size: 12px; font-weight: 600; color: #16a34a;">' + inv.amount + '</span></a>';
+                            });
+                        }
+
+                        if (data.clients && data.clients.length) {
+                            html += '<div class="cmd-palette-group-title">Clients</div>';
+                            data.clients.forEach(function (c) {
+                                total++;
+                                html += '<a href="' + c.url + '" class="cmd-item ' + (total === 1 ? 'is-selected' : '') + '"><div class="cmd-item-icon">👤</div><div class="cmd-item-info"><div class="cmd-item-title">' + c.title + '</div><div class="cmd-item-subtitle">' + c.subtitle + '</div></div><span style="font-size: 11px; color: var(--muted);">Client</span></a>';
+                            });
+                        }
+
+                        if (!total) {
+                            html = '<div style="padding: 24px; text-align: center; color: var(--muted); font-size: 13.5px;">No results found for "' + query + '"</div>';
+                        }
+
+                        cmdResults.innerHTML = html;
+                        attachCmdItemEvents();
+                    })
+                    .catch(function (err) {
+                        console.error("Command palette search error:", err);
+                    });
+                }, 180);
+            });
+
+            cmdInput.addEventListener("keydown", function (e) {
+                var items = cmdResults.querySelectorAll(".cmd-item");
+                if (!items.length) return;
+
+                var selected = cmdResults.querySelector(".cmd-item.is-selected");
+                var currentIndex = Array.prototype.indexOf.call(items, selected);
+
+                if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    if (selected) selected.classList.remove("is-selected");
+                    var nextIndex = (currentIndex + 1) % items.length;
+                    items[nextIndex].classList.add("is-selected");
+                    items[nextIndex].scrollIntoView({ block: "nearest" });
+                } else if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    if (selected) selected.classList.remove("is-selected");
+                    var prevIndex = (currentIndex - 1 + items.length) % items.length;
+                    items[prevIndex].classList.add("is-selected");
+                    items[prevIndex].scrollIntoView({ block: "nearest" });
+                } else if (e.key === "Enter" && selected) {
+                    e.preventDefault();
+                    selected.click();
+                }
+            });
+        }
+
+        function attachCmdItemEvents() {
+            var items = cmdResults.querySelectorAll(".cmd-item");
+            items.forEach(function (item) {
+                item.addEventListener("mouseenter", function () {
+                    var cur = cmdResults.querySelector(".cmd-item.is-selected");
+                    if (cur) cur.classList.remove("is-selected");
+                    item.classList.add("is-selected");
+                });
+            });
+        }
+        window.toggleTheme = function () {
+            var current = document.documentElement.getAttribute('data-theme') || 'light';
+            var next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            try {
+                localStorage.setItem('clienthub_theme', next);
+            } catch (e) {}
+        };
     })();
 </script>
     

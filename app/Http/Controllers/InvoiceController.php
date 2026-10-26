@@ -11,7 +11,7 @@ class InvoiceController extends Controller
     public function download(Invoice $invoice)
     {
         abort_unless(
-            $invoice->project->client_id === Auth::id(),
+            Auth::user()->role === 'admin' || $invoice->project->client_id === Auth::id(),
             403
         );
 

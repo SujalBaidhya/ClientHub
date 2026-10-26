@@ -16,7 +16,7 @@ class DashboardController extends Controller
         }
 
         // Fetch all projects belonging to this user/client
-        $allProjects = $user->projects()->latest()->get() ?? collect();
+        $allProjects = $user->projects()->active()->latest()->get() ?? collect();
 
         if ($project && $project->exists) {
             // Check that the requested project is in the user's projects list
@@ -31,7 +31,7 @@ class DashboardController extends Controller
             // Load relations specifically for this project
             $project->load([
                 'milestones.comments.user',
-                'files',
+                'files.uploadedBy',
                 'invoices',
                 'client',
             ]);

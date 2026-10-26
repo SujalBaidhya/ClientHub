@@ -12,19 +12,21 @@ class ClientActivityMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-        public function __construct(
+    public function __construct(
         public User $client,
         public Milestone $milestone,
-        public string $activityType, // 'comment' or 'revision'
+        public string $activityType, // 'comment', 'revision' or 'approval'
         public string $activityMessage,
     ) {
     }
 
     public function build()
     {
-        $subject = $this->activityType === 'revision'
-            ? "Revision requested: {$this->milestone->title}"
-            : "New comment from {$this->client->name}";
+        $subject = match ($this->activityType) {
+            'revision' => "Revision requested: {$this->milestone->title}",
+            'approval' => "Milestone approved: {$this->milestone->title}",
+            default => "New comment from {$this->client->name}",
+        };
 
         return $this->subject($subject)
             ->view('emails.client-activity');

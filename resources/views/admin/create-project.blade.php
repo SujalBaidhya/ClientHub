@@ -73,8 +73,13 @@
 
     <div class="dashboard">
 
+        <x-breadcrumbs :links="[
+            ['label' => 'Projects', 'url' => route('admin.projects.index'), 'icon' => true],
+            ['label' => 'Create New Project'],
+        ]" />
+
         <div class="form-header">
-            <p class="dashboard-eyebrow">Admin</p>
+            <p class="dashboard-eyebrow">Admin Workspace</p>
             <h1 style="margin: 0 0 6px 0;">Create New Project</h1>
             <p style="margin: 0; color: #6b7280; font-size: 14px;">Assign a new project to a client.</p>
         </div>
@@ -94,6 +99,16 @@
                             </option>
                         @endforeach
                     </select>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display:block; margin-bottom:4px; font-weight:bold;">Start from Template (optional)</label>
+                    <select name="template" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border);">
+                        <option value="">No template — blank project</option>
+                        @foreach($templates as $key => $template)
+                            <option value="{{ $key }}">{{ $template['label'] }}</option>
+                        @endforeach
+                    </select>
+                    <small style="color: var(--muted, #6b7280);">Automatically creates a standard set of milestones for this project type.</small>
                 </div>
 
                 <div class="form-group">

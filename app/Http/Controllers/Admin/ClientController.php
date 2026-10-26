@@ -5,23 +5,23 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Mail\ClientInvitationMail;
 use App\Models\User;
+use App\Support\SafeMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class ClientController extends Controller
 {
-  public function create()
-{
-    $clients = User::where('role', 'client')
-                ->withCount('projects')
-                ->latest()
-                ->paginate(10)
-                ->withQueryString();
+    public function create()
+    {
+        $clients = User::where('role', 'client')
+            ->withCount('projects')
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
-    return view('admin.create-client', compact('clients'));
-}
+        return view('admin.create-client', compact('clients'));
+    }
 
     public function store(Request $request)
     {
@@ -42,9 +42,20 @@ class ClientController extends Controller
         ]);
 
         $inviteUrl = route('invitations.show', ['token' => $token]);
-       Mail::to($client->email)->send(new ClientInvitationMail($client, $inviteUrl));
-         \App\Models\ActivityLog::record(auth()->user()->name . ' invited client "' . $client->name . '" (' . $client->email . ')', route('admin.clients.create'), $project->id,true);
-        return redirect()->route('admin.clients.create')->with('success', 'Client created and invitation email queued!');
+
+        $sent = SafeMail::send($client->email, new ClientInvitationMail($client, $inviteUrl));
+
+        \App\Models\ActivityLog::record(
+            auth()->user()->name . ' invited client "' . $client->name . '" (' . $client->email . ')',
+            route('admin.clients.create')
+        );
+
+        return redirect()->route('admin.clients.create')->with(
+            $sent ? 'success' : 'error',
+            $sent
+                ? 'Client created and invitation email sent!'
+                : 'Client created, but the invitation email could not be sent. Use "Resend invite" to try again.'
+        );
     }
 
     public function resendInvite(User $client)
@@ -65,10 +76,15 @@ class ClientController extends Controller
         ]);
 
         $inviteUrl = route('invitations.show', ['token' => $token]);
-       Mail::to($client->email)->send(new ClientInvitationMail($client, $inviteUrl));
 
-        return redirect()->route('admin.clients.create')
-            ->with('success', "Invitation re-sent successfully to {$client->email}!");
+        $sent = SafeMail::send($client->email, new ClientInvitationMail($client, $inviteUrl));
+
+        return redirect()->route('admin.clients.create')->with(
+            $sent ? 'success' : 'error',
+            $sent
+                ? "Invitation re-sent successfully to {$client->email}!"
+                : "Could not send the email to {$client->email}. Please try again."
+        );
     }
 
     public function destroy(User $client)

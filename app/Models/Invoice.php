@@ -18,6 +18,7 @@ class Invoice extends Model
         'amount',
         'issued_at',
         'due_date',
+                'due_reminder_sent_at',
     ];
 
     protected $casts = [
@@ -25,6 +26,7 @@ class Invoice extends Model
         'issued_at' => 'date',
         'due_date' => 'date',
         'paid_at' => 'datetime',
+                'due_reminder_sent_at' => 'datetime',
     ];
 
     public function project()

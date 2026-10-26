@@ -44,7 +44,7 @@ class ProjectFileController extends Controller
     public function store(Request $request, Project $project)
     {
         $validated = $request->validate([
-            'file' => 'required|file|mimes:pdf|max:20480', // 20MB max
+            'file' => 'required|file|mimes:pdf,jpg,jpeg,png,gif,webp,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip|max:20480', // 20MB max
         ]);
         $uploaded = $request->file('file');
         $fileName = basename(trim($uploaded->getClientOriginalName()));
@@ -64,13 +64,13 @@ class ProjectFileController extends Controller
         }
 
         
-        $path = $uploaded->store('files', 'public');
+        $path = $uploaded->store('files', config('filesystems.uploads_disk'));
 
         $projectFile = $project->files()->create([
             'uploaded_by' => auth()->id(),
             'original_name' => $fileName,
             'file_path' => $path,
-            'mime_type' => $uploaded->getClientMimeType(),
+            'mime_type' => $uploaded->getMimeType(),
             'file_size' => $uploaded->getSize(),
         ]);
 
@@ -83,26 +83,11 @@ class ProjectFileController extends Controller
             ->with('success', 'File uploaded successfully.');
     }
 
-    public function view(ProjectFile $projectFile)
-    {
-        $disk = Storage::disk('public');
-        abort_unless($disk->exists($projectFile->file_path), 404);
-        return $disk->response(
-            $projectFile->file_path,
-            $projectFile->original_name,
-            [
-                'Content-Type' => 'application/pdf',
-                'X-Content-Type-Options' => 'nosniff',
-            ],
-            'inline'
-        );
-    }
-
     public function destroy(Project $project, ProjectFile $file)
     {
         $fileName = $file->original_name;
-
-        \Storage::disk('public')->delete($file->file_path);
+        
+        \Storage::disk(config('filesystems.uploads_disk'))->delete($file->file_path);
         $file->delete();
 
         \App\Models\ActivityLog::record(

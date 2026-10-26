@@ -50,6 +50,34 @@
             </form>
 
         </x-card>
+                @if(auth()->user()->role === 'client')
+            <x-card title="Email Notifications">
+                <form method="POST" action="{{ route('account.notifications') }}">
+                    @csrf
+                    @method('PUT')
+
+                    <p style="margin: 0 0 14px; color: var(--muted); font-size: 14px;">
+                        Choose which emails you receive. Payment receipts, invitations and password resets are always sent.
+                    </p>
+
+                    @foreach([
+                        'email_invoices' => ['New invoices', 'An email when a new invoice is issued to you.'],
+                        'email_reminders' => ['Payment reminders', 'A reminder before an invoice is due, and a notice if it becomes overdue.'],
+                        'email_milestones' => ['Milestone updates', 'An email when one of your milestones is marked complete.'],
+                    ] as $field => [$label, $help])
+                        <label style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; cursor: pointer;">
+                            <input type="checkbox" name="{{ $field }}" value="1" @checked(auth()->user()->{$field} ?? true) style="margin-top: 4px; width: 16px; height: 16px;">
+                            <span>
+                                <strong style="display: block;">{{ $label }}</strong>
+                                <span style="font-size: 13px; color: var(--muted);">{{ $help }}</span>
+                            </span>
+                        </label>
+                    @endforeach
+
+                    <button type="submit" class="btn btn-success">Save Preferences</button>
+                </form>
+            </x-card>
+        @endif
 
     </div>
 

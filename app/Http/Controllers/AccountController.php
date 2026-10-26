@@ -12,7 +12,18 @@ class AccountController extends Controller
     {
         return view('account');
     }
+    public function updateNotifications(Request $request)
+    {
+        $user = Auth::user();
 
+        $user->forceFill([
+            'email_invoices' => $request->boolean('email_invoices'),
+            'email_reminders' => $request->boolean('email_reminders'),
+            'email_milestones' => $request->boolean('email_milestones'),
+        ])->save();
+
+        return back()->with('success', 'Email preferences saved.');
+    }
     public function update(Request $request)
     {
         $user = Auth::user();

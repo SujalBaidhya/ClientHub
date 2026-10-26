@@ -68,7 +68,7 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.process');
 
 Route::get('/forgot-password', [PasswordResetController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->middleware('throttle:5,1')->name('password.email');
 Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
 
@@ -80,30 +80,35 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 Route::get('/account', [AccountController::class, 'edit'])
     ->middleware('auth','no-cache')
     ->name('account.edit');
-
+Route::put('/account/notifications', [AccountController::class, 'updateNotifications'])
+    ->middleware('auth','no-cache')
+    ->name('account.notifications');
 Route::put('/account', [AccountController::class, 'update'])
     ->middleware('auth','no-cache')
     ->name('account.update');
-
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
 Route::get('/payment/failure', [PaymentController::class, 'failure'])->name('payment.failure');
 Route::get('admin/files/{projectFile}/view', [AdminFileController::class, 'view'])
         ->middleware(['auth', 'admin'])
         ->name('admin.files.view');
-Route::prefix('admin')->middleware(['auth', 'admin','no-cache'])->group(function () {
+Route::prefix('admin')->middleware(['auth', 'admin','no-cache'])->scopeBindings()->group(function () {
+
     Route::get('/', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::post('/check-overdue-invoices', [AdminDashboardController::class, 'checkOverdueInvoices'])->name('admin.invoices.check-overdue');
     Route::get('/projects', [AdminProjectController::class, 'index'])->name('admin.projects.index');
     Route::get('/projects/create', [AdminProjectController::class, 'create'])->name('admin.projects.create');
     Route::post('/projects', [AdminProjectController::class, 'store'])->name('admin.projects.store');
     Route::get('/projects/{project}/edit', [AdminProjectController::class, 'edit'])->name('admin.projects.edit');
     Route::put('/projects/{project}', [AdminProjectController::class, 'update'])->name('admin.projects.update');
     Route::delete('/projects/{project}', [AdminProjectController::class, 'destroy'])->name('admin.projects.destroy');
-
+        Route::patch('/projects/{project}/archive', [AdminProjectController::class, 'archive'])->name('admin.projects.archive');
+    Route::patch('/projects/{project}/restore', [AdminProjectController::class, 'restore'])->name('admin.projects.restore');
     Route::get('/projects/{project}/milestones', [AdminMilestoneController::class, 'create'])->name('admin.milestones.create');
     Route::post('/projects/{project}/milestones', [AdminMilestoneController::class, 'store'])->name('admin.milestones.store');
     Route::put('/projects/{project}/milestones/{milestone}', [AdminMilestoneController::class, 'update'])->name('admin.milestones.update');
     Route::delete('/projects/{project}/milestones/{milestone}', [AdminMilestoneController::class, 'destroy'])->name('admin.milestones.destroy');
-
+        Route::get('/invoices', [AdminInvoiceController::class, 'index'])->name('admin.invoices.index');
+    Route::get('/invoices/export', [AdminInvoiceController::class, 'exportCsv'])->name('admin.invoices.export');
     Route::get('/projects/{project}/invoices', [AdminInvoiceController::class, 'create'])->name('admin.invoices.create');
     Route::post('/projects/{project}/invoices', [AdminInvoiceController::class, 'store'])->name('admin.invoices.store');
     Route::put('/projects/{project}/invoices/{invoice}', [AdminInvoiceController::class, 'update'])->name('admin.invoices.update');
@@ -119,9 +124,10 @@ Route::prefix('admin')->middleware(['auth', 'admin','no-cache'])->group(function
         ->name('admin.clients.resend-invite');
 
     Route::get('/payments', [AdminPaymentController::class, 'index'])->name('admin.payments.index');
+
+    Route::get('/payments/export', [AdminPaymentController::class, 'exportCsv'])->name('admin.payments.export');
     Route::post('/activity-logs/mark-read', [\App\Http\Controllers\Admin\ActivityLogController::class, 'markRead'])->name('admin.activity_logs.mark_read');
     Route::get('/admin/activity', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('admin.activity.index');
-
     Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('admin.search');
 });
 Route::middleware('auth')->group(function () {
