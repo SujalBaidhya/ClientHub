@@ -1520,20 +1520,8 @@
 
         <div class="activity-dropdown" id="activityDropdown">
             @forelse($recentActivity as $item)
-                @php
-                    if ($isAdmin) {
-                        $targetUrl = $item->url ?? $activityIndexRoute;
-                    } else {
-                        if ($item->url && !str_contains($item->url, '/admin')) {
-                            $targetUrl = $item->url;
-                        } elseif ($item->project_id) {
-                            $targetUrl = route('dashboard.project', $item->project_id);
-                        } else {
-                            $targetUrl = route('client.activity.index');
-                        }
-                    }
-                @endphp
-                <a href="{{ $targetUrl }}" class="activity-dropdown-item" style="text-decoration: none; display: block; color: inherit;background: rgba(0,0,0,0.03); font-weight: 500;">
+                <a href="{{ $item->urlFor(auth()->user()) ?? $activityIndexRoute }}" class="activity-dropdown-item" style="text-decoration: none; display: block; color: inherit;background: rgba(0,0,0,0.03); font-weight: 500;">
+
                     <p>{{ $item->description }}</p>
                     <span style="font-size: 0.75rem; color: var(--muted);">{{ $item->created_at->diffForHumans() }}</span>
                 </a>
@@ -1609,7 +1597,7 @@
                 </a>
 
                 @if(!$isAdmin)
-                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=hello.clienthub@gmail.com" target="_blank" class="sidebar-link">
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=clienthub@gmail.com" target="_blank" class="sidebar-link">
                         <x-icon name="external-link" size="18" />
                         <span>Contact Support</span>
                     </a>
@@ -1736,7 +1724,7 @@
             const item = document.createElement('div');
             item.className = `toast toast-item toast-${type}`;
             const isSuccess = type === 'success';
-            const iconSvg = isSuccess 
+            const iconSvg = isSuccess
                 ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
                 : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
 

@@ -24,15 +24,35 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/milestones/{milestone}/approve', [AdminMilestoneController::class, 'approve'])
         ->name('client.milestones.approve');
     
-Route::post('/dashboard/{project}/files', [ProjectFileController::class, 'store'])
-->middleware('auth')
-->name('files.store');  
+    Route::post('/dashboard/{project}/files', [ProjectFileController::class, 'store'])
+    ->name('files.store');  
 
     Route::post('/milestones/{milestone}/request-revision', [AdminMilestoneController::class, 'requestRevision'])
         ->name('client.milestones.request-revision');
 
     Route::post('/milestones/{milestone}/complete', [AdminMilestoneController::class, 'approve'])
         ->name('milestones.complete');
+
+    Route::get('/dashboard/{project}', [DashboardController::class, 'index'])
+    ->name('dashboard.project');
+
+    Route::post('/logout', [LoginController::class, 'logout'])
+    ->name('logout');
+
+    Route::get('/files/{projectFile}/view', [ProjectFileController::class, 'view'])
+        ->name('files.view');
+
+    Route::get('/files/{projectFile}/download', [ProjectFileController::class, 'download'])
+        ->name('files.download');
+
+    Route::get('/invoices/{invoice}/download', [InvoiceController::class, 'download'])
+        ->name('invoices.download');
+
+    Route::post('/milestones/{milestone}/comments', [CommentController::class, 'store'])
+        ->name('comments.store');
+
+    Route::get('/invoices/{invoice}/pay', [PaymentController::class, 'pay'])
+        ->name('payment.pay');
 });
 
 Route::middleware('web')->group(function () {
@@ -57,10 +77,6 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware('auth','no-cache')
     ->name('dashboard');
 
-Route::get('/dashboard/{project}', [DashboardController::class, 'index'])
-    ->middleware('auth')
-    ->name('dashboard.project');
-
 Route::get('/account', [AccountController::class, 'edit'])
     ->middleware('auth','no-cache')
     ->name('account.edit');
@@ -70,34 +86,13 @@ Route::put('/account/notifications', [AccountController::class, 'updateNotificat
 Route::put('/account', [AccountController::class, 'update'])
     ->middleware('auth','no-cache')
     ->name('account.update');
-
-Route::post('/logout', [LoginController::class, 'logout'])
-    ->middleware('auth')
-    ->name('logout');
-
-Route::get('/files/{projectFile}/view', [ProjectFileController::class, 'view'])
-        ->middleware('auth')
-        ->name('files.view');
-
-Route::get('/files/{projectFile}/download', [ProjectFileController::class, 'download'])
-    ->middleware('auth')
-    ->name('files.download');
-
-Route::get('/invoices/{invoice}/download', [InvoiceController::class, 'download'])
-    ->middleware('auth')
-    ->name('invoices.download');
-
-Route::post('/milestones/{milestone}/comments', [CommentController::class, 'store'])
-    ->middleware('auth')
-    ->name('comments.store');
-
-Route::get('/invoices/{invoice}/pay', [PaymentController::class, 'pay'])
-    ->middleware('auth')
-    ->name('payment.pay');
-
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
 Route::get('/payment/failure', [PaymentController::class, 'failure'])->name('payment.failure');
+Route::get('admin/files/{projectFile}/view', [AdminFileController::class, 'view'])
+        ->middleware(['auth', 'admin'])
+        ->name('admin.files.view');
 Route::prefix('admin')->middleware(['auth', 'admin','no-cache'])->scopeBindings()->group(function () {
+
     Route::get('/', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::post('/check-overdue-invoices', [AdminDashboardController::class, 'checkOverdueInvoices'])->name('admin.invoices.check-overdue');
     Route::get('/projects', [AdminProjectController::class, 'index'])->name('admin.projects.index');
@@ -119,8 +114,8 @@ Route::prefix('admin')->middleware(['auth', 'admin','no-cache'])->scopeBindings(
     Route::put('/projects/{project}/invoices/{invoice}', [AdminInvoiceController::class, 'update'])->name('admin.invoices.update');
     Route::delete('/projects/{project}/invoices/{invoice}', [AdminInvoiceController::class, 'destroy'])->name('admin.invoices.destroy');
     Route::get('/projects/{project}/files', [AdminFileController::class, 'create'])->name('admin.files.create');
-Route::post('/projects/{project}/files', [AdminFileController::class, 'store'])->name('admin.files.store');
-Route::delete('/projects/{project}/files/{file}', [AdminFileController::class, 'destroy'])->name('admin.files.destroy');
+    Route::post('/projects/{project}/files', [AdminFileController::class, 'store'])->name('admin.files.store');
+    Route::delete('/projects/{project}/files/{file}', [AdminFileController::class, 'destroy'])->name('admin.files.destroy');
 
     Route::get('/clients', [AdminClientController::class, 'create'])->name('admin.clients.create');
     Route::post('/clients', [AdminClientController::class, 'store'])->name('admin.clients.store');
@@ -129,10 +124,11 @@ Route::delete('/projects/{project}/files/{file}', [AdminFileController::class, '
         ->name('admin.clients.resend-invite');
 
     Route::get('/payments', [AdminPaymentController::class, 'index'])->name('admin.payments.index');
+
     Route::get('/payments/export', [AdminPaymentController::class, 'exportCsv'])->name('admin.payments.export');
-Route::post('/activity-logs/mark-read', [\App\Http\Controllers\Admin\ActivityLogController::class, 'markRead'])->name('admin.activity_logs.mark_read');
-Route::get('/activity', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('admin.activity.index');
-Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('admin.search');
+    Route::post('/activity-logs/mark-read', [\App\Http\Controllers\Admin\ActivityLogController::class, 'markRead'])->name('admin.activity_logs.mark_read');
+    Route::get('/admin/activity', [App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('admin.activity.index');
+    Route::get('/search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('admin.search');
 });
 Route::middleware('auth')->group(function () {
     Route::get('/activity', [ClientActivityLogController::class, 'index'])->name('client.activity.index');

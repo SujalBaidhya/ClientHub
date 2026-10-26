@@ -68,7 +68,11 @@
             line-height: 1.5;
             word-break: break-word;
         }
- 
+        
+        .activity-content a:hover .activity-description {
+            text-decoration: underline;
+        }
+        
         .activity-item.is-unread .activity-description {
             font-weight: 700;
         }
@@ -162,17 +166,18 @@
                             <div class="activity-item {{ $isUnread ? 'is-unread' : '' }}">
                                 <div class="activity-dot"></div>
                                 <div class="activity-content">
-                                    @if($log->project)
-                                        <span class="activity-project">{{ $log->project->name }}</span>
-                                    @endif
-
-                                    <p class="activity-description">
-                                        {{ $log->description }}
-                                        @if($isUnread)
-                                            <span class="activity-new-badge">New</span>
+                                    <a href="{{ $log->urlFor(auth()->user()) }}" style="text-decoration: none; color: inherit; display: block;">
+                                        @if($log->project)
+                                            <span class="activity-project">{{ $log->project->name }}</span>
                                         @endif
-                                    </p>
 
+                                        <p class="activity-description">
+                                            {{ $log->description }}
+                                            @if($isUnread)
+                                                <span class="activity-new-badge">New</span>
+                                            @endif
+                                        </p>
+                                    </a>
                                     <span class="activity-time">
                                         {{ $log->created_at->format('M d, Y \a\t g:i A') }}
                                         &middot; {{ $log->created_at->diffForHumans() }}
