@@ -65,7 +65,72 @@
             gap: 6px;
             flex-wrap: wrap;
         }
+    
+        [data-theme="dark"] .client-row {
+            background: #162032;
+            border-color: #223048;
+        }
 
+        [data-theme="dark"] .client-row:hover {
+            border-color: #3b4d6e;
+        }
+
+        [data-theme="dark"] .client-email {
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .client-form-input {
+            background: #162032;
+            color: var(--text);
+            border-color: #243048;
+        }
+
+        [data-theme="dark"] .client-form-input::placeholder {
+            color: #64748b;
+        }
+
+        [data-theme="dark"] .client-form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        [data-theme="dark"] .clients-header p:not(.dashboard-eyebrow) {
+            color: var(--muted) !important;
+        }
+
+        [data-theme="dark"] .client-name-badge strong {
+            color: #e2e8f0 !important;
+        }
+
+        [data-theme="dark"] .client-name-badge span[style*="fef3c7"] {
+            background: #422f12 !important;
+            color: #fbbf24 !important;
+        }
+
+        [data-theme="dark"] .client-name-badge span[style*="dcfce7"] {
+            background: #123b30 !important;
+            color: #6ee7b7 !important;
+        }
+
+        [data-theme="dark"] .client-actions .btn[style*="eef2ff"] {
+            background: #242b4a !important;
+            color: #a5b4fc !important;
+            border-color: #373f68 !important;
+        }
+
+        [data-theme="dark"] .pagination-container a,
+        [data-theme="dark"] .pagination-container span {
+            background: #162032 !important;
+            border-color: #243048 !important;
+            color: #cbd5e1 !important;
+        }
+
+        [data-theme="dark"] .pagination-container span[style*="2563eb"] {
+            background: #2563eb !important;
+            border-color: #2563eb !important;
+            color: #ffffff !important;
+        }
         @media (max-width: 768px) {
             .client-row {
                 flex-direction: column;

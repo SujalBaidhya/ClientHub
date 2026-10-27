@@ -10,6 +10,61 @@
         .inv-row.is-overdue { border-color: #fca5a5; background: #fef2f2; }
         .inv-right { display: flex; align-items: center; gap: 14px; text-align: right; }
         .inv-main { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+        [data-theme="dark"] .inv-tab {
+            background: var(--surface);
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        [data-theme="dark"] .inv-tab.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        [data-theme="dark"] .inv-row {
+            background: var(--surface);
+            border-color: var(--border);
+            color: var(--text);
+        }
+
+        [data-theme="dark"] .inv-row.is-overdue {
+            background: rgba(239, 68, 68, 0.10);
+            border-color: #7f1d1d;
+        }
+
+        [data-theme="dark"] .inv-main > strong {
+            color: var(--text) !important;
+        }
+
+        [data-theme="dark"] .inv-right > strong {
+            color: var(--text);
+        }
+        [data-theme="dark"] .inv-right .btn[style] {
+            background: var(--surface) !important;
+            color: var(--text) !important;
+            border-color: var(--border) !important;
+        }
+
+        [data-theme="dark"] .inv-row .badge {
+            color: inherit;
+        }
+
+        [data-theme="dark"] .inv-filters input {
+            background: #0c121e !important;
+            color: var(--text) !important;
+            border-color: var(--border) !important;
+        }
+
+        [data-theme="dark"] .inv-filters input::placeholder {
+            color: var(--muted);
+        }
+
+        [data-theme="dark"] .inv-row ~ div a {
+            background: var(--surface) !important;
+            color: var(--text) !important;
+            border-color: var(--border) !important;
+        }
         @media (max-width: 768px) {
             .inv-stats { grid-template-columns: 1fr; }
             .inv-row { flex-direction: column; align-items: stretch; }

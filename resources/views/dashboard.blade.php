@@ -464,6 +464,124 @@
         .dropzone-remove-btn:hover {
             background: #fecaca;
         }
+    
+        [data-theme="dark"] .dashboard .card h1,
+        [data-theme="dark"] .dashboard .card h2,
+        [data-theme="dark"] .dashboard .card h3,
+        [data-theme="dark"] .dashboard .card-header,
+        [data-theme="dark"] .dashboard .card-title,
+        [data-theme="dark"] .dashboard .card-header h2,
+        [data-theme="dark"] .dashboard .card-header h3 {
+            color: #f1f5f9 !important;
+        }
+
+        [data-theme="dark"] .milestone-title,
+        [data-theme="dark"] .milestone-card strong,
+        [data-theme="dark"] .milestone-card h3,
+        [data-theme="dark"] .milestone-card h4 {
+            color: #f1f5f9 !important;
+        }
+
+        [data-theme="dark"] .milestone-card p,
+        [data-theme="dark"] .milestone-card span {
+            color: #cbd5e1;
+        }
+
+        [data-theme="dark"] .file-item strong,
+        [data-theme="dark"] .file-info strong {
+            color: #f1f5f9 !important;
+        }
+
+        [data-theme="dark"] .file-item span {
+            color: #cbd5e1;
+        }
+
+        [data-theme="dark"] .file-item span[style*="background: #f1f5f9"],
+        [data-theme="dark"] .file-item span[style*="background:#f1f5f9"] {
+            background: #263449 !important;
+            color: #e2e8f0 !important;
+        }
+
+        [data-theme="dark"] .file-item,
+        [data-theme="dark"] .file-info {
+            color: #cbd5e1;
+        }
+
+        [data-theme="dark"] .client-invoice-card {
+            background: #111827 !important;
+            border-color: #334155 !important;
+            color: #e2e8f0 !important;
+        }
+
+        [data-theme="dark"] .client-invoice-card span[style*="#1e1b4b"],
+        [data-theme="dark"] .client-invoice-card span[style*="#1E1B4B"] {
+            color: #c7d2fe !important;
+        }
+
+        [data-theme="dark"] .client-invoice-card strong[style*="#1e1b4b"],
+        [data-theme="dark"] .client-invoice-card strong[style*="#1E1B4B"] {
+            color: #a5b4fc !important;
+        }
+
+        [data-theme="dark"] .client-invoice-card p,
+        [data-theme="dark"] .client-invoice-card .invoice-label {
+            color: #94a3b8 !important;
+        }
+
+        [data-theme="dark"] .client-invoice-card strong {
+            color: #e2e8f0;
+        }
+
+        [data-theme="dark"] .roadmap-stepper-container,
+        [data-theme="dark"] .roadmap-step-pill {
+            background-color: #111827 !important;
+            color: var(--text) !important;
+            border-color: var(--border) !important;
+        }
+
+        [data-theme="dark"] .roadmap-stepper-counter {
+            background-color: #252747 !important;
+            color: #a5b4fc !important;
+        }
+
+        [data-theme="dark"] .roadmap-step-pill.is-done {
+            background-color: #123329 !important;
+            border-color: #166534 !important;
+            color: #86efac !important;
+        }
+
+        [data-theme="dark"] .roadmap-step-pill.is-active {
+            background-color: #172554 !important;
+            border-color: #1d4ed8 !important;
+            color: #bfdbfe !important;
+        }
+
+        [data-theme="dark"] .roadmap-step-dot {
+            background-color: #334155 !important;
+            color: #f1f5f9 !important;
+        }
+        [data-theme="dark"] .client-invoice-card a.btn:not(.btn-success) {
+            background: #1e293b !important;
+            border-color: #475569 !important;
+            color: #e2e8f0 !important;
+        }
+
+        [data-theme="dark"] .project-selector-bar a.btn:not([style*="var(--primary)"]) {
+            background: #1e293b !important;
+            border-color: #334155 !important;
+            color: #e2e8f0 !important;
+        }
+
+        [data-theme="dark"] .file-item,
+        [data-theme="dark"] .milestone-card {
+            background: #111827 !important;
+            border-color: #334155 !important;
+        }
+
+        [data-theme="dark"] .dashboard .muted,
+        [data-theme="dark"] .dashboard small {
+            color: #94a3b8;
+        }
     </style>
 
     <div class="dashboard">

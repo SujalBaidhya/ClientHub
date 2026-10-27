@@ -83,6 +83,104 @@
             margin: 0;
         }
 
+        [data-theme="dark"] .file-upload-input {
+            background: #162032;
+            color: var(--text);
+            border-color: #243048;
+        }
+
+        [data-theme="dark"] .file-card-item {
+            background: #162032;
+            border-color: #223048;
+        }
+
+        [data-theme="dark"] .file-card-item:hover {
+            border-color: #3b4d6e;
+            box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.5);
+        }
+
+        [data-theme="dark"] .file-meta strong {
+            color: #e2e8f0;
+        }
+
+        [data-theme="dark"] .file-meta span {
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .dropzone-box {
+            background: #162032;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .dropzone-box:hover,
+        [data-theme="dark"] .dropzone-box.is-dragover {
+            background: #1e293b;
+            border-color: var(--primary);
+        }
+
+        [data-theme="dark"] .dropzone-icon-wrap {
+            background: #312e81;
+            color: #a5b4fc;
+        }
+
+        [data-theme="dark"] .dropzone-title {
+            color: #e2e8f0;
+        }
+
+        [data-theme="dark"] .dropzone-hint {
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .dropzone-preview {
+            background: #162032;
+            border-color: #243048;
+        }
+
+        [data-theme="dark"] .dropzone-preview-name {
+            color: #e2e8f0;
+        }
+
+        [data-theme="dark"] .dropzone-preview-size {
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .dropzone-remove-btn {
+            background: #451a1a;
+            color: #fca5a5;
+        }
+
+        [data-theme="dark"] .dropzone-remove-btn:hover {
+            background: #7f1d1d;
+        }
+
+        [data-theme="dark"] .file-meta span[style*="f1f5f9"] {
+            background: #243048 !important;
+            color: #cbd5e1 !important;
+        }
+
+        [data-theme="dark"] select#uploader {
+            background: #162032 !important;
+            color: #e2e8f0 !important;
+            border-color: #243048 !important;
+        }
+
+        [data-theme="dark"] select#uploader option {
+            background: #162032;
+            color: #e2e8f0;
+        }
+
+        [data-theme="dark"] .pagination-container a,
+        [data-theme="dark"] .pagination-container span {
+            background: #162032 !important;
+            border-color: #243048 !important;
+            color: #cbd5e1 !important;
+        }
+
+        [data-theme="dark"] .pagination-container span[style*="2563eb"] {
+            background: #2563eb !important;
+            border-color: #2563eb !important;
+            color: #ffffff !important;
+        }
         @media (max-width: 768px) {
             .files-header h1 {
                 font-size: 26px;
